@@ -1,0 +1,25 @@
+﻿using Avokates_CRM.Models.Outputs;
+using Avokates_CRM.Models.Inputs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using WebSite.Models.Outputs;
+
+namespace WebSite.DataLayer
+{
+    public interface IDataLayer
+    {
+        string CheckConnectionToDB();
+        GetMainPage_Out GetMainPage(string token);
+
+        GetCasesList_Out GetCasesList(string token);
+
+        //ResultBase GetCases(BaseAuth_In inputValue);
+        //ResultBase GetCaseNotes(BaseAuth_In inputValue);
+
+        // ResultBase GetFigurantRoles( BaseAuth_In inputValue);
+        //ResultBase CreateNewCase(NewCase_In inputValue);
+
+    }
+}

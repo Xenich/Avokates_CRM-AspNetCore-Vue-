@@ -1,0 +1,8 @@
+WebSite/bin/
+WebSite/obj/
+WebSite/Properties/
+WebSite/appsettings.Development.json
+WebSite/appsettings.json
+WebSite/WebSite.csproj
+WebSite/WebSite.csproj.user
+.vs/

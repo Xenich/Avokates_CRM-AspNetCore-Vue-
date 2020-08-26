@@ -1,0 +1,92 @@
+﻿@using WebSite.Models.Outputs
+@model GetMainPage_Out
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WebSite</title>
+
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
+    <link rel="stylesheet" href="~/css/site.css" />
+
+        <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+
+
+
+    <style>
+        body {
+            font: 11pt Arial, Helvetica, sans-serif; /* Рубленый шрифт текста */
+            margin: 0; /* Отступы на странице */
+        }
+
+        h1 {
+            font-size: 36px; /* Размер шрифта */
+            margin: 0; /* Убираем отступы */
+            color: #fc6; /* Цвет текста */
+        }
+
+        h2 {
+            margin-top: 0; /* Убираем отступ сверху */
+        }
+
+        #header { /* Верхний блок */
+            background: #00a090; /* Цвет фона */
+            padding: 10px; /* Поля вокруг текста */
+        }
+
+        #sidebar { /* Левая колонка */
+            float: left; /* Обтекание справа */
+            border: 1px solid #333; /* Параметры рамки вокруг */
+            width: 20%; /* Ширина колонки */
+            padding: 5px; /* Поля вокруг текста */
+            margin: 10px 10px 20px 5px; /* Значения отступов */
+        }
+
+        #content { /* Правая колонка */
+            margin: 10px 5px 20px 25%; /* Значения отступов */
+            padding: 5px; /* Поля вокруг текста */
+            border: 1px solid #333; /* Параметры рамки */
+        }
+
+        #footer { /* Нижний блок */
+            background: #333; /* Цвет фона */
+            padding: 5px; /* Поля вокруг текста */
+            color: #fff; /* Цвет текста */
+            clear: left; /* Отменяем действие float */
+        }
+    </style>
+
+</head>
+<body>
+    <h1 id="companyName">@Model.CompanyName</h1>
+    <div id="header" class="row">
+
+        <div class="col">Вы вошли как: @Model.Name    </div>
+        <div class="col">Количество дел: @Model.CasesCount.ToString()     </div>
+        <div class="col">Количество заметок: @Model.NotesCount.ToString()     </div>
+
+    </div>
+    <div id="sidebar">
+        <p><a href="b_all.html">Настройки</a></p>
+    </div>
+
+    <div id="content">
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; 2020 - Advokates CRM</p>
+            </footer>
+        </div>
+    </div>
+    <div id="footer">&copy; Личман Дмитрий</div>
+
+
+</body>
+</html>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/main.js"></script>
+<script src="~/js/Layout.js"></script>
+

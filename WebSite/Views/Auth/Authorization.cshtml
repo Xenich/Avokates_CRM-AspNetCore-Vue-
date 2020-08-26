@@ -1,0 +1,33 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Authorization</title>
+</head>
+<body>
+
+    <h1>Авторизация</h1>
+
+    <div class="form-registration">
+        @using (Html.BeginForm("Authorization", "Auth", FormMethod.Post, new { @class = "form" }))
+        {
+            <label class="label label--login">
+                <input type="text" class="input input--login" placeholder="Логин" name="Login">
+            </label>
+            <label class="label label--lock">
+                <input type="password" class="input input--lock" placeholder="Пароль" name="Password">
+            </label>
+            <br />
+            <span class="error">@ViewBag.error</span>
+            <button class="form__button" type="submit" value="Login">Войти</button>
+        }
+
+    </div>
+</body>
+</html>
