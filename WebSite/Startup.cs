@@ -46,7 +46,7 @@ namespace WebSite
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => false;                                              // ОБЯЗАТЕЛЬНО ПОМЕНЯТЬ!!!!
+                options.CheckConsentNeeded = context => false;                                              // ОБЯЗАТЕЛЬНО ПОМЕНЯТЬ на false!!!!
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 

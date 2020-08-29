@@ -18,6 +18,6 @@ namespace WebSite.Models.Outputs
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public int IdPerCompany { get; set; }
-        public Guid Uid { get; set; }
+        //public Guid Uid { get; set; }
     }
 }

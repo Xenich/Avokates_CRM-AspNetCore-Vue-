@@ -78,7 +78,7 @@ namespace WebSite.Helpers
             List<Claim> list = jwt.Claims.ToList();
             values.Add("employeeId", list.FirstOrDefault(c => c.Type == "employeeId").Value);
             values.Add("login", list.FirstOrDefault(c => c.Type == "login").Value);
-            values.Add("companyUID" , list.FirstOrDefault(c => c.Type == "companyUID").Value);
+            values.Add("companyId", list.FirstOrDefault(c => c.Type == "companyId").Value);
             values.Add("uerName" , list.FirstOrDefault(c => c.Type == "userName").Value);
             values.Add("roleName", list.FirstOrDefault(c => c.Type == "roleName").Value);
 

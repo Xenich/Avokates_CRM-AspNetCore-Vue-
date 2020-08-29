@@ -1,0 +1,16 @@
+﻿
+@{
+    Layout = "_Layout"; ;
+}
+
+
+
+    <div id="caseVueModel">
+        <input type="hidden" id="caseId" value="@ViewData["id"]" />
+
+        <h2>Дело # @ViewData["id"]</h2>
+        <h3>{{title}}</h3>
+
+    </div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/Case.js"></script>

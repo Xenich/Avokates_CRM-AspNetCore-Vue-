@@ -37,3 +37,4 @@ function DataRequest(method, body, errorLabel, isAsync, func)
 
         });
 }
+

@@ -1,11 +1,11 @@
-﻿$(document).ready(function ()
-{
-    var vm = new Vue (				// объект класса vue
-    {
-            el: '#CasesTableBody',				// работаем с элементом с id = 'CasesTableBody'
+﻿$(document).ready(function () {
+    var vm = new Vue(				// объект класса vue
+        {
+            el: '#caseVueModel',				// работаем с элементом с id = 'CaseVueModel'
             data: 					// объект, в котором будут храниться переменные
             {
-                casesList: []
+                caseId: $('#caseId').val(),
+                title : ''
             },
             //methods:					// объект, в котором будут хранится функции
             //{
@@ -15,18 +15,18 @@
             //    }
             //},
             created: function () {			// выполнение кода после создания экземпляра Vue
-                GetCasesList(this);
-            }	
-    });
+                GetCaseInfo(this);
+            }
+        });
 })
 
 // подгрузка списка дел
-function GetCasesList(model)
-{
-    var result;
-    DataRequest('GetCasesList', null, null, true, 
-        function (result)
-        {
-            model.casesList = result.casesList;
+function GetCaseInfo(model) {
+    var data = {
+        'id': model.caseId
+    }
+    DataRequest('GetCaseInfo', data, null, true,
+        function (result) {
+            model.title = result.title;
         });
 }

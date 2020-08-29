@@ -10,6 +10,7 @@ using Avokates_CRM.Models;
 using Avokates_CRM.Models.ApiModels;
 using WebSite.Models.Outputs;
 using WebSite.DataLayer;
+using WebSite.Helpers;
 
 namespace WebSite.Controllers
 {
@@ -23,13 +24,27 @@ namespace WebSite.Controllers
 
         public IActionResult Index()
         {
-            GetMainPage_Out result = dl.GetMainPage(GetToken());
-            if (result.Status == "ok")
+            string token = GetToken();
+            if (HelperSecurity.IsTokenValid(token))
             {
+                GetMainPage_Out result = dl.GetMainPage(token);
                 return View(result);
             }
             else
-                return Error();
+                return View("ErrorView");
+        }
+
+        // получение определенного дела
+        public IActionResult Case(int id)
+        {
+            string token = GetToken();
+            if (HelperSecurity.IsTokenValid(token))
+            {
+                ViewData["id"] = id.ToString();
+                return View();
+            }
+            else
+                return View("ErrorView");
         }
 
 

@@ -32,17 +32,41 @@ namespace WebSite.Controllers
 
         }
 
-        public IActionResult GetCasesList(String foo)
-        {
-            //var c = HttpContext.Request;
-            //if (HelperSecurity.IsTokenValid(token))
-            //{
-                GetCasesList_Out result = dl.GetCasesList(GetToken());
+        public IActionResult GetCasesList()
+        {            
+            string token = GetToken();
+            if (HelperSecurity.IsTokenValid(token))
+            {
+                GetCasesList_Out result = dl.GetCasesList(token);
                 return Ok(result);
-            //}
-            //else
-            //    return Ok(ErrorHandler<ResultBase>.TokenNotValid());
+            }
+            else
+                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
 
+        }
+
+        public IActionResult GetMainPage()
+        {
+            string token = GetToken();
+            if (HelperSecurity.IsTokenValid(token))
+            {
+                GetMainPage_Out result = dl.GetMainPage(GetToken());
+                return Ok(result);
+            }
+            else
+                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
+        }
+
+        public IActionResult GetCaseInfo(int id)
+        {
+            string token = GetToken();
+            if (HelperSecurity.IsTokenValid(token))
+            {
+                GetCase_Out result = dl.GetCase(token, id);
+                return Ok(result);
+            }
+            else
+                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
         }
 
         private string GetToken()
