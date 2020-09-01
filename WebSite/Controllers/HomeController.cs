@@ -34,6 +34,17 @@ namespace WebSite.Controllers
                 return View("ErrorView");
         }
 
+        public IActionResult Cabinet()
+        {
+            string token = GetToken();
+            if (HelperSecurity.IsTokenValid(token))
+            {             
+                return View();
+            }
+            else
+                return View("ErrorView");
+        }
+
         // получение определенного дела
         public IActionResult Case(int id)
         {

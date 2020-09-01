@@ -144,78 +144,92 @@ namespace WebSite.DataLayer
             return result;
         }
 
-            //public ResultBase GetFigurantRoles(BaseAuth_In inputValue)
-            //{
-            //    FigurantRoles_Out result = new FigurantRoles_Out();
-            //    bool tokenValid = HelperSecurity.IsTokenValid(inputValue.Token);
-            //    try
-            //    {
-            //        if (tokenValid)
-            //        {
-            //            result.figurantRolesDictionary = HelperDB.figurantRolesDictionary;
-            //            result.Status = ResultBase.StatusOk;
-            //            return result;
-            //        }
-            //        else
-            //        {
-            //            result.ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Tокен недействителен или просрочен" } };
-            //            result.Status = ResultBase.BadToken;
-            //            return result;
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        return HelperDB.DBProblem(ex.Message);
-            //    }
-            //}
-
-
-            //public ResultBase CreateNewCase(NewCase_In inputValue)
-            //{
-            //    ResultBase result = new ResultBase();
-            //    bool tokenValid = HelperSecurity.IsTokenValid(inputValue.Token);
-            //    try
-            //    {
-            //        if (tokenValid)
-            //        {
-            //            Dictionary<string, string> JWTClaimsValues = HelperSecurity.GetJWTClaimsValues(inputValue.Token);
-
-            //            _context.LoadStoredProc("prCreateNewCase")
-            //                .AddParam("title", inputValue.Title)
-            //                .AddParam("info", inputValue.Info)
-            //                .AddParam("figurants", Newtonsoft.Json.JsonConvert.SerializeObject(inputValue.Figurants))
-            //                .AddParam("employeeId", JWTClaimsValues["employeeId"])
-            //                .AddParam("companyUID", JWTClaimsValues["companyUID"])
-            //                .ReturnValue(out IOutParam<int> retparam)
-            //                .ExecNonQuery();
-
-            //            switch (retparam.Value)
-            //            {
-            //                case 6:
-            //                    {
-            //                        result.ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Id пользователя не соответствует UID компании." } };
-            //                        result.Status = ResultBase.StatusBad;
-            //                        return result;
-            //                    }
-            //            }
-            //            result.Status = ResultBase.StatusOk;
-            //            return result;
-            //        }
-            //        else
-            //        {
-            //            result.ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Tокен недействителен или просрочен" } };
-            //            result.Status = ResultBase.BadToken;
-            //            return result;
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        return HelperDB<>.DBProblem(ex.Message);
-            //    }
-
-
-            //}
+        public GetCabinetInfo_Out GetCabinetInfo(string token)
+        {
+            GetCabinetInfo_Out result = new GetCabinetInfo_Out();
+            try
+            {
+                result.Name = "TestName";
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler<GetCabinetInfo_Out>.SetDBProblem(result, ex.Message);
+            }
+            return result;
         }
+
+        //public ResultBase GetFigurantRoles(BaseAuth_In inputValue)
+        //{
+        //    FigurantRoles_Out result = new FigurantRoles_Out();
+        //    bool tokenValid = HelperSecurity.IsTokenValid(inputValue.Token);
+        //    try
+        //    {
+        //        if (tokenValid)
+        //        {
+        //            result.figurantRolesDictionary = HelperDB.figurantRolesDictionary;
+        //            result.Status = ResultBase.StatusOk;
+        //            return result;
+        //        }
+        //        else
+        //        {
+        //            result.ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Tокен недействителен или просрочен" } };
+        //            result.Status = ResultBase.BadToken;
+        //            return result;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HelperDB.DBProblem(ex.Message);
+        //    }
+        //}
+
+
+        //public ResultBase CreateNewCase(NewCase_In inputValue)
+        //{
+        //    ResultBase result = new ResultBase();
+        //    bool tokenValid = HelperSecurity.IsTokenValid(inputValue.Token);
+        //    try
+        //    {
+        //        if (tokenValid)
+        //        {
+        //            Dictionary<string, string> JWTClaimsValues = HelperSecurity.GetJWTClaimsValues(inputValue.Token);
+
+        //            _context.LoadStoredProc("prCreateNewCase")
+        //                .AddParam("title", inputValue.Title)
+        //                .AddParam("info", inputValue.Info)
+        //                .AddParam("figurants", Newtonsoft.Json.JsonConvert.SerializeObject(inputValue.Figurants))
+        //                .AddParam("employeeId", JWTClaimsValues["employeeId"])
+        //                .AddParam("companyUID", JWTClaimsValues["companyUID"])
+        //                .ReturnValue(out IOutParam<int> retparam)
+        //                .ExecNonQuery();
+
+        //            switch (retparam.Value)
+        //            {
+        //                case 6:
+        //                    {
+        //                        result.ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Id пользователя не соответствует UID компании." } };
+        //                        result.Status = ResultBase.StatusBad;
+        //                        return result;
+        //                    }
+        //            }
+        //            result.Status = ResultBase.StatusOk;
+        //            return result;
+        //        }
+        //        else
+        //        {
+        //            result.ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Tокен недействителен или просрочен" } };
+        //            result.Status = ResultBase.BadToken;
+        //            return result;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HelperDB<>.DBProblem(ex.Message);
+        //    }
+
+
+        //}
+    }
 
 
 }

@@ -1,0 +1,33 @@
+﻿@{
+    Layout = "_Layout"; ;
+}
+
+    <div id="cabinetVueModel">
+        <h2>Личный кабинет</h2>
+        <label id="errorLabel" style='display:none'>Ошибка</label>        
+        <div>
+            <label>Имя</label>
+            <input type="text" v-model="Name" />            
+        </div>
+        <div>
+            <label>Фамилия</label>
+            <input type="text" v-model="surname" />
+        </div>
+        <div>
+            <label>Отчество</label>
+            <input type="text" v-model="secondName" />
+        </div>
+        <div>
+            <label>Публичный ключ</label>
+            <input type="text" v-model="publicKey" />
+        </div>
+        <div>
+            <label>Приватный ключ</label>
+            <input type="text" v-model="privateKey" />
+        </div>
+
+        <input type="button" v-on:click="SaveChanges" />
+    </div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/Cabinet.js"></script>

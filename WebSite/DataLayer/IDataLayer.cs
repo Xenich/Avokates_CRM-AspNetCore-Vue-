@@ -15,6 +15,7 @@ namespace WebSite.DataLayer
 
         GetCasesList_Out GetCasesList(string token);
         GetCase_Out GetCase(string token, int CaseId);
+        GetCabinetInfo_Out GetCabinetInfo(string token);
 
         //ResultBase GetCases(BaseAuth_In inputValue);
         //ResultBase GetCaseNotes(BaseAuth_In inputValue);

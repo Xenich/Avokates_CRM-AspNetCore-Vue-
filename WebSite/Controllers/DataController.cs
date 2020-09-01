@@ -69,6 +69,23 @@ namespace WebSite.Controllers
                 return Ok(ErrorHandler<ResultBase>.TokenNotValid());
         }
 
+        public IActionResult GetCabinetInfo()
+        {
+            string token = GetToken();
+            if (HelperSecurity.IsTokenValid(token))
+            {
+                GetCabinetInfo_Out result  = dl.GetCabinetInfo(token);
+                return Ok(result);
+                //return Ok(ErrorHandler<ResultBase>.TokenNotValid());
+                
+                //GetCase_Out result 
+                //return Ok(result);
+            }
+            else
+                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
+        }
+
+
         private string GetToken()
         {
             string b = Request.Headers["authorization"].ToString();

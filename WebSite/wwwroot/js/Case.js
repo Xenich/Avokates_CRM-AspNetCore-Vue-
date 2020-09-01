@@ -25,8 +25,12 @@ function GetCaseInfo(model) {
     var data = {
         'id': model.caseId
     }
-    DataRequest('GetCaseInfo', data, null, true,
+    var lbl = document.getElementById("errorLabel");
+    DataRequest('GetCaseInfo', data, true,
         function (result) {
             model.title = result.title;
+        },
+        function (errorMsg) {
+            ErrorHandler(lbl, errorMsg)
         });
 }

@@ -23,10 +23,13 @@
 // подгрузка списка дел
 function GetCasesList(model)
 {
+    var lbl = document.getElementById("errorLabel");
     var result;
-    DataRequest('GetCasesList', null, null, true, 
-        function (result)
-        {
+    DataRequest('GetCasesList', null, true,
+        function (result) {
             model.casesList = result.casesList;
+        },
+        function (errorMsg) {
+            ErrorHandler(lbl, errorMsg)
         });
 }

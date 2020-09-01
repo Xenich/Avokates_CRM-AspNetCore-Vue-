@@ -3,8 +3,10 @@
 // errorLabel - label, в которую выводится ошибка
 // isAsync - bool переменная, показывающая, будет ли запрос асинхронным
 // func - функция которая должна вызваться после получения ответа от сервера
-function DataRequest(method, body, errorLabel, isAsync, func)
+// errorHandlerFunction - 
+function DataRequest(method, body, isAsync, func)
 {
+    //errorLabel.style.display = 'block';
     var res;
     $.ajax(
         {
@@ -15,26 +17,52 @@ function DataRequest(method, body, errorLabel, isAsync, func)
         })
         .done(function (result)
         {
+            
             var errorMsg = result.errorMessages;
             if (errorMsg == null) {
                 func(result);
             }
             else
             {
-                if (errorLabel != null)
-                {
-                    var errormes = "Произошла ошибка! ";
-                    for (var i = 0; i < errorMsg.length; i++) {
-                        errormes += errorMsg[i].message + "  " + errorMsg[i].errorMessage + "; ";
-                    }
+                ErrorHandler( errorMsg);
+            //    if (errorLabel != null)
+            //    {
+            //        var errormes = "Произошла ошибка! ";
+            //        for (var i = 0; i < errorMsg.length; i++) {
+            //            errormes += errorMsg[i].message + "  " + errorMsg[i].errorMessage + "; ";
+            //        }
 
-                    errorLabel.innerHTML = errormes;
-                    errorLabel.style.display = 'block';
-                }
+
+            //        errorLabel.style.display = 'block';
+            //        errorLabel.innerHTML = errormes;
+            //    }
             }
         })
         .fail(function (e) {
-
+            ErrorHandler(null);
+            //if (errorLabel != null) {
+            //    var errormes = "Произошла ошибка! ";
+            //    errorLabel.innerHTML = errormes;
+            //   errorLabel.style.display = "block";
+            //} 
         });
+}
+
+function ErrorHandler(errorMsg)
+{
+    
+    if (errorMsg == null)
+    {
+        var errormes = "Произошла ошибка! ";
+    }
+    else
+    {
+        for (var i = 0; i < errorMsg.length; i++)
+        {
+            errormes += errorMsg[i].message + "  " + errorMsg[i].errorMessage + "; ";
+        }
+    }
+    errorLabel.innerHTML = errormes;
+    errorLabel.style.display = "block";
 }
 
