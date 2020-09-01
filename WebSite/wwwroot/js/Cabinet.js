@@ -5,9 +5,13 @@
             el: '#cabinetVueModel',			
             data: 					
             {
-                Name: '',
+                name: '',
                 surname: '',
-                secondName : '',
+                secondName: '',
+                birthday:'',
+                email: '',
+                phone: '',
+                role:'',
                 publicKey: '',
                 privateKey:''
             },
@@ -31,9 +35,13 @@ function GetCabinetInfo(model)
 {
     DataRequest('GetCabinetInfo', null, true,
         function (result) {
-            model.Name = result.name;
+            model.name = result.name;
             model.surname = result.surname;
             model.secondName = result.secondName;
+            model.birthday = result.birthday;
+            model.email = result.email;
+            model.phone = result.phone;
+            model.role = result.role;
             model.publicKey = result.publicKey;
             //localStorage.setItem("privateKey", "privateKey__++==");
             model.privateKey = localStorage.getItem("privateKey");

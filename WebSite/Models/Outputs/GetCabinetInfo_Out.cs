@@ -11,5 +11,9 @@ namespace WebSite.Models.Outputs
         public string Surname { get; set; }
         public string SecondName { get; set; }
         public string PublicKey { get; set; }
+        public string Role { get; set; }
+        public string Birthday { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
     }
 }

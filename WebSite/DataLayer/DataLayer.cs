@@ -55,7 +55,7 @@ namespace WebSite.DataLayer
                          where e.Id == userIdFromToken
                          select new
                          {
-                             userName = e.Name,
+                             userName = e.Surname + " " + e.Name + " " + e.SecondName,
                              companyName = c.CompanyName
                          }).FirstOrDefault();
 
@@ -87,11 +87,15 @@ namespace WebSite.DataLayer
             GetCasesList_Out result = new GetCasesList_Out();
             try
             {
-                string userUidFromToken = HelperSecurity.GetUserUidByJWT(token);
+                Guid userUidFromToken = HelperSecurity.GetUserUidByJWT(token);
+                if (userUidFromToken == Guid.Empty)
+                {
+                    return ErrorHandler<GetCasesList_Out>.SetDBProblem(result,"Неверный идентификатор пользователя");
+                }
                 result.CasesList = (
                     from ec in _context.EmployeeCase
                     join c in _context.Case on ec.CaseUid equals c.Uid
-                    where ec.EmployeeUid.ToString() == userUidFromToken && !c.IsClosed
+                    where ec.EmployeeUid == userUidFromToken && !c.IsClosed
                     select new Case_Out()
                     {
                         //Uid = c.Uid,
@@ -103,7 +107,7 @@ namespace WebSite.DataLayer
                               from ee in _context.Employee
                               join ecc in _context.EmployeeCase on ee.Uid equals ecc.EmployeeUid
                               where ecc.CaseUid == c.Uid && ecc.IsOwner
-                              select ee.Name
+                              select ee.Surname + " " +  ee.Name + " " + ee.SecondName
                               ).FirstOrDefault()
                     })
                     .OrderBy(b=>b.UpdateDate)
@@ -146,13 +150,32 @@ namespace WebSite.DataLayer
 
         public GetCabinetInfo_Out GetCabinetInfo(string token)
         {
-            GetCabinetInfo_Out result = new GetCabinetInfo_Out();
+            GetCabinetInfo_Out result;
             try
             {
-                result.Name = "TestName";
+                Guid userUidFromToken = HelperSecurity.GetUserUidByJWT(token);
+                //Employee emp = _context.Employee.FirstOrDefault(e => e.Uid == userUidFromToken);
+                result = (from e in _context.Employee
+                          join rLeft in _context.Role on e.RoleUid equals rLeft.Uid into rTemp
+                          from r in rTemp.DefaultIfEmpty()
+                          where e.Uid == userUidFromToken
+                          select new GetCabinetInfo_Out
+                          {
+                              Name = e.Name,
+                              Surname = e.Surname,
+                              SecondName = e.SecondName,
+                              PublicKey = e.PublicKey==null?"": Convert.ToBase64String(e.PublicKey),
+                              Birthday = e.Birthday.Value.Date.ToString(),
+                              Email = e.Email,
+                              Phone = e.Phone,
+                              Role = r.RoleName
+                          }).FirstOrDefault();
+                result.Status = ResultBase.StatusOk;
+
             }
             catch (Exception ex)
             {
+                result = new GetCabinetInfo_Out();
                 ErrorHandler<GetCabinetInfo_Out>.SetDBProblem(result, ex.Message);
             }
             return result;

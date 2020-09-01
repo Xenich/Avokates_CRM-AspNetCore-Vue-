@@ -31,11 +31,7 @@ namespace Avokates_CRM.Models.DB
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-//                optionsBuilder.UseSqlServer("Server=DESKTOP-IDFEOG1;Database=lawyerCRM;Trusted_Connection=True;");
-//            }
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -149,13 +145,17 @@ namespace Avokates_CRM.Models.DB
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(250);
+                entity.Property(e => e.Name).HasMaxLength(250);
 
                 entity.Property(e => e.Phone).HasMaxLength(50);
 
+                entity.Property(e => e.PublicKey).HasMaxLength(8000);
+
                 entity.Property(e => e.RoleUid).HasColumnName("RoleUID");
+
+                entity.Property(e => e.SecondName).HasMaxLength(250);
+
+                entity.Property(e => e.Surname).HasMaxLength(250);
 
                 entity.Property(e => e.Token).HasMaxLength(250);
 
@@ -294,9 +294,9 @@ namespace Avokates_CRM.Models.DB
 
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Updatedate).HasColumnType("datetime");
-
                 entity.Property(e => e.Title).HasMaxLength(500);
+
+                entity.Property(e => e.Updatedate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.CaseU)
                     .WithMany(p => p.Note)

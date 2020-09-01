@@ -2,20 +2,52 @@
     Layout = "_Layout"; ;
 }
 
-    <div id="cabinetVueModel">
+<style>
+    .row {
+        margin-top: 15px;       
+    }
+    .col {
+        padding-left : 5px
+    }
+    .col-8 {
+        padding-left: 0
+    }
+</style>
+
+    <div id="cabinetVueModel" class="cabinetInfoTable">
         <h2>Личный кабинет</h2>
-        <label id="errorLabel" style='display:none'>Ошибка</label>        
-        <div>
-            <label>Имя</label>
-            <input type="text" v-model="Name" />            
+        <label id="errorLabel" style='display:none'>Ошибка</label>
+        <div class="row">
+            <div class="col">Имя</div>
+            <input class="col-8"  type="text" v-model="name" />
         </div>
-        <div>
-            <label>Фамилия</label>
-            <input type="text" v-model="surname" />
+        <div class="row">
+            <div class="col">Фамилия</div>
+            <input class="col-8"  type="text" v-model="surname" />
         </div>
-        <div>
-            <label>Отчество</label>
-            <input type="text" v-model="secondName" />
+        <div class="row">
+            <div class="col">Отчество</div>
+            <input class="col-8"  type="text" v-model="secondName" />
+        </div>
+        <div class="row">
+            <div class="col">Дата рождения</div>
+            <div class="col-8">
+                <input type="date" v-model="birthday"/>
+            </div>
+            
+        </div>
+
+        <div class="row">
+            <div class="col">Email</div>
+            <input class="col-8" type="text" v-model="email" />
+        </div>
+        <div class="row">
+            <div class="col">Контактный телефон</div>
+            <input class="col-8" type="text" v-model="phone" />
+        </div>
+        <div class="row">
+            <div class="col">Должность</div>
+            <label class="col-8">{{role}}</label>
         </div>
         <div>
             <label>Публичный ключ</label>
@@ -26,7 +58,7 @@
             <input type="text" v-model="privateKey" />
         </div>
 
-        <input type="button" v-on:click="SaveChanges" />
+        <input type="button" v-on:click="SaveChanges" value="Сохранить изменения" />
     </div>
 
 <script src="~/lib/jquery/dist/jquery.js"></script>

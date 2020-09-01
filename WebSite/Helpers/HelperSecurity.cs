@@ -141,16 +141,16 @@ namespace WebSite.Helpers
             }
         }
 
-        public static string GetUserUidByJWT(string token)
+        public static Guid GetUserUidByJWT(string token)
         {
             try
             {
                 JwtSecurityToken jwt = new JwtSecurityToken(token);
-                return jwt.Claims.FirstOrDefault(c => c.Type == "employeeUid").Value;
+                return Guid.Parse(jwt.Claims.FirstOrDefault(c => c.Type == "employeeUid").Value);
             }
             catch (Exception)
             {
-                return "";
+                return Guid.Empty;
             }
         }
 

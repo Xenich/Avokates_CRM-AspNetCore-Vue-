@@ -18,11 +18,14 @@ namespace Avokates_CRM.Models.DB
         public Guid? ClassificatorUid { get; set; }
         public Guid? RoleUid { get; set; }
         public string Name { get; set; }
+        public string Surname { get; set; }
+        public string SecondName { get; set; }
         public DateTime? Birthday { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Token { get; set; }
         public bool? IsActive { get; set; }
+        public byte[] PublicKey { get; set; }
 
         public Classificator ClassificatorU { get; set; }
         public Company CompanyU { get; set; }
