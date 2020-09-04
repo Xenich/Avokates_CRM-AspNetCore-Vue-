@@ -55,7 +55,8 @@ namespace WebSite.DataLayer
                          where e.Id == userIdFromToken
                          select new
                          {
-                             userName = e.Surname + " " + e.Name + " " + e.SecondName,
+                             userName = ((string.IsNullOrEmpty(e.Surname)?"": e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " "
+                             + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName)),
                              companyName = c.CompanyName
                          }).FirstOrDefault();
 
@@ -100,14 +101,15 @@ namespace WebSite.DataLayer
                     {
                         //Uid = c.Uid,
                         CaseTitle = c.Title,
-                        CreateDate = c.Date,
+                        CreateDate = c.Date.HasValue? c.Date.Value.ToShortDateString():"",
                         IdPerCompany = c.IdPerCompany,
-                        UpdateDate = c.UpdateDate,
+                        UpdateDate = c.UpdateDate.HasValue? c.UpdateDate.Value.ToShortDateString():"",
                         CaseOwner = (
                               from ee in _context.Employee
                               join ecc in _context.EmployeeCase on ee.Uid equals ecc.EmployeeUid
                               where ecc.CaseUid == c.Uid && ecc.IsOwner
-                              select ee.Surname + " " +  ee.Name + " " + ee.SecondName
+                              select ((string.IsNullOrEmpty(ee.Surname) ? "" : ee.Surname) + " " + (string.IsNullOrEmpty(ee.Name) ? "" : ee.Name) + " "
+                              + (string.IsNullOrEmpty(ee.SecondName) ? "" : ee.SecondName))
                               ).FirstOrDefault()
                     })
                     .OrderBy(b=>b.UpdateDate)
@@ -177,6 +179,34 @@ namespace WebSite.DataLayer
             {
                 result = new GetCabinetInfo_Out();
                 ErrorHandler<GetCabinetInfo_Out>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
+        public ResultBase CabinetInfoSaveChanges(string token, GetCabinetInfo_Out cabinetInfo)
+        {
+            ResultBase result = new ResultBase();
+            try
+            {
+                Guid userUidFromToken = HelperSecurity.GetUserUidByJWT(token);
+                Employee emp = _context.Employee.FirstOrDefault(e => e.Uid == userUidFromToken);
+                emp.Surname = cabinetInfo.Surname;
+                emp.Name = cabinetInfo.Name;
+                emp.SecondName = cabinetInfo.SecondName;
+                emp.Phone = cabinetInfo.Phone;
+                emp.Email = cabinetInfo.Email;
+
+                DateTime bDay;
+                bool bDaySuccessParse =  DateTime.TryParse(cabinetInfo.Birthday, out bDay);
+                if (bDaySuccessParse)
+                    emp.Birthday = bDay;
+
+                _context.SaveChanges();
+                result.Status = ResultBase.StatusBad;
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
             }
             return result;
         }

@@ -18,8 +18,21 @@
 
             methods:					
             {
-                SaveChanges() {
-                    
+                SaveChanges()
+                {
+                    var body =
+                    {
+                        name: this.name,
+                        surname: this.surname,
+                        secondName: this.secondName,
+                        birthday: this.birthday,
+                        email: this.email,
+                        phone: this.phone
+                    }
+                    DataRequest('CabinetInfoSaveChanges', body, true,
+                        function (result) {
+                            location.reload();
+                        });
                 }
             },
 

@@ -14,52 +14,56 @@
     }
 </style>
 
-    <div id="cabinetVueModel" class="cabinetInfoTable">
-        <h2>Личный кабинет</h2>
-        <label id="errorLabel" style='display:none'>Ошибка</label>
-        <div class="row">
-            <div class="col">Имя</div>
-            <input class="col-8"  type="text" v-model="name" />
-        </div>
-        <div class="row">
-            <div class="col">Фамилия</div>
-            <input class="col-8"  type="text" v-model="surname" />
-        </div>
-        <div class="row">
-            <div class="col">Отчество</div>
-            <input class="col-8"  type="text" v-model="secondName" />
-        </div>
-        <div class="row">
-            <div class="col">Дата рождения</div>
-            <div class="col-8">
-                <input type="date" v-model="birthday"/>
-            </div>
-            
-        </div>
-
-        <div class="row">
-            <div class="col">Email</div>
-            <input class="col-8" type="text" v-model="email" />
-        </div>
-        <div class="row">
-            <div class="col">Контактный телефон</div>
-            <input class="col-8" type="text" v-model="phone" />
-        </div>
-        <div class="row">
-            <div class="col">Должность</div>
-            <label class="col-8">{{role}}</label>
-        </div>
-        <div>
-            <label>Публичный ключ</label>
-            <input type="text" v-model="publicKey" />
-        </div>
-        <div>
-            <label>Приватный ключ</label>
-            <input type="text" v-model="privateKey" />
-        </div>
-
-        <input type="button" v-on:click="SaveChanges" value="Сохранить изменения" />
+<div id="cabinetVueModel" class="cabinetInfoTable">
+    <h2>Личный кабинет</h2>
+    <label id="errorLabel" style='display:none'>Ошибка</label>
+    <div class="row">
+        <div class="col">Фамилия</div>
+        <input class="col-8" type="text" v-model="surname" />
     </div>
+    <div class="row">
+        <div class="col">Имя</div>
+        <input class="col-8" type="text" v-model="name" />
+    </div>
+
+    <div class="row">
+        <div class="col">Отчество</div>
+        <input class="col-8" type="text" v-model="secondName" />
+    </div>
+    <div class="row">
+        <div class="col">Дата рождения</div>
+        <div class="col-8">
+            <input type="date" v-model="birthday" />
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col">Email</div>
+        <input class="col-8" type="text" v-model="email" />
+    </div>
+    <div class="row">
+        <div class="col">Контактный телефон</div>
+        <input class="col-8" type="text" v-model="phone" />
+    </div>
+    <div class="row">
+        <div class="col">Должность</div>
+        <label class="col-8">{{role}}</label>
+    </div>
+    <input class="row" type="button" v-on:click="SaveChanges" value="Сохранить изменения" />
+    <h5>Ключи доступа к зашифрованным данным</h5>
+    <div>
+        <label class="row">Публичный ключ</label>
+        <textarea  rows="5"  style="width: 100%;" readonly>{{publicKey}}</textarea>
+    </div>
+
+    <label class="row">Приватный ключ</label>
+    <h5>Внимание!</h5>
+    <span>Приватный ключ хранится в локальном хранилище вашего браузера. При утере приватного ключа вы потеряете доступ к зашифрованной информации на сервере. Рекомендуем сохранить приватный ключ на стороннем носителе, доступ к которому имеете только вы. Так же не рекомендуем делать сброс настроек браузера во избежание утери приватного ключа.</span>
+    <div>
+        <textarea  rows="5"  style="width: 100%;" readonly>{{privateKey}}</textarea>
+    </div>
+</div>
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/js/Cabinet.js"></script>

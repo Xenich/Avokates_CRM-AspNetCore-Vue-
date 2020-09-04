@@ -85,6 +85,17 @@ namespace WebSite.Controllers
                 return Ok(ErrorHandler<ResultBase>.TokenNotValid());
         }
 
+        public IActionResult CabinetInfoSaveChanges(GetCabinetInfo_Out cabinetInfo)
+        {
+            string token = GetToken();
+            if (HelperSecurity.IsTokenValid(token))
+            {
+                ResultBase result = dl.CabinetInfoSaveChanges(token, cabinetInfo);
+                return Ok(result);
+            }
+            else
+                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
+        }
 
         private string GetToken()
         {

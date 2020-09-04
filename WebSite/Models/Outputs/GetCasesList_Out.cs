@@ -15,8 +15,8 @@ namespace WebSite.Models.Outputs
     {
         public string CaseTitle { get; set; }
         public string CaseOwner { get; set; }
-        public DateTime? CreateDate { get; set; }
-        public DateTime? UpdateDate { get; set; }
+        public string CreateDate { get; set; }
+        public string UpdateDate { get; set; }
         public int IdPerCompany { get; set; }
         //public Guid Uid { get; set; }
     }

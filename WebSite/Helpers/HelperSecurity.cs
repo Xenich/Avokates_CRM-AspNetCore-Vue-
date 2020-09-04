@@ -29,8 +29,8 @@ namespace WebSite.Helpers
             claimList.Add(new Claim("employeeUid", auth.EmployeeUid.ToString()));
             claimList.Add(new Claim("login", auth.Login));
             claimList.Add(new Claim("companyId", auth.CompanyId.ToString()));
-            claimList.Add(new Claim("userName", auth.Name));
-            claimList.Add(new Claim("roleName", auth.RoleName));
+            claimList.Add(new Claim("userName", string.IsNullOrEmpty(auth.Name)?"": auth.Name));
+            claimList.Add(new Claim("roleName", string.IsNullOrEmpty(auth.RoleName) ? "" : auth.RoleName));
 
             SecurityKey KEY = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("secretKey").Get<string>()));
             SigningCredentials signingCredentials = new SigningCredentials(KEY, SecurityAlgorithms.HmacSha256);
