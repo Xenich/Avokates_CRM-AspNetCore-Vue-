@@ -11,6 +11,10 @@ namespace WebSite.DataLayer
     public interface IDataLayer
     {
         string CheckConnectionToDB();
+
+        ResultBase CreateInvite(string token, string email);
+        ResultBase Invite(string inviteToken);
+
         GetMainPage_Out GetMainPage(string token);
 
         GetCasesList_Out GetCasesList(string token);

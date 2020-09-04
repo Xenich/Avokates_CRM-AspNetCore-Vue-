@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Avokates_CRM.Models.Inputs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using WebSite.DataLayer;
@@ -32,6 +33,20 @@ namespace WebSite.Controllers
 
         }
 
+        [HttpPost]
+        public IActionResult CreateInvite([FromBody] CreateInvite_In value)
+        {
+            string token = GetToken();
+            //token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbXBsb3llZVVpZCI6IjcxYzkwM2IwLWE0ZDQtZWExMS1hMTQ0LWUwZDU1ZTQ0OTkxMCIsImxvZ2luIjoibG9naW4iLCJjb21wYW55VWlkIjoiYjliMjBhMTgtYTNkNC1lYTExLWExNDQtZTBkNTVlNDQ5OTEwIiwidXNlck5hbWUiOiLQmNCy0LDQvSIsInJvbGVOYW1lIjoiZGlyZWN0b3IiLCJuYmYiOjE1OTkyNDEzNzIsImV4cCI6MTU5OTI0NDk3MiwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMzIvIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMzIvIn0.AugeLImZm-lHbnVx_y-UX4xavMxaG5bD9sjQVJgyeWo";
+            if (HelperSecurity.IsTokenValid(token))
+            {
+                ResultBase result = dl.CreateInvite(token, value.Email);
+                return Ok(result);
+            }
+            else
+                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
+        }
+
         public IActionResult GetCasesList()
         {            
             string token = GetToken();
@@ -42,7 +57,6 @@ namespace WebSite.Controllers
             }
             else
                 return Ok(ErrorHandler<ResultBase>.TokenNotValid());
-
         }
 
         public IActionResult GetMainPage()

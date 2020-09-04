@@ -19,6 +19,10 @@ using Avokates_CRM;
 using Avokates_CRM.Models.DB;
 using WebSite.Helpers;
 using WebSite.DataLayer;
+using Avokates_CRM.Helpers;
+using Microsoft.Extensions.Primitives;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace WebSite
 {
@@ -29,6 +33,7 @@ namespace WebSite
         {
             Configuration = configuration;
             HelperSecurity.Init(configuration);
+            BaseHelper.Init(configuration);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -70,6 +75,18 @@ namespace WebSite
                 {
                     options.RequireHttpsMetadata = true;
                     options.SaveToken = true;
+                    options.Events = new JwtBearerEvents()
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var token = context.HttpContext.Session.GetString("token");
+                            context.Request.Headers.Add("Authorization", "Bearer " + token);
+                            //context.Token = context.HttpContext.Request.Headers["X-JWT-Assertion"];
+                            return Task.CompletedTask;
+                        }
+                    };
+
+                    //options.Authority = "https://localhost:44391/Auth/Authorization";
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,                // валидация ключа безопасности
@@ -112,28 +129,42 @@ namespace WebSite
             app.UseCookiePolicy();
             app.UseSession();               // конфигурировать сессии, чтоб можно было получать из них токен
 
-            // внедряем токен в хидер поступающих запросов
-            app.Use(async (context, next) =>
-            {
-                //string[] s = context.Request.Path.Value.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                //if (!(s.Length>0 && s[0]=="Data"))
-                //{
-                    var token = context.Session.GetString("token");
-                    if (!string.IsNullOrEmpty(token))
-                    {
-                        context.Request.Headers.Add("Authorization", "Bearer " + token);
-                    }
-                    else
-                    {       // перехват запроса и возврат на авторизацию
-                        context.Request.Path = "/Auth/Authorization/";
-                    }
-                //}
-                await next();
-            });
+            //внедряем токен в хидер поступающих запросов
+            //app.Use(async (context, next) =>
+            //{
+            //    //string[] s = context.Request.Path.Value.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            //    //if (!(s.Length > 0 && s[0] == "Data"))
+            //    //{
+            //        var token = context.Session.GetString("token");
+            //        //StringValues token_;
+            //        //context.Request.Headers.TryGetValue("Authorization", out token_);
+            //        if (!string.IsNullOrEmpty(token))
+            //        {
+            //            context.Request.Headers.Add("Authorization", "Bearer " + token);
+            //        }
+            //        //else
+            //        //{       // перехват запроса и возврат на авторизацию
+            //        //    context.Request.Path = "/Auth/Authorization/";
+            //        //}
+            //        //context.Request.Headers.TryGetValue("Authorization", out token_);
+            //    //}
+            //    await next.Invoke();
+            //});
 
             app.UseAuthentication();
 
+
             app.UseCors("EnableCors");
+
+            app.UseStatusCodePages(async context => {
+                var request = context.HttpContext.Request;
+                var response = context.HttpContext.Response;
+
+                if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+                {
+                    response.Redirect("/Auth/Authorization/");
+                   }
+            });
 
             //BaseHelper.Init(Configuration);
 

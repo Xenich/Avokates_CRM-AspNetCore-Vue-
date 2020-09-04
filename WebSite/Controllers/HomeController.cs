@@ -11,9 +11,11 @@ using Avokates_CRM.Models.ApiModels;
 using WebSite.Models.Outputs;
 using WebSite.DataLayer;
 using WebSite.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebSite.Controllers
 {
+   [Authorize]
     public class HomeController : Controller
     {
         private readonly IDataLayer dl;      // dataLayer
@@ -22,6 +24,7 @@ namespace WebSite.Controllers
             dl = dataLayer;
         }
 
+   
         public IActionResult Index()
         {
             string token = GetToken();
@@ -30,6 +33,17 @@ namespace WebSite.Controllers
                 GetMainPage_Out result = dl.GetMainPage(token);
                 return View(result);
             }
+            else
+                return View("ErrorView");
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult Invite(string token)
+        {
+            ResultBase result = dl.Invite(token);
+            if (result.Status == ResultBase.StatusOk)
+                return View(result);
             else
                 return View("ErrorView");
         }

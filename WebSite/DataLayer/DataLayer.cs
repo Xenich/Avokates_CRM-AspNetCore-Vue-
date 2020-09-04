@@ -8,9 +8,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MimeKit;
+using MailKit.Net.Smtp;
 
 using WebSite.Models.Outputs;
 using WebSite.Helpers;
+using System.Security.Policy;
+using System.Text;
+using System.Text.RegularExpressions;
+using Avokates_CRM.Helpers;
+using System.Security.Cryptography;
 
 namespace WebSite.DataLayer
 {
@@ -41,18 +48,89 @@ namespace WebSite.DataLayer
             }
         }
 
+// -------------------------    НОВЫЙ ПОЛЬЗОВАТЕЛЬ СИСТЕМЫ      -------------------------
+
+#region Новый пользователь системы
+        public  ResultBase CreateInvite(string token, string email)
+        {
+            ResultBase result = new ResultBase();
+            try
+            {
+                email = email.Trim();
+                string pattern = @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
+    @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$";
+                if (Regex.Matches(email, pattern, RegexOptions.IgnoreCase).Count != 1)
+                {
+                    ErrorHandler<ResultBase>.SetDBProblem(result,"Email not valid");
+                    return result;
+                }
+
+                Guid companyUid = HelperSecurity.GetCompanyUidByJWT(token);
+
+                SHA256 sha256 = SHA256.Create();
+                byte[] bytes = Encoding.UTF8.GetBytes(email);
+                string inviteToken = Convert.ToBase64String( sha256.ComputeHash(bytes));
+
+                Invite invite = new Invite()
+                {
+                    CompanyUid = companyUid,
+                    Token = inviteToken,
+                    ExpiresIn = DateTime.Now.AddHours(1)
+                };
+                _context.Invite.Add(invite);
+                string message = "Для регистрации перейдите по ссылке ниже" + Environment.NewLine;
+                message += BaseHelper.GetHostAddress() + "Home/Invite?token=" + inviteToken;
+                SendEmail(email, "Регистрация Advokates CRM", message);
+                //_context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
+        public async static Task SendEmail(string email, string subject, string message)
+        {
+            var emailMessage = new MimeMessage();
+
+            emailMessage.From.Add(new MailboxAddress("Администрация сайта", "blondinkaTest1@gmail.com"));
+            emailMessage.To.Add(new MailboxAddress("", email));
+            emailMessage.Subject = subject;
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = message
+            };
+
+            using (var client = new SmtpClient())
+            {
+                await client.ConnectAsync("smtp.gmail.com", 25, false);
+                await client.AuthenticateAsync("blondinkaTest1@gmail.com", "15926489z");
+                await client.SendAsync(emailMessage);
+                await client.DisconnectAsync(true);
+            }
+        }
+
+        public ResultBase Invite(string token)
+        {
+            throw new NotImplementedException();
+        }
+
+#endregion
+
         public GetMainPage_Out GetMainPage(string token)
         {
             GetMainPage_Out result = new GetMainPage_Out();
 
             try
             {
-                int companyIdFromToken = HelperSecurity.GetCompanyIdByJWT(token);
-                int userIdFromToken = HelperSecurity.GetUserIdByJWT(token);
+                //int companyIdFromToken = HelperSecurity.GetCompanyIdByJWT(token);
+                //int userIdFromToken = HelperSecurity.GetUserIdByJWT(token);
+                Guid userUid = HelperSecurity.GetUserUidByJWT(token);
 
                 var r = (from c in _context.Company
                          join e in _context.Employee on c.Uid equals e.CompanyUid
-                         where e.Id == userIdFromToken
+                         where e.Uid == userUid
                          select new
                          {
                              userName = ((string.IsNullOrEmpty(e.Surname)?"": e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " "
@@ -64,14 +142,13 @@ namespace WebSite.DataLayer
                 result.CompanyName = r.companyName;
 
 
-                result.CasesCount = (from e in _context.Employee
-                                     join ec in _context.EmployeeCase on e.Uid equals ec.EmployeeUid
-                                     where e.Id == userIdFromToken
+                result.CasesCount = (from  ec in _context.EmployeeCase
+                                     where ec.EmployeeUid == userUid
                                      select ec).Count();
 
                 result.NotesCount = (from e in _context.Employee
                                      join n in _context.Note on e.Uid equals n.EmployeeUid
-                                     where e.Id == userIdFromToken
+                                     where e.Uid == userUid
                                      select n).Count();
 
                 result.Status = ResultBase.StatusOk;
@@ -130,15 +207,16 @@ namespace WebSite.DataLayer
             try
             {
                 //string userUidFromToken = HelperSecurity.GetUserUidByJWT(token);
-                Dictionary<string, string> jwtValues =   HelperSecurity.GetJWTClaimsValues(token);
-                int companyId = int.Parse(jwtValues["companyId"]);
+                //Dictionary<string, string> jwtValues = HelperSecurity.GetJWTClaimsValues(token);
+                //int companyId = int.Parse(jwtValues["companyId"]);
 
+                Guid companyGuid = HelperSecurity.GetCompanyUidByJWT(token);
 
 
                 // var r = from 
                 Case _case = (from c in _context.Case
                               join cm in _context.Company on c.CompanyUid equals cm.Uid
-                              where cm.Id == companyId && c.IdPerCompany == caseId && !c.IsClosed
+                              where cm.Uid == companyGuid && c.IdPerCompany == caseId && !c.IsClosed
                               select c).FirstOrDefault();
 
                 result.Title = _case.Title;
@@ -210,6 +288,8 @@ namespace WebSite.DataLayer
             }
             return result;
         }
+
+
 
         //public ResultBase GetFigurantRoles(BaseAuth_In inputValue)
         //{

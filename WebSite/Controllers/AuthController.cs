@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Avokates_CRM.Models;
 using WebSite.Models.Outputs;
 using WebSite.DataLayer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Avokates_CRM.Controllers
 {
@@ -37,7 +38,7 @@ namespace Avokates_CRM.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Authorization(Authorization_In auth)
+        public async Task<IActionResult> AuthorizationAsync(Authorization_In auth)
         {
             ResultBase res = dl.Authorization(auth);
             //string resp = Helpers.AuthHelper.Authorization(auth.Login, auth.Password);
@@ -53,7 +54,8 @@ namespace Avokates_CRM.Controllers
             else
             {
                 HttpContext.Session.SetString("token", (res as Authorization_Out).Token);
-                return Redirect("~/Home/Index");
+                 
+                     return Redirect("~/Home/Index");
 
             }
 

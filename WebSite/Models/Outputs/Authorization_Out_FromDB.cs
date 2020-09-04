@@ -13,7 +13,7 @@ namespace WebSite.Models.Outputs
         public string Login { get; set; }
         public string RoleName { get; set; }
         public bool? IsActive { get; set; }
-        public int CompanyId { get; set; }
+        public Guid CompanyUID { get; set; }
 
         public string Token { get; set; }
     }

@@ -25,10 +25,11 @@ namespace WebSite.Helpers
         {
             List<Claim> claimList = new List<Claim>();
 
-            claimList.Add(new Claim("employeeId", auth.EmployeeId.ToString()));
+            //claimList.Add(new Claim("employeeId", auth.EmployeeId.ToString()));
             claimList.Add(new Claim("employeeUid", auth.EmployeeUid.ToString()));
             claimList.Add(new Claim("login", auth.Login));
-            claimList.Add(new Claim("companyId", auth.CompanyId.ToString()));
+            //claimList.Add(new Claim("companyId", auth.CompanyId.ToString()));
+            claimList.Add(new Claim("companyUid", auth.CompanyUID.ToString()));
             claimList.Add(new Claim("userName", string.IsNullOrEmpty(auth.Name)?"": auth.Name));
             claimList.Add(new Claim("roleName", string.IsNullOrEmpty(auth.RoleName) ? "" : auth.RoleName));
 
@@ -76,9 +77,10 @@ namespace WebSite.Helpers
 
             JwtSecurityToken jwt = new JwtSecurityToken(token);
             List<Claim> list = jwt.Claims.ToList();
-            values.Add("employeeId", list.FirstOrDefault(c => c.Type == "employeeId").Value);
+            //values.Add("employeeId", list.FirstOrDefault(c => c.Type == "employeeId").Value);
             values.Add("login", list.FirstOrDefault(c => c.Type == "login").Value);
-            values.Add("companyId", list.FirstOrDefault(c => c.Type == "companyId").Value);
+            //values.Add("companyId", list.FirstOrDefault(c => c.Type == "companyId").Value);
+            values.Add("companyUid", list.FirstOrDefault(c => c.Type == "companyUId").Value);
             values.Add("uerName" , list.FirstOrDefault(c => c.Type == "userName").Value);
             values.Add("roleName", list.FirstOrDefault(c => c.Type == "roleName").Value);
 
@@ -120,6 +122,24 @@ namespace WebSite.Helpers
             catch (Exception ex)
             {
                 return 0;
+            }
+        }
+
+        /// <summary>
+        /// Получение UID компании из токена
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Guid GetCompanyUidByJWT(string token)
+        {
+            try
+            {
+                JwtSecurityToken jwt = new JwtSecurityToken(token);
+                return Guid.Parse(jwt.Claims.FirstOrDefault(c => c.Type == "companyUid").Value);
+            }
+            catch (Exception ex)
+            {
+                return Guid.Empty;
             }
         }
 
