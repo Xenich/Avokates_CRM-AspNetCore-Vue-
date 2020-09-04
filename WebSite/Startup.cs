@@ -80,7 +80,7 @@ namespace WebSite
                                                                         // TODO: изменить алгоритм шифрования на асимметричный. В админке использовать публичный ключ, в апи - приватный
                         //IssuerSigningKey = AuthHelper.GetSymmetricSecurityKey(Configuration),                   // установка ключа безопасности
                         ValidateLifetime = false,   // будет ли валидироваться время существования
-                        ClockSkew = System.TimeSpan.FromMinutes(30000)
+                        ClockSkew = System.TimeSpan.FromMinutes(3000000)
                     };
                 });
 
