@@ -24,7 +24,6 @@ namespace WebSite.Controllers
             dl = dataLayer;
         }
 
-   
         public IActionResult Index()
         {
             string token = GetToken();

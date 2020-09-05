@@ -12,6 +12,8 @@ using Avokates_CRM.Models;
 using WebSite.Models.Outputs;
 using WebSite.DataLayer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Avokates_CRM.Models.ApiModels;
+using System.Net;
 
 namespace Avokates_CRM.Controllers
 {
@@ -28,8 +30,6 @@ namespace Avokates_CRM.Controllers
             return View();
         }
 
-
-
         [AllowAnonymous]
         public IActionResult Authorization()
         {
@@ -38,24 +38,25 @@ namespace Avokates_CRM.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> AuthorizationAsync(Authorization_In auth)
+        public IActionResult Authorization(Authorization_In auth)
         {
             ResultBase res = dl.Authorization(auth);
             //string resp = Helpers.AuthHelper.Authorization(auth.Login, auth.Password);
             //AuthResponce res = Newtonsoft.Json.JsonConvert.DeserializeObject<AuthResponce>(resp);
-
+            
             if (res.Status == "bad")
             {
                 HttpContext.Session.Clear();
                 ViewBag.error = "Неправильно введён логин или пароль!";
-                return View();
+                return Ok(res);
             }
 
             else
             {
                 HttpContext.Session.SetString("token", (res as Authorization_Out).Token);
-                 
-                     return Redirect("~/Home/Index");
+                //HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+                return Ok(res);
+               //return Redirect("~/Home/Index");
 
             }
 

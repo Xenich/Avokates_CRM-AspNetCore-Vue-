@@ -15,7 +15,7 @@
     <h1>Авторизация</h1>
 
     <div class="form-registration">
-        @using (Html.BeginForm("Authorization", "Auth", FormMethod.Post, new { @class = "form" }))
+        @*@using (Html.BeginForm("Authorization", "Auth", FormMethod.Post, new { @class = "form" }))
         {
             <label class="label label--login">
                 <input type="text" class="input input--login" placeholder="Логин" name="Login">
@@ -26,8 +26,55 @@
             <br />
             <span class="error">@ViewBag.error</span>
             <button class="form__button" type="submit" value="Login">Войти</button>
-        }
+        }*@
 
+        <label class="label label--login">
+            <input type="text" class="input input--login" placeholder="Логин" id="Login">
+        </label>
+        <label class="label label--lock">
+            <input type="password" class="input input--lock" placeholder="Пароль" id="Password">
+        </label>
+        <br />
+        <span id="error"></span>
+        <input type="button" onclick="AuthRequest()" value="Войти" />
     </div>
+    <a href="https://localhost:44391/Home/Index">Ссылка</a>
 </body>
 </html>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/main.js"></script>
+
+<script>
+
+    function AuthRequest()
+    {
+        var login = document.getElementById("Login").value;
+        var password = document.getElementById("Password").value;
+        var errorlbl = document.getElementById("error");
+        var body =
+        {
+            'login': login,
+            'password' : password
+        };
+        $.ajax(
+            {
+                type: 'POST',
+                url: '/Auth/Authorization/',
+                data: body,
+                async: false
+            })
+            .done(function (result) {
+                if (result.status != 'bad') {
+                    //document.location.href = 'https://localhost:44391/Home/Index';
+                }
+                else {
+                    errorlbl.innerHTML = "Неправильно введён логин или пароль!";
+                }
+            })
+            .fail(function (e) {
+                errorlbl.innerHTML = "Ошибка";
+            });
+    }
+
+</script>
