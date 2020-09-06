@@ -15,7 +15,7 @@
     <h1>Авторизация</h1>
 
     <div class="form-registration">
-        @*@using (Html.BeginForm("Authorization", "Auth", FormMethod.Post, new { @class = "form" }))
+        @using (Html.BeginForm("Authorization", "Auth", FormMethod.Post, new { @class = "form" }))
         {
             <label class="label label--login">
                 <input type="text" class="input input--login" placeholder="Логин" name="Login">
@@ -26,9 +26,9 @@
             <br />
             <span class="error">@ViewBag.error</span>
             <button class="form__button" type="submit" value="Login">Войти</button>
-        }*@
+        }
 
-        <label class="label label--login">
+        @*<label class="label label--login">
             <input type="text" class="input input--login" placeholder="Логин" id="Login">
         </label>
         <label class="label label--lock">
@@ -36,7 +36,7 @@
         </label>
         <br />
         <span id="error"></span>
-        <input type="button" onclick="AuthRequest()" value="Войти" />
+        <input type="button" onclick="AuthRequest()" value="Войти" />*@
     </div>
     <a href="https://localhost:44391/Home/Index">Ссылка</a>
 </body>

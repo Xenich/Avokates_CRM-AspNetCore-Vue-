@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebSite.Models.Outputs
+namespace Avokates_CRM.Models.Outputs
 {
     public class GetMainPage_Out : ResultBase
     {
@@ -16,5 +16,6 @@ namespace WebSite.Models.Outputs
         public int CasesCount { get; set; }
         [Display(Name = "Количество записей")]
         public int NotesCount { get; set; }
+        public bool isAdmin { get; set; }
     }
 }

@@ -9,7 +9,8 @@ using System.Text;
 using System.Security.Claims;
 using System.Linq;
 using Avokates_CRM.Models.Outputs;
-using WebSite.Models.Outputs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace WebSite.Helpers
 {
@@ -27,11 +28,12 @@ namespace WebSite.Helpers
 
             //claimList.Add(new Claim("employeeId", auth.EmployeeId.ToString()));
             claimList.Add(new Claim("employeeUid", auth.EmployeeUid.ToString()));
-            claimList.Add(new Claim("login", auth.Login));
-            //claimList.Add(new Claim("companyId", auth.CompanyId.ToString()));
             claimList.Add(new Claim("companyUid", auth.CompanyUID.ToString()));
-            claimList.Add(new Claim("userName", string.IsNullOrEmpty(auth.Name)?"": auth.Name));
-            claimList.Add(new Claim("roleName", string.IsNullOrEmpty(auth.RoleName) ? "" : auth.RoleName));
+            //claimList.Add(new Claim("login", auth.Login));
+            //claimList.Add(new Claim("companyId", auth.CompanyId.ToString()));
+
+            //claimList.Add(new Claim("userName", string.IsNullOrEmpty(auth.Name)?"": auth.Name));           
+            claimList.Add(new Claim(ClaimsIdentity.DefaultRoleClaimType, string.IsNullOrEmpty(auth.RoleName) ? "" : auth.RoleName));
 
             SecurityKey KEY = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("secretKey").Get<string>()));
             SigningCredentials signingCredentials = new SigningCredentials(KEY, SecurityAlgorithms.HmacSha256);
@@ -78,12 +80,11 @@ namespace WebSite.Helpers
             JwtSecurityToken jwt = new JwtSecurityToken(token);
             List<Claim> list = jwt.Claims.ToList();
             //values.Add("employeeId", list.FirstOrDefault(c => c.Type == "employeeId").Value);
-            values.Add("login", list.FirstOrDefault(c => c.Type == "login").Value);
+            //values.Add("login", list.FirstOrDefault(c => c.Type == "login").Value);
             //values.Add("companyId", list.FirstOrDefault(c => c.Type == "companyId").Value);
             values.Add("companyUid", list.FirstOrDefault(c => c.Type == "companyUId").Value);
-            values.Add("uerName" , list.FirstOrDefault(c => c.Type == "userName").Value);
-            values.Add("roleName", list.FirstOrDefault(c => c.Type == "roleName").Value);
-
+            values.Add("employeeUid", list.FirstOrDefault(c => c.Type == "employeeUid").Value);
+            //values.Add("uerName" , list.FirstOrDefault(c => c.Type == "userName").Value);
             return values;
         }
 
@@ -105,6 +106,20 @@ namespace WebSite.Helpers
             SecurityToken validatedToken;
             ClaimsPrincipal principal = tokenHandler.ValidateToken(authToken, validationParameters, out validatedToken);
             return true;
+        }
+
+        public static bool IsTokenAdmin(string token)
+        {
+            try
+            {
+                JwtSecurityToken jwt = new JwtSecurityToken(token);
+                string role = jwt.Claims.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Value;
+                return (role == "admin" || role == "director");
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>

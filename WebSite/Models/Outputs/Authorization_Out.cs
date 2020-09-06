@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebSite.Models.Outputs
+namespace Avokates_CRM.Models.Outputs
 {
     public class Authorization_Out : ResultBase
     {

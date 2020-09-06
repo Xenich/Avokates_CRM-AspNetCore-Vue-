@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebSite.Models.Outputs;
 
 namespace WebSite.DataLayer
 {
@@ -13,7 +12,7 @@ namespace WebSite.DataLayer
         string CheckConnectionToDB();
 
         ResultBase CreateInvite(string token, string email);
-        ResultBase Invite(string inviteToken);
+        InviteResult Invite(string inviteToken);
 
         GetMainPage_Out GetMainPage(string token);
 

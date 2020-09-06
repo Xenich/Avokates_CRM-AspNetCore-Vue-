@@ -1,7 +1,7 @@
 ﻿$(document).ready(function () {
     var vueModel = new Vue
         ({
-            el: '#bodyVueModel',				// работаем с элементом с id = 'header'
+            el: '#bodyVueModel',		// работаем с элементом с id = 'header'
             data: 					    // объект, в котором будут храниться переменные
             {
                 CompanyName: '',
@@ -25,6 +25,14 @@ function GetLayoutModel(model)
             model.Name = result.name;
             model.CasesCount = result.casesCount;
             model.NotesCount = result.notesCount;
+            if (result.isAdmin)
+            {
+                var emp = document.getElementById('employeesLink');
+                var employeesLink = document.createElement('a');
+                employeesLink.setAttribute("href", "/Home/Employees");
+                employeesLink.innerHTML = "Сотрудники";
+                emp.appendChild(employeesLink);
+            }
         }
         //function (errorMsg) {
         //ErrorHandler(lbl, errorMsg)

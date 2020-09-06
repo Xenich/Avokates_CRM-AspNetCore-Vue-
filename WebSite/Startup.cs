@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -97,7 +96,7 @@ namespace WebSite
                         //ValidIssuer = AuthHelper.ISSUER,               // строка, представляющая издателя
                         //ValidAudience = AuthHelper.AUDIENCE,           // установка потребителя токена
                                                                         // TODO: изменить алгоритм шифрования на асимметричный. В админке использовать публичный ключ, в апи - приватный
-                        //IssuerSigningKey = AuthHelper.GetSymmetricSecurityKey(Configuration),                   // установка ключа безопасности
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("secretKey").Get<string>())),                   // установка ключа безопасности
                         ValidateLifetime = false,   // будет ли валидироваться время существования
                         ClockSkew = System.TimeSpan.FromMinutes(3000000)
                     };
@@ -144,6 +143,7 @@ namespace WebSite
                 {
                     context.Request.Headers.Add("Authorization", "Bearer " + token);
                 }
+                
                 //else
                 //{       // перехват запроса и возврат на авторизацию
                 //    context.Request.Path = "/Auth/Authorization/";

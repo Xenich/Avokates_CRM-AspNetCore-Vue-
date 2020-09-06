@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using MimeKit;
 using MailKit.Net.Smtp;
 
-using WebSite.Models.Outputs;
 using WebSite.Helpers;
 using System.Security.Policy;
 using System.Text;
@@ -49,39 +48,45 @@ namespace WebSite.DataLayer
         }
 
 // -------------------------    НОВЫЙ ПОЛЬЗОВАТЕЛЬ СИСТЕМЫ      -------------------------
-
 #region Новый пользователь системы
+        
         public  ResultBase CreateInvite(string token, string email)
         {
             ResultBase result = new ResultBase();
             try
             {
+                Guid companyUid = HelperSecurity.GetCompanyUidByJWT(token);
+                Guid userUID = HelperSecurity.GetUserUidByJWT(token);
+
                 email = email.Trim();
+                email = email.ToLower();
                 string pattern = @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
-    @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$";
+                                 @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$";
                 if (Regex.Matches(email, pattern, RegexOptions.IgnoreCase).Count != 1)
                 {
                     ErrorHandler<ResultBase>.SetDBProblem(result,"Email not valid");
                     return result;
                 }
-
-                Guid companyUid = HelperSecurity.GetCompanyUidByJWT(token);
-
                 SHA256 sha256 = SHA256.Create();
                 byte[] bytes = Encoding.UTF8.GetBytes(email);
                 string inviteToken = Convert.ToBase64String( sha256.ComputeHash(bytes));
 
-                Invite invite = new Invite()
+                Invite invite = _context.Invite.FirstOrDefault(i => i.Token == inviteToken);
+                if (invite == null)
                 {
-                    CompanyUid = companyUid,
-                    Token = inviteToken,
-                    ExpiresIn = DateTime.Now.AddHours(1)
-                };
-                _context.Invite.Add(invite);
+                    invite = new Invite()
+                    {
+                        CompanyUid = companyUid,
+                        Token = inviteToken
+                    };
+                    _context.Invite.Add(invite);
+                }
+                invite.ExpiresIn = DateTime.Now.AddHours(1);
                 string message = "Для регистрации перейдите по ссылке ниже" + Environment.NewLine;
                 message += BaseHelper.GetHostAddress() + "Home/Invite?token=" + inviteToken;
                 SendEmail(email, "Регистрация Advokates CRM", message);
-                //_context.SaveChanges();
+                _context.SaveChanges();
+                result.Status = ResultBase.StatusOk;
             }
             catch (Exception ex)
             {
@@ -111,12 +116,46 @@ namespace WebSite.DataLayer
             }
         }
 
-        public ResultBase Invite(string token)
+        public InviteResult Invite(string token)
         {
-            throw new NotImplementedException();
+            InviteResult result = new InviteResult();
+            try
+            {
+                Invite invite = _context.Invite.FirstOrDefault(i => i.Token == token);
+                if (invite == null)
+                {
+                    return new InviteResult()
+                    {
+                        Status = ResultBase.StatusBad,
+                        ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Пригласительный токен недействителен. Обратитесь к администратору компании для получения приглашения" } }
+                    };
+                }
+                if (invite.ExpiresIn < DateTime.Now)
+                {
+                    _context.Invite.Remove(invite);
+                    _context.SaveChanges();
+                    return new InviteResult()
+                    {
+                        Status = ResultBase.StatusBad,
+                        ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Пригласительный токен просрочен. Обратитесь к администратору компании для получения нового приглашения" } }
+                    };
+                }                
+                result.InviteToken = token;
+                result.CompanyName = _context.Company
+                                            .Where(c => c.Uid == invite.CompanyUid)
+                                            .Select(c => c.CompanyName)
+                                            .FirstOrDefault();
+                result.Status = ResultBase.StatusOk;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler<InviteResult>.SetDBProblem(result, ex.Message);
+            }
         }
 
 #endregion
+//---------------------------------------------------------------------------------------
 
         public GetMainPage_Out GetMainPage(string token)
         {
@@ -150,7 +189,7 @@ namespace WebSite.DataLayer
                                      join n in _context.Note on e.Uid equals n.EmployeeUid
                                      where e.Uid == userUid
                                      select n).Count();
-
+                result.isAdmin = HelperSecurity.IsTokenAdmin(token);
                 result.Status = ResultBase.StatusOk;
             }
             catch (Exception ex)

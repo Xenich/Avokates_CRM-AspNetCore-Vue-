@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Avokates_CRM.Models;
-using WebSite.Models.Outputs;
 using WebSite.DataLayer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Avokates_CRM.Models.ApiModels;
@@ -25,10 +24,10 @@ namespace Avokates_CRM.Controllers
             dl = dataLayer;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        //public IActionResult Index()
+        //{
+        //    return View();
+        //}
 
         [AllowAnonymous]
         public IActionResult Authorization()
@@ -54,9 +53,9 @@ namespace Avokates_CRM.Controllers
             else
             {
                 HttpContext.Session.SetString("token", (res as Authorization_Out).Token);
-                //HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
-                return Ok(res);
-               //return Redirect("~/Home/Index");
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+               // return Ok(res);
+               return Redirect("~/Home/Index");
 
             }
 

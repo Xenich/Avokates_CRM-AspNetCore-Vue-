@@ -8,14 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 
 using Avokates_CRM.Models;
 using Avokates_CRM.Models.ApiModels;
-using WebSite.Models.Outputs;
 using WebSite.DataLayer;
 using WebSite.Helpers;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebSite.Controllers
 {
-   [Authorize]
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IDataLayer dl;      // dataLayer
@@ -40,22 +39,20 @@ namespace WebSite.Controllers
         [HttpGet]
         public IActionResult Invite(string token)
         {
-            ResultBase result = dl.Invite(token);
-            if (result.Status == ResultBase.StatusOk)
-                return View(result);
-            else
-                return View("ErrorView");
+            InviteResult result = dl.Invite(token);
+            return View(result);
         }
 
         public IActionResult Cabinet()
         {
-            string token = GetToken();
-            if (HelperSecurity.IsTokenValid(token))
-            {             
-                return View();
-            }
-            else
-                return View("ErrorView");
+            return View();
+        }
+
+        [Authorize(Roles = "admin, director")]
+        [HttpGet]
+        public IActionResult Employees()
+        {
+            return View();
         }
 
         // получение определенного дела
