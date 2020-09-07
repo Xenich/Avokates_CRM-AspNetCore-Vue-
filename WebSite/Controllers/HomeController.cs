@@ -11,6 +11,7 @@ using Avokates_CRM.Models.ApiModels;
 using WebSite.DataLayer;
 using WebSite.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace WebSite.Controllers
 {
@@ -35,7 +36,15 @@ namespace WebSite.Controllers
                 return View("ErrorView");
         }
 
-        [AllowAnonymous]
+        public IActionResult UnLogin()
+        {
+            HttpContext.Session.Clear();
+               return Redirect("~/Auth/Authorization");
+
+        }
+
+
+    [AllowAnonymous]
         [HttpGet]
         public IActionResult Invite(string token)
         {

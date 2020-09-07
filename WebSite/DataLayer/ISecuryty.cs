@@ -9,7 +9,7 @@ namespace WebSite.DataLayer
 {
     public interface ISecuryty
     {
-        ResultBase Registration(Registration_In reg);
+        //ResultBase Registration(Registration_In reg);
         ResultBase Authorization(Authorization_In auth);
     }
 }

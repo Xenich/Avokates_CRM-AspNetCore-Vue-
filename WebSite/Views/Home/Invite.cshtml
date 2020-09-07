@@ -16,10 +16,13 @@
     {
     <div id="createNewUserVueModel">
 
-        <label id="inviteToken" style='display:none'>@Model.InviteToken</label>
 
         <h3>@Model.CompanyName</h3>
         <h4>Создание нового пользователя</h4>
+        <div class="row">
+            
+            <label id="inviteToken" style='display:none'>@Model.InviteToken</label>
+        </div>
         <div class="row">
             <label>Логин</label>
             <input type="text" v-model="login" />
@@ -28,7 +31,7 @@
             <label>Пароль</label>
             <input type="text" v-model="password" />
         </div>
-        <input class="row" type="button" v-on:click="CreateUser" value="Создать" />
+        <input class="row" type="button" v-on:click="CreateUserByInvite" value="Создать" />
 
         <div class="row"></div>
     </div>

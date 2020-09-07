@@ -10,16 +10,18 @@
 
             methods:
             {
-                CreateUser() {
+                CreateUserByInvite() {
                     var body =
                     {
                         login: this.login,
                         password: this.password,
-                        inviteToken: $('#inviteToken').html()
+                        invitingToken: $('#inviteToken').html()
                     }
                     DataRequest('CreateUserByInvite', body, true,
-                        function (result) {
-                           // location.reload();
+                        function (result)
+                        {
+                            localStorage.setItem("privateKey" + result.userUid, result.privateKey);
+                            location.href = '/Home/Cabinet';
                         });
                 }
             }

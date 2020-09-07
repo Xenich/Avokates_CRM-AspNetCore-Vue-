@@ -154,6 +154,90 @@ namespace WebSite.DataLayer
             }
         }
 
+            //Регистрация нового пользователя по пригласительному токену, отправленному на имейл
+        public Registration_Out CreateUserByInvite(Registration_In value)
+        {
+            Registration_Out result = new Registration_Out();
+
+            try
+            {
+                if (string.IsNullOrEmpty(value.Login) || string.IsNullOrEmpty(value.Password))
+                {
+                    return ErrorHandler<Registration_Out>.SetDBProblem(result, "Логин или пароль не указан");
+                }
+
+                if (value.Login.Length > 50)
+                {
+                    return ErrorHandler<Registration_Out>.SetDBProblem(result, "Логин слишком длинный");
+                }
+
+                if (value.Password.Length < 6)
+                {
+                    return ErrorHandler<Registration_Out>.SetDBProblem(result, "Пароль слишком короткий");
+                }
+
+                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(1024);
+                rsa.PersistKeyInCsp = false;
+                byte[] publicKey = rsa.ExportCspBlob(false);
+                byte[] privteKey = rsa.ExportCspBlob(true);
+
+                _context.LoadStoredProc("prRegistration")
+                    .AddParam("Login", value.Login)
+                    .AddParam("Password", value.Password)
+                    .AddParam("InvitingToken", value.InvitingToken)
+                    .AddParam("Name", value.Name)
+                    .AddParam("Birthday", value.Birthday)
+                    .AddParam("Phone", value.Phone)
+                    .AddParam("Email", value.Email)
+                    .AddParam("PublicKey", publicKey)
+                    .AddParam("UserGuid", out IOutParam<Guid> outret)
+                    .ReturnValue(out IOutParam<int> retparam)
+                    .ExecNonQuery();
+
+                switch (retparam.Value)
+                {
+                    case 6:
+                        {
+                            return ErrorHandler<Registration_Out>.SetDBProblem(result, "Пользователь с таким логином уже существует");
+                        }
+                    case 7:
+                        {
+                            return ErrorHandler<Registration_Out>.SetDBProblem(result, "Приглашение не действительно. Обратитесь к администратору");
+                        }
+                    case 8:
+                        {
+                            return ErrorHandler<Registration_Out>.SetDBProblem(result, "Ошибка");
+                        }
+                }
+
+                result.PrivateKey = Convert.ToBase64String(privteKey);
+                var authEmp = (from e in _context.Employee
+                               join rLeft in _context.Role on e.RoleUid equals rLeft.Uid into rTemp
+                               from r in rTemp.DefaultIfEmpty()
+                               where e.Uid == outret.Value
+                               select new
+                               {
+                                   companyUid = e.CompanyUid,
+                                   RoleName = r.RoleName
+                               }).FirstOrDefault();
+
+                Authorization_Out_FromDB auth = new Authorization_Out_FromDB()
+                {
+                    CompanyUID = authEmp.companyUid,
+                    EmployeeUid = outret.Value,
+                    RoleName = authEmp.RoleName
+                };
+                result.JWT = Helpers.HelperSecurity.GenerateToken(auth);
+                result.UserUid = outret.Value;
+                result.Status = ResultBase.StatusOk;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler<Registration_Out>.SetDBProblem(result, ex.Message);
+            }
+        }
+
 #endregion
 //---------------------------------------------------------------------------------------
 
@@ -287,7 +371,8 @@ namespace WebSite.DataLayer
                               Birthday = e.Birthday.Value.Date.ToString(),
                               Email = e.Email,
                               Phone = e.Phone,
-                              Role = r.RoleName
+                              Role = r.RoleName,
+                               UserUid = e.Uid
                           }).FirstOrDefault();
                 result.Status = ResultBase.StatusOk;
 

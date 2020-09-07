@@ -57,7 +57,7 @@ function GetCabinetInfo(model)
             model.role = result.role;
             model.publicKey = result.publicKey;
             //localStorage.setItem("privateKey", "privateKey__++==");
-            model.privateKey = localStorage.getItem("privateKey");
+            model.privateKey = localStorage.getItem("privateKey" + result.userUid);
         }
     )
 }

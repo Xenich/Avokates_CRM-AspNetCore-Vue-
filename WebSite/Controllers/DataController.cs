@@ -11,6 +11,7 @@ using WebSite.DataLayer;
 using WebSite.Helpers;
 using WebSite.Models.Inputs;
 using Avokates_CRM.Models.Outputs;
+using Microsoft.AspNetCore.Http;
 
 namespace WebSite.Controllers
 {
@@ -43,12 +44,17 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
+        // Создание нового юзера по пригласительному токену
         [AllowAnonymous]
-        public IActionResult CreateUserByInvite(Authorization_In value)
+        public IActionResult CreateUserByInvite(Registration_In value)
         {
-            return Ok();
+            Registration_Out result = dl.CreateUserByInvite(value);
+            if (result.Status == ResultBase.StatusOk)
+            {
+                HttpContext.Session.SetString("token", result.JWT);
+            }
+            return Ok(result);
         }
-
 
         public IActionResult GetCasesList()
         {            

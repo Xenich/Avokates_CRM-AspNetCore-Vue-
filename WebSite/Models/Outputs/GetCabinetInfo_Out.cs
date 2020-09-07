@@ -15,5 +15,6 @@ namespace Avokates_CRM.Models.Outputs
         public string Birthday { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
+        public Guid UserUid { get; set; }
     }
 }

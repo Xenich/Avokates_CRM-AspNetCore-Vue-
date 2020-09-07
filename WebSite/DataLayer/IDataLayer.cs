@@ -20,6 +20,7 @@ namespace WebSite.DataLayer
         GetCase_Out GetCase(string token, int CaseId);
         GetCabinetInfo_Out GetCabinetInfo(string token);
         ResultBase CabinetInfoSaveChanges(string token, GetCabinetInfo_Out cabinetInfo);
+        Registration_Out CreateUserByInvite(Registration_In value);
         //ResultBase GetCases(BaseAuth_In inputValue);
         //ResultBase GetCaseNotes(BaseAuth_In inputValue);
 

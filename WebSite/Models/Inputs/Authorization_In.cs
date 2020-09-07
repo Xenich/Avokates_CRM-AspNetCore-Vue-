@@ -9,6 +9,5 @@ namespace Avokates_CRM.Models.Inputs
     {
         public string Login { get; set; }
         public string Password { get; set; }
-        public string InviteToken { get; set; }
     }
 }
