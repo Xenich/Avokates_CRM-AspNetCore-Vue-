@@ -310,7 +310,8 @@ namespace WebSite.DataLayer
                               where ecc.CaseUid == c.Uid && ecc.IsOwner
                               select ((string.IsNullOrEmpty(ee.Surname) ? "" : ee.Surname) + " " + (string.IsNullOrEmpty(ee.Name) ? "" : ee.Name) + " "
                               + (string.IsNullOrEmpty(ee.SecondName) ? "" : ee.SecondName))
-                              ).FirstOrDefault()
+                              ).FirstOrDefault(),
+                         Uid = c.Uid
                     })
                     .OrderBy(b=>b.UpdateDate)
                     .ToList();

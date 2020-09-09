@@ -18,6 +18,7 @@ namespace Avokates_CRM.Models.Outputs
         public string CreateDate { get; set; }
         public string UpdateDate { get; set; }
         public int IdPerCompany { get; set; }
+        public Guid Uid { get; set; }
         //public Guid Uid { get; set; }
     }
 }

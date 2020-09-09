@@ -39,12 +39,12 @@ namespace WebSite.Controllers
         public IActionResult UnLogin()
         {
             HttpContext.Session.Clear();
-               return Redirect("~/Auth/Authorization");
+            return Redirect("~/Auth/Authorization");
 
         }
 
 
-    [AllowAnonymous]
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Invite(string token)
         {
@@ -77,6 +77,10 @@ namespace WebSite.Controllers
                 return View("ErrorView");
         }
 
+        public IActionResult NewCase()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -7,13 +7,18 @@
 <h2>Сотрудники</h2>
 <div id="emloyeesVueModel">
     <h4>Добавить сотрудника</h4>
-    <span>Для добавления сотрудника укажите email, на который будет выслано приглашение</span>
-    <div class="row">
-        <input class="col" type="text" v-model="inviteEmail" />
-        <input class="col" type="button" v-on:click="SendInviteEmail" value="Выслать приглашение на email" />
+    <span class="cl1">Для добавления сотрудника укажите email, на который будет выслано приглашение</span>
+    <div class="row" >
+        <input class="col-3 cl1" type="text" v-model="inviteEmail" />
+        <input class="cl1" type="button" v-on:click="SendInviteEmail" value="Выслать приглашение на email" />
     </div>
 </div>
 
+<style>
+    .cl1 {
+        margin:10px
+    }
+</style>
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/js/Employees.js"></script>
 

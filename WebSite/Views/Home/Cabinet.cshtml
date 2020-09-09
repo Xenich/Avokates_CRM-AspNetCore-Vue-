@@ -2,17 +2,6 @@
     Layout = "_Layout"; ;
 }
 
-<style>
-    .row {
-        margin-top: 15px;       
-    }
-    .col {
-        padding-left : 5px
-    }
-    .col-8 {
-        padding-left: 0
-    }
-</style>
 
 <div id="cabinetVueModel" class="cabinetInfoTable">
     <h2>Личный кабинет</h2>
@@ -33,7 +22,7 @@
     <div class="row">
         <div class="col">Дата рождения</div>
         <div class="col-8">
-            <input type="date" v-model="birthday" />
+            <input style="margin:0" type="date" v-model="birthday" />
         </div>
 
     </div>
@@ -62,7 +51,7 @@
     <span>Приватный ключ хранится в локальном хранилище вашего браузера. При утере приватного ключа вы потеряете доступ к зашифрованной информации на сервере. Рекомендуем сохранить приватный ключ на стороннем носителе, доступ к которому имеете только вы. Так же не рекомендуем делать сброс настроек браузера во избежание утери приватного ключа.</span>
     <div>
         <textarea  rows="5"  style="width: 100%;" readonly>{{privateKey}}</textarea>
-    </div>
+        
 </div>
 
 <script src="~/lib/jquery/dist/jquery.js"></script>

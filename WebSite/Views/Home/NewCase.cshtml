@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewData["Title"] = "NewCase";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Новое дело</h2>
+
+<div id="newCase">
+    <div class="row">
+        <label class="col">Название</label>
+        <input class="col-8" type="text" v-model="title" placeholder="Введите название" />
+    </div>
+    <div class="row">
+        <label class="col">Фигуранты</label>
+
+    </div>
+    <div class="row">
+        <label class="col">Описание</label>
+        <div  class="col-8" >
+            <textarea rows="5" style="width: 100%;">{{description}}</textarea>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/NewCase.js"></script>

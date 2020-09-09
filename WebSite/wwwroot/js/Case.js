@@ -20,7 +20,7 @@
         });
 })
 
-// подгрузка списка дел
+
 function GetCaseInfo(model) {
     var data = {
         'id': model.caseId
