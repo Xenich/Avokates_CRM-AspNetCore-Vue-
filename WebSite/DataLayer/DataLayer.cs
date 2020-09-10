@@ -352,6 +352,27 @@ namespace WebSite.DataLayer
             return result;
         }
 
+        public NewCaseGetModel_Out NewCaseGetModel()
+        {
+            NewCaseGetModel_Out result = new NewCaseGetModel_Out();
+
+            try 
+            {
+                result.FigurantRoleOptions = _context.FigurantRole.Select(f => new ItemView()
+                {
+                    Id = f.Uid.ToString(),
+                    Name = f.RoleName
+                })
+                .OrderBy(f=>f.Name)
+                .ToArray();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler<NewCaseGetModel_Out>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
         public GetCabinetInfo_Out GetCabinetInfo(string token)
         {
             GetCabinetInfo_Out result;

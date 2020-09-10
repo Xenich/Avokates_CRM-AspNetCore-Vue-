@@ -68,6 +68,12 @@ namespace WebSite.Controllers
                 return Ok(ErrorHandler<ResultBase>.TokenNotValid());
         }
 
+        public IActionResult NewCaseGetModel()
+        {
+            NewCaseGetModel_Out result = dl.NewCaseGetModel();
+            return Ok(result);
+        }
+
         public IActionResult GetMainPage()
         {
             string token = GetToken();

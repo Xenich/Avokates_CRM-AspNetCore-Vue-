@@ -4,25 +4,36 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Новое дело</h2>
+<style>
+    .allinputs {
+        width: 95%
+    }
+</style>
+
+<h2 align="center">Новое дело</h2>
 
 <div id="newCase">
+    <label id="errorLabel" style='display: none'>Ошибка</label>
     <div class="row">
-        <label class="col">Название</label>
-        <input class="col-8" type="text" v-model="title" placeholder="Введите название" />
+        <h5 class="col">Название</h5>
+        <input class="col-9" type="text" v-model="title" placeholder="Введите название" />
     </div>
+    <hr  noshade size="10" >
     <div class="row">
-        <label class="col">Фигуранты</label>
-
-    </div>
-    <div class="row">
-        <label class="col">Описание</label>
-        <div  class="col-8" >
+        <h5 class="col">Описание</h5>
+        <div class="col-9">
             <textarea rows="5" style="width: 100%;">{{description}}</textarea>
+
         </div>
     </div>
-    <div class="row">
-    </div>
+    <hr   noshade size="10" >
+    <h5 class="row">Фигуранты</h5>
+
+    <figurant style="margin-left:15px" v-for="__figurant in figurants"
+              v-bind:_figurant="__figurant">
+    </figurant>
+
+    <input class="row" type="button" v-on:click="AddFigurant" value="Добавить фигуранта по делу" />
 </div>
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
