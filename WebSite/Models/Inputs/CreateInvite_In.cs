@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebSite.Models.Inputs;
 
 namespace Avokates_CRM.Models.Inputs
 {

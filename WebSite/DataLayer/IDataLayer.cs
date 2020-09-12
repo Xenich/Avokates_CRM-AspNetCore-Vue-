@@ -29,7 +29,7 @@ namespace WebSite.DataLayer
         //ResultBase GetCaseNotes(BaseAuth_In inputValue);
 
         // ResultBase GetFigurantRoles( BaseAuth_In inputValue);
-        //ResultBase CreateNewCase(NewCase_In inputValue);
+        ResultBase CreateNewCase(NewCase_In inputValue);
 
     }
 }

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using WebSite.DataLayer;
 using WebSite.Helpers;
-using WebSite.Models.Inputs;
+
 using Avokates_CRM.Models.Outputs;
 using Microsoft.AspNetCore.Http;
 
@@ -71,6 +71,13 @@ namespace WebSite.Controllers
         public IActionResult NewCaseGetModel()
         {
             NewCaseGetModel_Out result = dl.NewCaseGetModel();
+            return Ok(result);
+        }
+
+        public IActionResult CreateNewCase(NewCase_In value)
+        {
+            value.Token = GetToken();
+            ResultBase result = dl.CreateNewCase(value);
             return Ok(result);
         }
 

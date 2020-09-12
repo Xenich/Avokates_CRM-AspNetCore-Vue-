@@ -462,6 +462,18 @@ namespace WebSite.DataLayer
         //    }
         //}
 
+        public ResultBase CreateNewCase(NewCase_In inputValue)
+        {
+            ResultBase result = new ResultBase();
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
 
         //public ResultBase CreateNewCase(NewCase_In inputValue)
         //{
@@ -505,8 +517,6 @@ namespace WebSite.DataLayer
         //    {
         //        return HelperDB<>.DBProblem(ex.Message);
         //    }
-
-
         //}
     }
 

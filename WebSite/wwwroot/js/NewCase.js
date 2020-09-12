@@ -9,44 +9,54 @@ Vue.component('figurant',
                 selected : ''
             }
         },
-        calculated:
-        {
-            //figurantArrayCounter: this.counter+1
-        },
         methods: {
             Remove()
             {
                 this._figurant.Remove(this._figurant.id);
+            },
+            OnChangeSelectedTask()
+            {
+                this._figurant.selectedRole = this.selected;
             }
         },
-        template: `<div>
-                    <div class="row">
-                        <div class="col-3">
-                            <label>Фамилия</label>
-					        <input  class="allinputs" type="text" v-model="_figurant.figurantSurname"/>
+        template: `
+                    <transition  appear name="bounce" leave-active-class="animated bounceOutRight">
+                        <div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <label>Фамилия</label>
+					                <input  class="allinputs" type="text" v-model="_figurant.figurantSurname"/>
 
-                            <label>Имя</label>
-					        <input class="allinputs" type="text" v-model="_figurant.figurantName"/>
+                                    <label>Имя</label>
+					                <input class="allinputs" type="text" v-model="_figurant.figurantName"/>
 
-                            <label>Отчество</label>
-					        <input class="allinputs" type="text" v-model="_figurant.figurantSecodName"/>
+                                    <label>Отчество</label>
+					                <input class="allinputs" type="text" v-model="_figurant.figurantSecondName"/>
 
-                            <label>Роль в деле</label>
-			                <select v-model="selected">
-				                <option v-for="option in _figurant.figurantRoleOptions" v-bind:value="option.id">
-				                  {{ option.name }}
-				                </option>
-			                 </select>
+                                    <label>Телефон</label>
+					                <input class="allinputs" type="text" v-model="_figurant.figurantPhone"/>
+
+                                    <label>Email</label>
+					                <input class="allinputs" type="text" v-model="_figurant.figurantEmail"/>
+
+                                    <label>Роль в деле</label>
+			                        <select v-model="selected" @change="OnChangeSelectedTask">
+				                        <option v-for="option in _figurant.figurantRoleOptions" v-bind:value="option.id" >
+				                          {{ option.name }}
+				                        </option>
+			                         </select>
+                                </div>
+                                <div class="col-9" style="display: flex; flex-direction:column">
+                                    <div>
+                                        <label>Детали</label>   
+                                        <textarea rows="5" style="width: 100%;" v-model="_figurant.figurantDescription"></textarea>
+                                    </div>
+                                    <input style="margin-left: auto; margin-top: auto;" type="button" v-on:click="Remove" value="Удалить" />                           
+                                </div>
+                            </div>
+                            <hr>
                         </div>
-                        <div class="col-9">
-                            <label>Детали</label>
-                            <textarea rows="5" style="width: 100%;">{{_figurant.figurantDescription}}</textarea>
-                            <input style="position: absolute; bottom: 10px; right: 10px; " type="button" v-on:click="Remove" value="Удалить" />
-                        </div>
-                     </div>
-                    <hr>
-					</div>`
-                    
+                    </transition>`                   
     });
 
     var vm = new Vue(
@@ -55,7 +65,7 @@ Vue.component('figurant',
             data:
             {
                 title: '',
-                description: '',
+                info: '',
                 figurantCounter: 1,
                 figurants: [],
                 figurantsMap: new Map(),
@@ -71,15 +81,18 @@ Vue.component('figurant',
                         id: this.figurantCounter,
                         figurantSurname: '',
                         figurantName: '',
-                        figurantSecodName: '',
+                        figurantSecondName: '',
                         figurantRole: '',
                         figurantDescription: '',  
-                        figurantRoleOptions: []
+                        figurantPhone: '',  
+                        figurantEmail: '',  
+                        figurantRoleOptions: [],
+                        selectedRole: ''
                     };
-                    newFigurant.figurantRoleOptions = roleOptions;
+                    newFigurant.figurantRoleOptions = roleOptions;//.slice();
                     newFigurant.Remove = this.RemoveFigurant;
                     this.figurants.push(newFigurant);
-                    this.figurantsMap.set(this.figurantCounter, newFigurant);
+                    this.figurantsMap.set(newFigurant.id, newFigurant);
 
                 },
                 RemoveFigurant(id)
@@ -91,10 +104,29 @@ Vue.component('figurant',
 
                 CreateNewCase()
                 {
-                    var body =
-                    {
+                    var array = [];
 
+                    this.figurants.forEach(element =>
+                    {
+                        var obj =
+                        {
+                            surname: element.figurantSurname,
+                            roleUid: element.selectedRole,
+                            name: element.figurantName,
+                            secondName: element.figurantSecondName,
+                            description: element.figurantDescription,
+                            phone: element.figurantPhone,
+                            email: element.figurantEmail
+                        }
+                        array.push(obj);
+                    });
+
+                    var body = {
+                        title: this.title,
+                        info: this.info,
+                        figurants: array
                     }
+
                     DataRequest('CreateNewCase', body, true,
                         function (result) {
 

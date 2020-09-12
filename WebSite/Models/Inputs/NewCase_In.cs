@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebSite.Models.Inputs
+namespace Avokates_CRM.Models.Inputs
 {
     public class NewCase_In : BaseAuth_In
     {

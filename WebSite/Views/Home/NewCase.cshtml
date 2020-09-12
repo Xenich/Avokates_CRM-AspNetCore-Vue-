@@ -3,12 +3,40 @@
     ViewData["Title"] = "NewCase";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<style>
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+    <style>
     .allinputs {
         width: 95%
     }
-</style>
+
+.bounce-enter-active {
+  animation: bounce-in .8s;
+}
+        .bounce-leave-active {
+            animation: bounce-out .3s reverse;
+        }
+@@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+
+}
+        @@keyframes bounce-out {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
 
 <h2 align="center">Новое дело</h2>
 
@@ -18,22 +46,26 @@
         <h5 class="col">Название</h5>
         <input class="col-9" type="text" v-model="title" placeholder="Введите название" />
     </div>
-    <hr  noshade size="10" >
+    <hr noshade size="10">
     <div class="row">
         <h5 class="col">Описание</h5>
         <div class="col-9">
-            <textarea rows="5" style="width: 100%;">{{description}}</textarea>
-
+            <textarea rows="5" style="width: 100%;" v-model="info"></textarea>
         </div>
     </div>
-    <hr   noshade size="10" >
+    <hr noshade size="10">
     <h5 class="row">Фигуранты</h5>
 
     <figurant style="margin-left:15px" v-for="__figurant in figurants"
+              v-bind:key="__figurant.id"
               v-bind:_figurant="__figurant">
     </figurant>
 
     <input class="row" type="button" v-on:click="AddFigurant" value="Добавить фигуранта по делу" />
+    <hr noshade size="10">
+    <div style="margin: auto; text-align:center;">
+        <input type="button" v-on:click="CreateNewCase" style="font-size : 1.5em;" value="Создать дело" />
+    </div>
 </div>
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
