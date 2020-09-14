@@ -47,10 +47,11 @@ namespace WebSite.DataLayer
             }
         }
 
-// -------------------------    НОВЫЙ ПОЛЬЗОВАТЕЛЬ СИСТЕМЫ      -------------------------
+// --------------------------------------------------    НОВЫЙ ПОЛЬЗОВАТЕЛЬ СИСТЕМЫ      ---------------------------------------------------
 #region Новый пользователь системы
-        
-        public  ResultBase CreateInvite(string token, string email)
+
+        // создание приглашения новому пользователю путём отсылки ему email с токеном приглашения
+        public ResultBase CreateInvite(string token, string email)
         {
             ResultBase result = new ResultBase();
             try
@@ -116,6 +117,7 @@ namespace WebSite.DataLayer
             }
         }
 
+        // Форма регистрации нового пользователя по пригласительному токену, полученному по email
         public InviteResult Invite(string token)
         {
             InviteResult result = new InviteResult();
@@ -176,10 +178,9 @@ namespace WebSite.DataLayer
                     return ErrorHandler<Registration_Out>.SetDBProblem(result, "Пароль слишком короткий");
                 }
 
-                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(1024);
-                rsa.PersistKeyInCsp = false;
-                byte[] publicKey = rsa.ExportCspBlob(false);
-                byte[] privteKey = rsa.ExportCspBlob(true);
+                Tuple<string, byte[]> keyPair = HelperSecurity.CreateKeyPair();
+                string privateKey = keyPair.Item1;
+                byte[] publicKey = keyPair.Item2;
 
                 _context.LoadStoredProc("prRegistration")
                     .AddParam("Login", value.Login)
@@ -210,7 +211,7 @@ namespace WebSite.DataLayer
                         }
                 }
 
-                result.PrivateKey = Convert.ToBase64String(privteKey);
+                result.PrivateKey = privateKey;
                 var authEmp = (from e in _context.Employee
                                join rLeft in _context.Role on e.RoleUid equals rLeft.Uid into rTemp
                                from r in rTemp.DefaultIfEmpty()
@@ -239,8 +240,8 @@ namespace WebSite.DataLayer
         }
 
 #endregion
-//---------------------------------------------------------------------------------------
-
+// -----------------------------------------------------------------------------------------------------------------------------------------
+        
         public GetMainPage_Out GetMainPage(string token)
         {
             GetMainPage_Out result = new GetMainPage_Out();
@@ -283,27 +284,35 @@ namespace WebSite.DataLayer
             return result;
         }
 
+// --------------------------------------------------    ДЕЛО      -------------------------------------------------------------------------
+#region ДЕЛО
+
         public GetCasesList_Out GetCasesList(string token)
         {
             GetCasesList_Out result = new GetCasesList_Out();
             try
             {
-                Guid userUidFromToken = HelperSecurity.GetUserUidByJWT(token);
+                Dictionary<string, string> JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+                Guid userUidFromToken = Guid.Parse(JWTValues["employeeUid"]);
+                Guid companyUidFromToken = Guid.Parse(JWTValues["companyUid"]);
+                string userRole = JWTValues["role"];
+
                 if (userUidFromToken == Guid.Empty)
                 {
                     return ErrorHandler<GetCasesList_Out>.SetDBProblem(result,"Неверный идентификатор пользователя");
                 }
-                result.CasesList = (
-                    from ec in _context.EmployeeCase
-                    join c in _context.Case on ec.CaseUid equals c.Uid
-                    where ec.EmployeeUid == userUidFromToken && !c.IsClosed
+                if (userRole == "director")
+                {
+                    result.CasesList = (
+                    from c in _context.Case
+                    where !c.IsClosed && c.CompanyUid == companyUidFromToken
                     select new Case_Out()
                     {
                         //Uid = c.Uid,
                         CaseTitle = c.Title,
-                        CreateDate = c.Date.HasValue? c.Date.Value.ToShortDateString():"",
+                        CreateDate = c.Date.HasValue ? c.Date.Value.ToShortDateString() : "",
                         IdPerCompany = c.IdPerCompany,
-                        UpdateDate = c.UpdateDate.HasValue? c.UpdateDate.Value.ToShortDateString():"",
+                        UpdateDate = c.UpdateDate.HasValue ? c.UpdateDate.Value.ToShortDateString() : "",
                         CaseOwner = (
                               from ee in _context.Employee
                               join ecc in _context.EmployeeCase on ee.Uid equals ecc.EmployeeUid
@@ -311,10 +320,36 @@ namespace WebSite.DataLayer
                               select ((string.IsNullOrEmpty(ee.Surname) ? "" : ee.Surname) + " " + (string.IsNullOrEmpty(ee.Name) ? "" : ee.Name) + " "
                               + (string.IsNullOrEmpty(ee.SecondName) ? "" : ee.SecondName))
                               ).FirstOrDefault(),
-                         Uid = c.Uid
+                        Uid = c.Uid
                     })
-                    .OrderBy(b=>b.UpdateDate)
+                    .OrderBy(b => b.UpdateDate)
                     .ToList();
+                }
+                else
+                {
+                    result.CasesList = (
+                        from ec in _context.EmployeeCase
+                        join c in _context.Case on ec.CaseUid equals c.Uid
+                        where ec.EmployeeUid == userUidFromToken && !c.IsClosed && c.CompanyUid == companyUidFromToken
+                        select new Case_Out()
+                        {
+                        //Uid = c.Uid,
+                        CaseTitle = c.Title,
+                            CreateDate = c.Date.HasValue ? c.Date.Value.ToShortDateString() : "",
+                            IdPerCompany = c.IdPerCompany,
+                            UpdateDate = c.UpdateDate.HasValue ? c.UpdateDate.Value.ToShortDateString() : "",
+                            CaseOwner = (
+                                  from ee in _context.Employee
+                                  join ecc in _context.EmployeeCase on ee.Uid equals ecc.EmployeeUid
+                                  where ecc.CaseUid == c.Uid && ecc.IsOwner
+                                  select ((string.IsNullOrEmpty(ee.Surname) ? "" : ee.Surname) + " " + (string.IsNullOrEmpty(ee.Name) ? "" : ee.Name) + " "
+                                  + (string.IsNullOrEmpty(ee.SecondName) ? "" : ee.SecondName))
+                                  ).FirstOrDefault(),
+                            Uid = c.Uid
+                        })
+                        .OrderBy(b => b.UpdateDate)
+                        .ToList();
+                }
                 result.Status = ResultBase.StatusOk;
             }
             catch (Exception ex)
@@ -324,7 +359,7 @@ namespace WebSite.DataLayer
             return result;           
         }
 
-        public GetCase_Out GetCase(string token, int caseId)
+        public GetCase_Out GetCase(string token, int caseId, string privateKey)
         {
 
             GetCase_Out result = new GetCase_Out();
@@ -334,16 +369,77 @@ namespace WebSite.DataLayer
                 //Dictionary<string, string> jwtValues = HelperSecurity.GetJWTClaimsValues(token);
                 //int companyId = int.Parse(jwtValues["companyId"]);
 
-                Guid companyGuid = HelperSecurity.GetCompanyUidByJWT(token);
+                Dictionary<string, string> JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+                Guid userUidFromToken = Guid.Parse(JWTValues["employeeUid"]);
+                Guid companyUidFromToken = Guid.Parse(JWTValues["companyUid"]);
+                string userRole = JWTValues["role"];
 
 
-                // var r = from 
-                Case _case = (from c in _context.Case
+
+                EmployeeCase employeeCase = (from EmployeeCase ec in _context.EmployeeCase
+                                             join c in _context.Case on ec.CaseUid equals c.Uid
+                                             where userRole=="director" ? (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseId && ec.EmployeeUid == userUidFromToken ) :
+                                                                          (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseId && ec.EmployeeUid == userUidFromToken && !c.IsClosed)
+                                             select ec)
+                                             .FirstOrDefault();
+                if(employeeCase == null)
+                    return ErrorHandler<GetCase_Out>.SetDBProblem(result, "Нет права доступа. Обратитесь к администратору");
+
+                byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
+
+                var _case = (from c in _context.Case
                               join cm in _context.Company on c.CompanyUid equals cm.Uid
-                              where cm.Uid == companyGuid && c.IdPerCompany == caseId && !c.IsClosed
-                              select c).FirstOrDefault();
+                              where cm.Uid == companyUidFromToken && c.IdPerCompany == caseId
+                              select new
+                              {
+                                  Title = c.Title,
+                                  Info = HelperSecurity.DecriptByAes(c.Info, symmetricKey),
+                                  Date = c.Date.Value.ToShortDateString() + " " + c.Date.Value.ToShortTimeString(),
+                                  IsClosed = c.IsClosed,
+                                  UID = c.Uid
+                              }).FirstOrDefault();
 
                 result.Title = _case.Title;
+                result.Info = _case.Info;
+                result.Date = _case.Date;
+                result.IsClosed = _case.IsClosed;
+                result.CaseUid = _case.UID;
+
+                result.EmployeesWithAccess = (from e in _context.Employee
+                                              join ec in _context.EmployeeCase on e.Uid equals ec.EmployeeUid
+                                              where ec.CaseUid == _case.UID
+                                              select new Case_Employee()
+                                              {
+                                                  Name = e.Surname + " " + e.Name + " " + e.SecondName,
+                                                  EmployeeUid = e.Uid,
+                                                  IsOwner = ec.IsOwner
+                                              }).ToArray();
+
+                result.EmployeesWithOutAccess = (from e in _context.Employee                                             
+                                                    where e.CompanyUid == companyUidFromToken  && !result.EmployeesWithAccess
+                                                                                                            .Select(ee=>ee.EmployeeUid)                                                                                                            
+                                                                                                            .Contains(e.Uid)
+                                                    select new Case_Employee()
+                                                    {
+                                                        Name = e.Surname + " " + e.Name + " " + e.SecondName,
+                                                        EmployeeUid = e.Uid,
+                                                        IsOwner = false
+                                                    }).ToArray();
+
+                result.Figurants = (from f in _context.Figurant
+                                    join r in _context.FigurantRole on f.FigurantRoleUid equals r.Uid
+                                    where f.CaseUid == result.CaseUid
+                                    select new Case_Figurant()
+                                    {
+                                        FullName = f.Surname + " " + f.Name + " " + f.SecondName,
+                                        Uid = f.Uid,
+                                        Phone = f.Phone,
+                                        Role = r.RoleName
+                                    }).ToArray();
+
+                result.Status = ResultBase.StatusOk;   
+
+                //TODO : доделать метод
             }
             catch (Exception ex)
             {
@@ -372,7 +468,88 @@ namespace WebSite.DataLayer
             }
             return result;
         }
+        
+        public ResultBase CreateNewCase(NewCase_In inputValue)
+        {
+            ResultBase result = new ResultBase();
+            try
+            {
+                Guid userUID = Helpers.HelperSecurity.GetUserUidByJWT(inputValue.Token);
+                var userInfo = _context.Employee
+                                        .Where(e => e.Uid == userUID && e.IsActive.Value)
+                                        .Select(e => new
+                                        {
+                                            publicKey = e.PublicKey,
+                                            companyUid = e.CompanyUid
+                                        })
+                                        .FirstOrDefault();
 
+                int caseId = _context.Case
+                                    .Where(c => c.CompanyUid == userInfo.companyUid)
+                                    .Select(c => c.IdPerCompany)
+                                    .Max();
+                caseId++;
+
+                if (userInfo == null)
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Пользователь не найден");
+
+                Tuple<byte[], byte[]> AESKey = HelperSecurity.CreateAESKeyEncryptedByRSA(userInfo.publicKey);
+                byte[] encriptedAesKeyByRSA = AESKey.Item1;
+                byte[] aesKey = AESKey.Item2;
+
+                DateTime dateTime = DateTime.Now;
+                Case newCase = new Case()
+                {                    
+                    CompanyUid = userInfo.companyUid,
+                    Date = dateTime,
+                    UpdateDate = dateTime,
+                    Title = inputValue.Title,
+                    IsClosed = false,
+                    Info = HelperSecurity.EncryptByAes(inputValue.Info, aesKey),
+                    IdPerCompany = caseId
+                };
+                _context.Case.Add(newCase);
+                _context.SaveChanges();
+
+                EmployeeCase employeeCase = new EmployeeCase()
+                {
+                    CaseUid = newCase.Uid,
+                    EmployeeUid = userUID,
+                    IsOwner = true,
+                    EncriptedAesKey = encriptedAesKeyByRSA
+                };
+                _context.EmployeeCase.Add(employeeCase);
+
+                foreach (NewCase_Figurant_In figurant in inputValue.Figurants)
+                {
+                    Figurant newFigurant = new Figurant()
+                    {
+                        CaseUid = newCase.Uid,
+                        Email = figurant.Email,
+                        FigurantRoleUid = figurant.RoleUid,
+                        Name = figurant.Name,
+                        Surname = figurant.Surname,
+                        SecondName = figurant.SecondName,
+                        Phone = figurant.Phone,
+                        Description = HelperSecurity.EncryptByAes(figurant.Description, aesKey)
+                    };
+                    _context.Figurant.Add(newFigurant);
+                }
+                _context.SaveChanges();
+
+                // TODO : доделать метод
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+#endregion
+// -----------------------------------------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------    Личный кабинет      ---------------------------------------------------------------
+#region Личный кабинет
         public GetCabinetInfo_Out GetCabinetInfo(string token)
         {
             GetCabinetInfo_Out result;
@@ -434,91 +611,7 @@ namespace WebSite.DataLayer
             }
             return result;
         }
-
-
-
-        //public ResultBase GetFigurantRoles(BaseAuth_In inputValue)
-        //{
-        //    FigurantRoles_Out result = new FigurantRoles_Out();
-        //    bool tokenValid = HelperSecurity.IsTokenValid(inputValue.Token);
-        //    try
-        //    {
-        //        if (tokenValid)
-        //        {
-        //            result.figurantRolesDictionary = HelperDB.figurantRolesDictionary;
-        //            result.Status = ResultBase.StatusOk;
-        //            return result;
-        //        }
-        //        else
-        //        {
-        //            result.ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Tокен недействителен или просрочен" } };
-        //            result.Status = ResultBase.BadToken;
-        //            return result;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return HelperDB.DBProblem(ex.Message);
-        //    }
-        //}
-
-        public ResultBase CreateNewCase(NewCase_In inputValue)
-        {
-            ResultBase result = new ResultBase();
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
-            }
-            return result;
-        }
-
-        //public ResultBase CreateNewCase(NewCase_In inputValue)
-        //{
-        //    ResultBase result = new ResultBase();
-        //    bool tokenValid = HelperSecurity.IsTokenValid(inputValue.Token);
-        //    try
-        //    {
-        //        if (tokenValid)
-        //        {
-        //            Dictionary<string, string> JWTClaimsValues = HelperSecurity.GetJWTClaimsValues(inputValue.Token);
-
-        //            _context.LoadStoredProc("prCreateNewCase")
-        //                .AddParam("title", inputValue.Title)
-        //                .AddParam("info", inputValue.Info)
-        //                .AddParam("figurants", Newtonsoft.Json.JsonConvert.SerializeObject(inputValue.Figurants))
-        //                .AddParam("employeeId", JWTClaimsValues["employeeId"])
-        //                .AddParam("companyUID", JWTClaimsValues["companyUID"])
-        //                .ReturnValue(out IOutParam<int> retparam)
-        //                .ExecNonQuery();
-
-        //            switch (retparam.Value)
-        //            {
-        //                case 6:
-        //                    {
-        //                        result.ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Id пользователя не соответствует UID компании." } };
-        //                        result.Status = ResultBase.StatusBad;
-        //                        return result;
-        //                    }
-        //            }
-        //            result.Status = ResultBase.StatusOk;
-        //            return result;
-        //        }
-        //        else
-        //        {
-        //            result.ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Tокен недействителен или просрочен" } };
-        //            result.Status = ResultBase.BadToken;
-        //            return result;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return HelperDB<>.DBProblem(ex.Message);
-        //    }
-        //}
+#endregion
+// -----------------------------------------------------------------------------------------------------------------------------------------
     }
-
-
 }

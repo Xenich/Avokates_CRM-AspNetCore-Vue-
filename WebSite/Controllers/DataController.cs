@@ -56,6 +56,8 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
+//----------------------------------------------    ДЕЛО    -------------------------------------------------------
+
         public IActionResult GetCasesList()
         {            
             string token = GetToken();
@@ -80,6 +82,13 @@ namespace WebSite.Controllers
             ResultBase result = dl.CreateNewCase(value);
             return Ok(result);
         }
+        public IActionResult GetCaseInfo(int id,string privateKey)
+        {
+            string token = GetToken();
+            GetCase_Out result = dl.GetCase(token, id, privateKey);
+            return Ok(result);
+        }
+//-----------------------------------------------------------------------------------------------------------------
 
         public IActionResult GetMainPage()
         {
@@ -93,17 +102,7 @@ namespace WebSite.Controllers
                 return Ok(ErrorHandler<ResultBase>.TokenNotValid());
         }
 
-        public IActionResult GetCaseInfo(int id)
-        {
-            string token = GetToken();
-            if (HelperSecurity.IsTokenValid(token))
-            {
-                GetCase_Out result = dl.GetCase(token, id);
-                return Ok(result);
-            }
-            else
-                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
-        }
+
 
         public IActionResult GetCabinetInfo()
         {

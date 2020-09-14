@@ -11,6 +11,7 @@ using System.Linq;
 using Avokates_CRM.Models.Outputs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using System.Security.Cryptography;
 
 namespace WebSite.Helpers
 {
@@ -21,6 +22,8 @@ namespace WebSite.Helpers
         {
             Configuration = configuration;
         }
+
+        #region JWT-токен
 
         public static string GenerateToken(Authorization_Out_FromDB auth)
         {
@@ -82,8 +85,9 @@ namespace WebSite.Helpers
             //values.Add("employeeId", list.FirstOrDefault(c => c.Type == "employeeId").Value);
             //values.Add("login", list.FirstOrDefault(c => c.Type == "login").Value);
             //values.Add("companyId", list.FirstOrDefault(c => c.Type == "companyId").Value);
-            values.Add("companyUid", list.FirstOrDefault(c => c.Type == "companyUId").Value);
+            values.Add("companyUid", list.FirstOrDefault(c => c.Type == "companyUid").Value);
             values.Add("employeeUid", list.FirstOrDefault(c => c.Type == "employeeUid").Value);
+            values.Add("role", list.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Value);
             //values.Add("uerName" , list.FirstOrDefault(c => c.Type == "userName").Value);
             return values;
         }
@@ -115,6 +119,20 @@ namespace WebSite.Helpers
                 JwtSecurityToken jwt = new JwtSecurityToken(token);
                 string role = jwt.Claims.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Value;
                 return (role == "admin" || role == "director");
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static bool IsTokenDirector(string token)
+        {
+            try
+            {
+                JwtSecurityToken jwt = new JwtSecurityToken(token);
+                string role = jwt.Claims.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Value;
+                return (role == "director");
             }
             catch
             {
@@ -158,23 +176,23 @@ namespace WebSite.Helpers
             }
         }
 
-        /// <summary>
-        /// Получение Id юзера из токена
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static int GetUserIdByJWT(string token)
-        {
-            try
-            {
-                JwtSecurityToken jwt = new JwtSecurityToken(token);
-                return int.Parse(jwt.Claims.FirstOrDefault(c => c.Type == "employeeId").Value);
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-        }
+        ///// <summary>
+        ///// Получение Id юзера из токена
+        ///// </summary>
+        ///// <param name="token"></param>
+        ///// <returns></returns>
+        //public static int GetUserIdByJWT(string token)
+        //{
+        //    try
+        //    {
+        //        JwtSecurityToken jwt = new JwtSecurityToken(token);
+        //        return int.Parse(jwt.Claims.FirstOrDefault(c => c.Type == "employeeId").Value);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return 0;
+        //    }
+        //}
 
         public static Guid GetUserUidByJWT(string token)
         {
@@ -189,9 +207,100 @@ namespace WebSite.Helpers
             }
         }
 
+#endregion
+
+        #region Криптография
+        //-------------------------------------     Создание ключей шифрования      ------------------------------------
+
+        // создание пары ключей RSA
+        public static Tuple<string, byte[]> CreateKeyPair()
+        {
+            CspParameters cspParams = new CspParameters { ProviderType = 1 /* PROV_RSA_FULL */ };
+            RSACryptoServiceProvider rsaProvider = new RSACryptoServiceProvider(2048, cspParams);
+            byte[] publicKey = rsaProvider.ExportCspBlob(false);
+            string privateKey = Convert.ToBase64String(rsaProvider.ExportCspBlob(true));
+            return new Tuple<string, byte[]>(privateKey, publicKey);
+        }
+
+
+        /// <summary>
+        /// Создание AES-ключа
+        /// </summary>
+        /// <param name="publicKey">Публичный ключ RSA</param>
+        /// <returns>Item1 - симметричный ключ, зашифрованный публичным, Item1 - симметричный ключ в открытом виде</returns>
+        public static Tuple<byte[], byte[]> CreateAESKeyEncryptedByRSA(byte[] publicKey)
+        {
+            // генерируем симметричный ключ
+            Aes aes = Aes.Create();
+            byte[] key = aes.Key;
+            // шифруем симметричный ключ публичным асимметричным
+            byte[] encriptedAesKeyByRSA = EncryptByRSA(publicKey, key);
+            return new Tuple<byte[], byte[]>(encriptedAesKeyByRSA, key); 
+        }
+
+//---------------------------------------------------------------   Симметричное шифрование     --------------------------------------------------------
+
+        /// <summary>
+        /// Шифрование алгоритмом AES
+        /// </summary>
+        /// <param name="text">Исходный текст</param>
+        /// <param name="key">Симметричный ключ</param>
+        /// <returns>Шифротекст с вектором инициализации в первых 16 байтах</returns>
+        public static byte[] EncryptByAes(string text, byte[] key)
+        {
+            Aes aes = Aes.Create();
+            aes.Key = key;
+            aes.GenerateIV();
+            ICryptoTransform encryptor = aes.CreateEncryptor();
+            byte[] bufer = Encoding.UTF8.GetBytes(text);
+            byte[] encriptedText = aes.IV.Concat(encryptor.TransformFinalBlock(bufer, 0, bufer.Length)).ToArray();
+            return encriptedText;
+        }
+
+        /// <summary>
+        /// Расшифровка исходного сообщения, зашифрованного алгоритмом AES
+        /// </summary>
+        /// <param name="encriptedText">Шифротекст с вектором инициализации в первых 16 байтах</param>
+        /// <param name="key">Симметричный ключ</param>
+        /// <returns>Исходный текст</returns>
+        public static string DecriptByAes(byte[] encriptedText, byte[] key)
+        {
+            Aes aes = Aes.Create();
+            aes.Key = key;
+            aes.IV = encriptedText.Take(16).ToArray();
+
+            ICryptoTransform decriptor = aes.CreateDecryptor();
+                //  16 байт - вектор инициализации
+            byte[] decryptedText = decriptor.TransformFinalBlock(encriptedText, 16, encriptedText.Length - 16);
+            string text = Encoding.UTF8.GetString(decryptedText);
+            return text;
+        }
+//---------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------   Асимметричное шифрование     --------------------------------------------------------
+
+        // шифрование AES ключа публичным RSA
+        private static byte[] EncryptByRSA(byte[] publicKey, byte[] data)
+        {
+            CspParameters cspParams = new CspParameters { ProviderType = 1 };
+            RSACryptoServiceProvider rsaProvider = new RSACryptoServiceProvider(cspParams);
+            rsaProvider.ImportCspBlob(publicKey);
+            byte[] encryptedBytes = rsaProvider.Encrypt(data, false);
+            return encryptedBytes;
+        }
+
+        // Расшифровка AES ключа приватным RSA
+        public static byte[] DecryptByRSA(string privateKey, byte[] encryptedBytes)
+        {
+            CspParameters cspParams = new CspParameters { ProviderType = 1 };
+            RSACryptoServiceProvider rsaProvider = new RSACryptoServiceProvider(cspParams);
+            rsaProvider.ImportCspBlob(Convert.FromBase64String(privateKey));
+            byte[] plainBytes = rsaProvider.Decrypt(encryptedBytes, false);
+            return plainBytes;
+        }
+
     }
 
-
+    #endregion
 
 
     static class AuthOptions

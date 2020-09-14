@@ -31,7 +31,11 @@ namespace Avokates_CRM.Models.DB
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=DESKTOP-IDFEOG1;Database=LawyerCRM;Trusted_Connection=True;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -181,10 +185,11 @@ namespace Avokates_CRM.Models.DB
 
                 entity.Property(e => e.EmployeeUid).HasColumnName("EmployeeUID");
 
+                entity.Property(e => e.EncriptedAesKey).HasMaxLength(8000);
+
                 entity.HasOne(d => d.CaseU)
                     .WithMany(p => p.EmployeeCase)
                     .HasForeignKey(d => d.CaseUid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EmployeeCase_Case");
 
                 entity.HasOne(d => d.EmployeeU)
@@ -196,6 +201,12 @@ namespace Avokates_CRM.Models.DB
 
             modelBuilder.Entity<Figurant>(entity =>
             {
+                entity.HasKey(e => e.Uid);
+
+                entity.Property(e => e.Uid)
+                    .HasColumnName("UID")
+                    .ValueGeneratedNever();
+
                 entity.Property(e => e.CaseUid).HasColumnName("CaseUID");
 
                 entity.Property(e => e.Email).HasMaxLength(50);
@@ -204,11 +215,13 @@ namespace Avokates_CRM.Models.DB
 
                 entity.Property(e => e.FigurantRoleUid).HasColumnName("FigurantRoleUID");
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(255);
+                entity.Property(e => e.Name).HasMaxLength(255);
 
                 entity.Property(e => e.Phone).HasMaxLength(20);
+
+                entity.Property(e => e.SecondName).HasMaxLength(255);
+
+                entity.Property(e => e.Surname).HasMaxLength(255);
 
                 entity.HasOne(d => d.CaseU)
                     .WithMany(p => p.Figurant)

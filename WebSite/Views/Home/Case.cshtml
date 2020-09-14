@@ -6,10 +6,13 @@
 
 
     <div id="caseVueModel">
+        <label id="errorLabel" style='display:none'>Ошибка</label>
         <input type="hidden" id="caseId" value="@ViewData["id"]" />
+        <input type="hidden" id="userUid" value="@ViewData["userUid"]" />
 
         <h2>Дело # @ViewData["id"]</h2>
         <h3>{{title}}</h3>
+        <input type="text" v-model="info" />
 
     </div>
     <script src="~/lib/jquery/dist/jquery.js"></script>

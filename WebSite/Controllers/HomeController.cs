@@ -68,13 +68,9 @@ namespace WebSite.Controllers
         public IActionResult Case(int id)
         {
             string token = GetToken();
-            if (HelperSecurity.IsTokenValid(token))
-            {
-                ViewData["id"] = id.ToString();
-                return View();
-            }
-            else
-                return View("ErrorView");
+            ViewData["id"] = id.ToString();
+            ViewData["userUid"] = HelperSecurity.GetUserUidByJWT(token).ToString();               
+            return View();
         }
 
         public IActionResult NewCase()

@@ -15,7 +15,7 @@ namespace Avokates_CRM.Models.DB
         public Guid Uid { get; set; }
         public Guid CompanyUid { get; set; }
         public string Title { get; set; }
-        public string Info { get; set; }
+        public byte[] Info { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? UpdateDate { get; set; }
         public bool IsClosed { get; set; }

@@ -5,7 +5,9 @@
             data: 					// объект, в котором будут храниться переменные
             {
                 caseId: $('#caseId').val(),
-                title : ''
+                userUid: $('#userUid').val(),
+                title: '',
+                info: ''
             },
             //methods:					// объект, в котором будут хранится функции
             //{
@@ -23,12 +25,14 @@
 
 function GetCaseInfo(model) {
     var data = {
-        'id': model.caseId
+        'id': model.caseId,
+        'privateKey': localStorage.getItem("privateKey" + model.userUid)
     }
     var lbl = document.getElementById("errorLabel");
     DataRequest('GetCaseInfo', data, true,
         function (result) {
             model.title = result.title;
+            model.info = result.info;
         },
         function (errorMsg) {
             ErrorHandler(lbl, errorMsg)
