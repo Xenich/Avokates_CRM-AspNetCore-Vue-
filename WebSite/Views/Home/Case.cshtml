@@ -1,19 +1,55 @@
-﻿
-@{
+﻿@{
     Layout = "_Layout"; ;
 }
 
 
-
-    <div id="caseVueModel">
-        <label id="errorLabel" style='display:none'>Ошибка</label>
-        <input type="hidden" id="caseId" value="@ViewData["id"]" />
-        <input type="hidden" id="userUid" value="@ViewData["userUid"]" />
-
-        <h2>Дело # @ViewData["id"]</h2>
-        <h3>{{title}}</h3>
-        <input type="text" v-model="info" />
-
+<label id="errorLabel" style='display:none'>Ошибка</label>
+<div  id="caseVueModel">
+    
+    <input type="hidden" id="caseId" value="@ViewData["id"]" />
+    <input type="hidden" id="userUid" value="@ViewData["userUid"]" />
+    <div class="row">
+        <h3 class="col-11">{{title}}</h3>
+        <h3 class="col-1">#@ViewData["id"]</h3>
     </div>
-    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <div class="row">
+        <label class="col">Краткое описание</label>
+        <textarea class="col-9" rows="5" style="width: 100%;" v-model="info"></textarea>
+    </div>
+    <div class="row">
+        <label class="col">Дата создания: {{dateCreate}}</label>
+    </div>
+    <div class="row">
+        <label class="col">Изменено: {{updateDate}}</label>
+    </div>
+    <div class="row">
+        <label v-if="isClosed">Статус: закрыто</label>
+        <label v-else>Статус: открыто</label>
+    </div>
+    <div>
+        <h4>Доступ сотрудников к делу</h4>
+        <div class="row">
+            <div class="col">
+                <h5>Сотрудники, имеющие доступ</h5>
+                <employeewithaccess v-for="employee in employeesWithAccess"
+                                    v-bind:key="employee.employeeUid"
+                                    v-bind:employee="employee"
+                                    v-bind:useruid="userUid"
+                                    v-bind:caseuid="caseUid">
+                </employeewithaccess>
+            </div>
+            <div class="col-1"></div>
+            <div class="col">
+                <h5>Сотрудники, не имеющие доступ</h5>
+                <employeewithoutaccess v-for="employee in employeesWithoutAccess"
+                                       v-bind:key="employee.employeeUid"
+                                       v-bind:employee="employee"
+                                       v-bind:useruid="userUid"
+                                       v-bind:caseuid="caseUid">
+                </employeewithoutaccess>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/js/Case.js"></script>

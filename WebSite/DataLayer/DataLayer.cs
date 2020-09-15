@@ -279,7 +279,7 @@ namespace WebSite.DataLayer
             }
             catch (Exception ex)
             {
-                ErrorHandler<GetMainPage_Out>.SetDBProblem(result, ex.Message);
+                return ErrorHandler<GetMainPage_Out>.SetDBProblem(result, ex.Message);
             }
             return result;
         }
@@ -292,10 +292,10 @@ namespace WebSite.DataLayer
             GetCasesList_Out result = new GetCasesList_Out();
             try
             {
-                Dictionary<string, string> JWTValues = HelperSecurity.GetJWTClaimsValues(token);
-                Guid userUidFromToken = Guid.Parse(JWTValues["employeeUid"]);
-                Guid companyUidFromToken = Guid.Parse(JWTValues["companyUid"]);
-                string userRole = JWTValues["role"];
+                JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+                Guid userUidFromToken = JWTValues.employeeUid;
+                Guid companyUidFromToken = JWTValues.companyUid;
+                string userRole = JWTValues.role;
 
                 if (userUidFromToken == Guid.Empty)
                 {
@@ -354,7 +354,7 @@ namespace WebSite.DataLayer
             }
             catch (Exception ex)
             {
-                ErrorHandler<GetCasesList_Out>.SetDBProblem(result, ex.Message);
+                return ErrorHandler<GetCasesList_Out>.SetDBProblem(result, ex.Message);
             }
             return result;           
         }
@@ -369,10 +369,10 @@ namespace WebSite.DataLayer
                 //Dictionary<string, string> jwtValues = HelperSecurity.GetJWTClaimsValues(token);
                 //int companyId = int.Parse(jwtValues["companyId"]);
 
-                Dictionary<string, string> JWTValues = HelperSecurity.GetJWTClaimsValues(token);
-                Guid userUidFromToken = Guid.Parse(JWTValues["employeeUid"]);
-                Guid companyUidFromToken = Guid.Parse(JWTValues["companyUid"]);
-                string userRole = JWTValues["role"];
+                JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+                Guid userUidFromToken = JWTValues.employeeUid;
+                Guid companyUidFromToken = JWTValues.companyUid;
+                string userRole = JWTValues.role;
 
 
 
@@ -382,7 +382,7 @@ namespace WebSite.DataLayer
                                                                           (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseId && ec.EmployeeUid == userUidFromToken && !c.IsClosed)
                                              select ec)
                                              .FirstOrDefault();
-                if(employeeCase == null)
+                if (employeeCase == null)
                     return ErrorHandler<GetCase_Out>.SetDBProblem(result, "Нет права доступа. Обратитесь к администратору");
 
                 byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
@@ -394,37 +394,47 @@ namespace WebSite.DataLayer
                               {
                                   Title = c.Title,
                                   Info = HelperSecurity.DecriptByAes(c.Info, symmetricKey),
-                                  Date = c.Date.Value.ToShortDateString() + " " + c.Date.Value.ToShortTimeString(),
+                                  DateCreate = c.Date.Value.ToShortDateString(),
+                                  UpdateDate = c.UpdateDate.Value.ToShortDateString() + " " + c.UpdateDate.Value.ToShortTimeString(),
                                   IsClosed = c.IsClosed,
                                   UID = c.Uid
                               }).FirstOrDefault();
 
+                result.CanManage = userRole == "director" || employeeCase.IsOwner;
                 result.Title = _case.Title;
                 result.Info = _case.Info;
-                result.Date = _case.Date;
+                result.DateCreate = _case.DateCreate;
+                result.UpdateDate = _case.UpdateDate;
                 result.IsClosed = _case.IsClosed;
                 result.CaseUid = _case.UID;
 
                 result.EmployeesWithAccess = (from e in _context.Employee
                                               join ec in _context.EmployeeCase on e.Uid equals ec.EmployeeUid
+                                              join rLeft in _context.Role on e.RoleUid equals rLeft.Uid into rTemp
+                                              from r in rTemp.DefaultIfEmpty()
                                               where ec.CaseUid == _case.UID
                                               select new Case_Employee()
                                               {
-                                                  Name = e.Surname + " " + e.Name + " " + e.SecondName,
+                                                  Name = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
                                                   EmployeeUid = e.Uid,
-                                                  IsOwner = ec.IsOwner
+                                                  IsOwner = ec.IsOwner,
+                                                  CanManageThisEmployee = (userRole == "director" && r.RoleName != "director" && !ec.IsOwner) || 
+                                                                          (employeeCase.IsOwner && r.RoleName != "director" && userUidFromToken != e.Uid)
+                                                  //IsDirector = r.RoleName=="director"
                                               }).ToArray();
 
-                result.EmployeesWithOutAccess = (from e in _context.Employee                                             
-                                                    where e.CompanyUid == companyUidFromToken  && !result.EmployeesWithAccess
-                                                                                                            .Select(ee=>ee.EmployeeUid)                                                                                                            
-                                                                                                            .Contains(e.Uid)
-                                                    select new Case_Employee()
-                                                    {
-                                                        Name = e.Surname + " " + e.Name + " " + e.SecondName,
-                                                        EmployeeUid = e.Uid,
-                                                        IsOwner = false
-                                                    }).ToArray();
+                result.EmployeesWithoutAccess = (from e in _context.Employee
+                                                 where e.CompanyUid == companyUidFromToken && !result.EmployeesWithAccess
+                                                                                                         .Select(ee => ee.EmployeeUid)
+                                                                                                         .Contains(e.Uid)
+                                                 select new Case_Employee()
+                                                 {
+                                                     Name = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
+                                                     EmployeeUid = e.Uid,
+                                                     IsOwner = false,
+                                                     CanManageThisEmployee = (userRole == "director" || employeeCase.IsOwner)
+                                                     //IsDirector = false
+                                                 }).ToArray();
 
                 result.Figurants = (from f in _context.Figurant
                                     join r in _context.FigurantRole on f.FigurantRoleUid equals r.Uid
@@ -443,7 +453,58 @@ namespace WebSite.DataLayer
             }
             catch (Exception ex)
             {
-                ErrorHandler<GetCase_Out>.SetDBProblem(result, ex.Message);
+                return ErrorHandler<GetCase_Out>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
+        public ResultBase GrantAccessToCase(string token, Guid userUid, Guid caseUid, string privateKey)
+        {
+            ResultBase result = new GetCase_Out();
+            try
+            {
+                JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+                Guid userUidFromToken = JWTValues.employeeUid;
+                Guid companyUidFromToken = JWTValues.companyUid;
+                string userRole = JWTValues.role;
+
+                if (userRole != "director")
+                {
+                    Guid ownerUID = _context.EmployeeCase
+                                            .Where(e => e.CaseUid == caseUid && e.IsOwner) 
+                                            .Select(e => e.EmployeeUid)
+                                            .FirstOrDefault();
+
+                    if (ownerUID != userUidFromToken)
+                    {
+                        return ErrorHandler<ResultBase>.SetDBProblem(result, "Недостаточно прав для осуществления данной операции");
+                    }
+                }
+                byte[] employeePublicKey = _context.Employee
+                                                    .Where(e => e.Uid == userUid)
+                                                    .Select(e => e.PublicKey)
+                                                    .FirstOrDefault();
+
+                byte[] encriptedAesKey = _context.EmployeeCase
+                                            .Where(e => e.CaseUid == caseUid && e.EmployeeUid == userUidFromToken)
+                                            .Select(e => e.EncriptedAesKey)
+                                            .FirstOrDefault();
+                byte[] aesKey = HelperSecurity.DecryptByRSA(privateKey, encriptedAesKey);
+
+                EmployeeCase employeeCase = new EmployeeCase()
+                {
+                    CaseUid = caseUid,
+                    EmployeeUid = userUid,
+                    IsOwner = false,
+                    EncriptedAesKey = HelperSecurity.EncryptByRSA(employeePublicKey, aesKey)
+                };
+                _context.EmployeeCase.Add(employeeCase);
+                _context.SaveChanges();
+                result.Status = ResultBase.StatusOk;
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
             }
             return result;
         }
@@ -464,7 +525,7 @@ namespace WebSite.DataLayer
             }
             catch (Exception ex)
             {
-                ErrorHandler<NewCaseGetModel_Out>.SetDBProblem(result, ex.Message);
+                return ErrorHandler<NewCaseGetModel_Out>.SetDBProblem(result, ex.Message);
             }
             return result;
         }
@@ -474,7 +535,11 @@ namespace WebSite.DataLayer
             ResultBase result = new ResultBase();
             try
             {
-                Guid userUID = Helpers.HelperSecurity.GetUserUidByJWT(inputValue.Token);
+                if(string.IsNullOrEmpty(inputValue.Title))
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Дело не создано. Введите название.");
+                JWTClaims jWTClaims = HelperSecurity.GetJWTClaimsValues(inputValue.Token);
+                Guid userUID = jWTClaims.employeeUid;
+                bool isDirector = jWTClaims.role == "director";
                 var userInfo = _context.Employee
                                         .Where(e => e.Uid == userUID && e.IsActive.Value)
                                         .Select(e => new
@@ -484,10 +549,14 @@ namespace WebSite.DataLayer
                                         })
                                         .FirstOrDefault();
 
-                int caseId = _context.Case
+                int caseId = 0;
+                if (_context.Case.Where(c => c.CompanyUid == userInfo.companyUid).Any())
+                {
+                    caseId = _context.Case
                                     .Where(c => c.CompanyUid == userInfo.companyUid)
                                     .Select(c => c.IdPerCompany)
                                     .Max();
+                }
                 caseId++;
 
                 if (userInfo == null)
@@ -505,7 +574,7 @@ namespace WebSite.DataLayer
                     UpdateDate = dateTime,
                     Title = inputValue.Title,
                     IsClosed = false,
-                    Info = HelperSecurity.EncryptByAes(inputValue.Info, aesKey),
+                    Info = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(inputValue.Info)?"": inputValue.Info, aesKey),
                     IdPerCompany = caseId
                 };
                 _context.Case.Add(newCase);
@@ -520,20 +589,46 @@ namespace WebSite.DataLayer
                 };
                 _context.EmployeeCase.Add(employeeCase);
 
-                foreach (NewCase_Figurant_In figurant in inputValue.Figurants)
+                if (!isDirector)
                 {
-                    Figurant newFigurant = new Figurant()
+
+                    var directorInfo = (from e in _context.Employee
+                                        join r in _context.Role on e.RoleUid equals r.Uid
+                                        where e.CompanyUid == userInfo.companyUid && r.RoleName == "director"
+                                        select new
+                                        {
+                                            directorUid = e.Uid,
+                                            publicKey = e.PublicKey
+                                        }).FirstOrDefault();
+
+                    encriptedAesKeyByRSA = HelperSecurity.EncryptByRSA(directorInfo.publicKey, aesKey);
+                    EmployeeCase directorEmployeeCase = new EmployeeCase()
                     {
                         CaseUid = newCase.Uid,
-                        Email = figurant.Email,
-                        FigurantRoleUid = figurant.RoleUid,
-                        Name = figurant.Name,
-                        Surname = figurant.Surname,
-                        SecondName = figurant.SecondName,
-                        Phone = figurant.Phone,
-                        Description = HelperSecurity.EncryptByAes(figurant.Description, aesKey)
+                        EmployeeUid = directorInfo.directorUid,
+                        IsOwner = false,
+                        EncriptedAesKey = encriptedAesKeyByRSA
                     };
-                    _context.Figurant.Add(newFigurant);
+                    _context.EmployeeCase.Add(directorEmployeeCase);
+                }
+
+                if (inputValue.Figurants != null)
+                {
+                    foreach (NewCase_Figurant_In figurant in inputValue.Figurants)
+                    {
+                        Figurant newFigurant = new Figurant()
+                        {
+                            CaseUid = newCase.Uid,
+                            Email = figurant.Email,
+                            FigurantRoleUid = figurant.RoleUid,
+                            Name = figurant.Name,
+                            Surname = figurant.Surname,
+                            SecondName = figurant.SecondName,
+                            Phone = figurant.Phone,
+                            Description = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(figurant.Description) ? "" : inputValue.Info, aesKey)
+                        };
+                        _context.Figurant.Add(newFigurant);
+                    }
                 }
                 _context.SaveChanges();
 
@@ -541,7 +636,7 @@ namespace WebSite.DataLayer
             }
             catch (Exception ex)
             {
-                ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
+                return ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
             }
             return result;
         }
@@ -579,7 +674,7 @@ namespace WebSite.DataLayer
             catch (Exception ex)
             {
                 result = new GetCabinetInfo_Out();
-                ErrorHandler<GetCabinetInfo_Out>.SetDBProblem(result, ex.Message);
+                return ErrorHandler<GetCabinetInfo_Out>.SetDBProblem(result, ex.Message);
             }
             return result;
         }
@@ -607,7 +702,7 @@ namespace WebSite.DataLayer
             }
             catch (Exception ex)
             {
-                ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
+                return ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
             }
             return result;
         }

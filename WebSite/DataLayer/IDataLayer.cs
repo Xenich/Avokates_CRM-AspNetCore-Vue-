@@ -22,6 +22,8 @@ namespace WebSite.DataLayer
         GetCase_Out GetCase(string token, int caseId, string privateKey);
         GetCabinetInfo_Out GetCabinetInfo(string token);
         NewCaseGetModel_Out NewCaseGetModel();
+        ResultBase GrantAccessToCase(string token, Guid userUid, Guid caseUid, string privateKey);
+
         Registration_Out CreateUserByInvite(Registration_In value);
 
 

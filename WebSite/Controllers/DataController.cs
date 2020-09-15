@@ -88,7 +88,15 @@ namespace WebSite.Controllers
             GetCase_Out result = dl.GetCase(token, id, privateKey);
             return Ok(result);
         }
-//-----------------------------------------------------------------------------------------------------------------
+
+        public IActionResult GrantAccessToCase(Guid userUid, Guid caseUid, string privateKey)
+        {
+            string token = GetToken();
+            ResultBase result = dl.GrantAccessToCase(token, userUid, caseUid, privateKey);
+            return Ok(result);
+        }
+
+//-------------------------------------------------------------------------------------------------------------------------------------
 
         public IActionResult GetMainPage()
         {

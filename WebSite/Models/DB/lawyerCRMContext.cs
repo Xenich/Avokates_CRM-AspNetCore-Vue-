@@ -205,7 +205,8 @@ namespace Avokates_CRM.Models.DB
 
                 entity.Property(e => e.Uid)
                     .HasColumnName("UID")
-                    .ValueGeneratedNever();
+                    .HasDefaultValueSql("(newsequentialid())");
+                    
 
                 entity.Property(e => e.CaseUid).HasColumnName("CaseUID");
 

@@ -76,18 +76,26 @@ namespace WebSite.Helpers
                 return false;
         }
 
-        public static Dictionary<string, string> GetJWTClaimsValues(string token)
+        public static JWTClaims GetJWTClaimsValues(string token)
         {
-            Dictionary<string, string> values = new Dictionary<string, string>();
+
+            //Dictionary<string, string> values = new Dictionary<string, string>();
 
             JwtSecurityToken jwt = new JwtSecurityToken(token);
             List<Claim> list = jwt.Claims.ToList();
+            JWTClaims values = new JWTClaims()
+            {
+                companyUid = Guid.Parse(list.FirstOrDefault(c => c.Type == "companyUid").Value),
+                employeeUid = Guid.Parse(list.FirstOrDefault(c => c.Type == "employeeUid").Value),
+                role = list.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Value
+            };
+
             //values.Add("employeeId", list.FirstOrDefault(c => c.Type == "employeeId").Value);
             //values.Add("login", list.FirstOrDefault(c => c.Type == "login").Value);
             //values.Add("companyId", list.FirstOrDefault(c => c.Type == "companyId").Value);
-            values.Add("companyUid", list.FirstOrDefault(c => c.Type == "companyUid").Value);
-            values.Add("employeeUid", list.FirstOrDefault(c => c.Type == "employeeUid").Value);
-            values.Add("role", list.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Value);
+            //values.Add("companyUid", list.FirstOrDefault(c => c.Type == "companyUid").Value);
+            //values.Add("employeeUid", list.FirstOrDefault(c => c.Type == "employeeUid").Value);
+            //values.Add("role", list.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Value);
             //values.Add("uerName" , list.FirstOrDefault(c => c.Type == "userName").Value);
             return values;
         }
@@ -275,11 +283,11 @@ namespace WebSite.Helpers
             string text = Encoding.UTF8.GetString(decryptedText);
             return text;
         }
-//---------------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------   Асимметричное шифрование     --------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------   Асимметричное шифрование     --------------------------------------------------------
 
         // шифрование AES ключа публичным RSA
-        private static byte[] EncryptByRSA(byte[] publicKey, byte[] data)
+        public static byte[] EncryptByRSA(byte[] publicKey, byte[] data)
         {
             CspParameters cspParams = new CspParameters { ProviderType = 1 };
             RSACryptoServiceProvider rsaProvider = new RSACryptoServiceProvider(cspParams);
@@ -313,6 +321,13 @@ namespace WebSite.Helpers
         //{
         //    return new SymmetricSecurityKey(Encoding.ASCII.GetBytes(KEY));
         //}
+    }
+
+    public class JWTClaims
+    {
+        public Guid companyUid;
+        public Guid employeeUid;
+        public string role;
     }
 }
 
