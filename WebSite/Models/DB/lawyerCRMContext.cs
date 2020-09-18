@@ -181,6 +181,10 @@ namespace Avokates_CRM.Models.DB
 
             modelBuilder.Entity<EmployeeCase>(entity =>
             {
+                entity.HasIndex(e => new { e.CaseUid, e.EmployeeUid })
+                    .HasName("IX_EmployeeCase")
+                    .IsUnique();
+
                 entity.Property(e => e.CaseUid).HasColumnName("CaseUID");
 
                 entity.Property(e => e.EmployeeUid).HasColumnName("EmployeeUID");
@@ -206,7 +210,6 @@ namespace Avokates_CRM.Models.DB
                 entity.Property(e => e.Uid)
                     .HasColumnName("UID")
                     .HasDefaultValueSql("(newsequentialid())");
-                    
 
                 entity.Property(e => e.CaseUid).HasColumnName("CaseUID");
 
@@ -243,6 +246,8 @@ namespace Avokates_CRM.Models.DB
                     .HasColumnName("UID")
                     .HasDefaultValueSql("(newsequentialid())");
 
+                entity.Property(e => e.CompanyUid).HasColumnName("CompanyUID");
+
                 entity.Property(e => e.IsActive)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
@@ -250,6 +255,12 @@ namespace Avokates_CRM.Models.DB
                 entity.Property(e => e.RoleName)
                     .IsRequired()
                     .HasMaxLength(255);
+
+                entity.HasOne(d => d.CompanyU)
+                    .WithMany(p => p.FigurantRole)
+                    .HasForeignKey(d => d.CompanyUid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_FigurantRole_Company");
             });
 
             modelBuilder.Entity<Invite>(entity =>
@@ -289,6 +300,7 @@ namespace Avokates_CRM.Models.DB
                 entity.HasOne(d => d.NoteU)
                     .WithMany(p => p.MediaFile)
                     .HasForeignKey(d => d.NoteUid)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MediaFile_Note");
             });
 
@@ -308,14 +320,11 @@ namespace Avokates_CRM.Models.DB
 
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Title).HasMaxLength(500);
-
                 entity.Property(e => e.Updatedate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.CaseU)
                     .WithMany(p => p.Note)
                     .HasForeignKey(d => d.CaseUid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Note_Case");
 
                 entity.HasOne(d => d.EmployeeU)

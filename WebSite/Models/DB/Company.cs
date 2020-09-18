@@ -9,6 +9,7 @@ namespace Avokates_CRM.Models.DB
         {
             Case = new HashSet<Case>();
             Employee = new HashSet<Employee>();
+            FigurantRole = new HashSet<FigurantRole>();
             Invite = new HashSet<Invite>();
         }
 
@@ -23,6 +24,7 @@ namespace Avokates_CRM.Models.DB
 
         public ICollection<Case> Case { get; set; }
         public ICollection<Employee> Employee { get; set; }
+        public ICollection<FigurantRole> FigurantRole { get; set; }
         public ICollection<Invite> Invite { get; set; }
     }
 }

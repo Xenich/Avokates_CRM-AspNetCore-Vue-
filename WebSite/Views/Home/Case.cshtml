@@ -4,14 +4,15 @@
 
 
 <label id="errorLabel" style='display:none'>Ошибка</label>
-<div  id="caseVueModel">
-    
+<div id="caseVueModel">
+
     <input type="hidden" id="caseId" value="@ViewData["id"]" />
     <input type="hidden" id="userUid" value="@ViewData["userUid"]" />
     <div class="row">
-        <h3 class="col-11">{{title}}</h3>
-        <h3 class="col-1">#@ViewData["id"]</h3>
+        <div class="col-11"></div>
+        <h5 class="col-1">#@ViewData["id"]</h5>
     </div>
+    <h3 align="center" class="col-11">{{title}}</h3>
     <div class="row">
         <label class="col">Краткое описание</label>
         <textarea class="col-9" rows="5" style="width: 100%;" v-model="info"></textarea>
@@ -26,11 +27,12 @@
         <label v-if="isClosed">Статус: закрыто</label>
         <label v-else>Статус: открыто</label>
     </div>
+    <hr noshade size="10">
     <div>
-        <h4>Доступ сотрудников к делу</h4>
+        <h4 align="center">Доступ сотрудников к делу</h4>
         <div class="row">
             <div class="col">
-                <h5>Сотрудники, имеющие доступ</h5>
+                <h5 align="center">Сотрудники, имеющие доступ</h5>
                 <employeewithaccess v-for="employee in employeesWithAccess"
                                     v-bind:key="employee.employeeUid"
                                     v-bind:employee="employee"
@@ -40,7 +42,7 @@
             </div>
             <div class="col-1"></div>
             <div class="col">
-                <h5>Сотрудники, не имеющие доступ</h5>
+                <h5 align="center">Сотрудники, не имеющие доступ</h5>
                 <employeewithoutaccess v-for="employee in employeesWithoutAccess"
                                        v-bind:key="employee.employeeUid"
                                        v-bind:employee="employee"
@@ -50,6 +52,35 @@
             </div>
         </div>
     </div>
+    <hr noshade size="10">
+
+    <div>
+        <h4 align="center">Фигуранты дела</h4>
+        <figurantstable v-bind:figurants="figurants"
+                        v-bind:caseuid="caseUid"
+                        v-bind:canmanage="canManage">
+        </figurantstable>
+        <div v-if="canManage">
+            <input v-if="newFigurantNotCreating" type="button" v-on:click="AddFigurant" value="Добавить фигуранта" />
+        </div>
+        <newfigurant v-if="newFigurantCreating"
+                     v-bind:key="1"
+                     v-bind:parentmodel="this"></newfigurant>
+
+    </div>
+
+    <hr noshade size="10">
+    <div>
+        <h4 align="center">Записи по делу</h4>
+        <note v-for="note in notes"
+              v-bind:note="note"
+              v-bind:canmanage="canManage"
+               v-bind:caseuid="caseUid">
+        </note>
+    </div>
+
+    
+
 </div>
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/js/Case.js"></script>

@@ -48,7 +48,7 @@ namespace WebSite.DataLayer
         }
 
 // --------------------------------------------------    НОВЫЙ ПОЛЬЗОВАТЕЛЬ СИСТЕМЫ      ---------------------------------------------------
-#region Новый пользователь системы
+        #region Новый пользователь системы
 
         // создание приглашения новому пользователю путём отсылки ему email с токеном приглашения
         public ResultBase CreateInvite(string token, string email)
@@ -65,12 +65,12 @@ namespace WebSite.DataLayer
                                  @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$";
                 if (Regex.Matches(email, pattern, RegexOptions.IgnoreCase).Count != 1)
                 {
-                    ErrorHandler<ResultBase>.SetDBProblem(result,"Email not valid");
+                    ErrorHandler<ResultBase>.SetDBProblem(result, "Email not valid");
                     return result;
                 }
                 SHA256 sha256 = SHA256.Create();
                 byte[] bytes = Encoding.UTF8.GetBytes(email);
-                string inviteToken = Convert.ToBase64String( sha256.ComputeHash(bytes));
+                string inviteToken = Convert.ToBase64String(sha256.ComputeHash(bytes));
 
                 Invite invite = _context.Invite.FirstOrDefault(i => i.Token == inviteToken);
                 if (invite == null)
@@ -141,7 +141,7 @@ namespace WebSite.DataLayer
                         Status = ResultBase.StatusBad,
                         ErrorMessages = new List<ErrorMessageResult>() { new ErrorMessageResult() { message = "Пригласительный токен просрочен. Обратитесь к администратору компании для получения нового приглашения" } }
                     };
-                }                
+                }
                 result.InviteToken = token;
                 result.CompanyName = _context.Company
                                             .Where(c => c.Uid == invite.CompanyUid)
@@ -156,7 +156,7 @@ namespace WebSite.DataLayer
             }
         }
 
-            //Регистрация нового пользователя по пригласительному токену, отправленному на имейл
+        //Регистрация нового пользователя по пригласительному токену, отправленному на имейл
         public Registration_Out CreateUserByInvite(Registration_In value)
         {
             Registration_Out result = new Registration_Out();
@@ -239,9 +239,9 @@ namespace WebSite.DataLayer
             }
         }
 
-#endregion
+        #endregion
 // -----------------------------------------------------------------------------------------------------------------------------------------
-        
+
         public GetMainPage_Out GetMainPage(string token)
         {
             GetMainPage_Out result = new GetMainPage_Out();
@@ -257,7 +257,7 @@ namespace WebSite.DataLayer
                          where e.Uid == userUid
                          select new
                          {
-                             userName = ((string.IsNullOrEmpty(e.Surname)?"": e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " "
+                             userName = ((string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " "
                              + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName)),
                              companyName = c.CompanyName
                          }).FirstOrDefault();
@@ -266,7 +266,7 @@ namespace WebSite.DataLayer
                 result.CompanyName = r.companyName;
 
 
-                result.CasesCount = (from  ec in _context.EmployeeCase
+                result.CasesCount = (from ec in _context.EmployeeCase
                                      where ec.EmployeeUid == userUid
                                      select ec).Count();
 
@@ -285,7 +285,7 @@ namespace WebSite.DataLayer
         }
 
 // --------------------------------------------------    ДЕЛО      -------------------------------------------------------------------------
-#region ДЕЛО
+        #region ДЕЛО
 
         public GetCasesList_Out GetCasesList(string token)
         {
@@ -299,7 +299,7 @@ namespace WebSite.DataLayer
 
                 if (userUidFromToken == Guid.Empty)
                 {
-                    return ErrorHandler<GetCasesList_Out>.SetDBProblem(result,"Неверный идентификатор пользователя");
+                    return ErrorHandler<GetCasesList_Out>.SetDBProblem(result, "Неверный идентификатор пользователя");
                 }
                 if (userRole == "director")
                 {
@@ -333,8 +333,8 @@ namespace WebSite.DataLayer
                         where ec.EmployeeUid == userUidFromToken && !c.IsClosed && c.CompanyUid == companyUidFromToken
                         select new Case_Out()
                         {
-                        //Uid = c.Uid,
-                        CaseTitle = c.Title,
+                            //Uid = c.Uid,
+                            CaseTitle = c.Title,
                             CreateDate = c.Date.HasValue ? c.Date.Value.ToShortDateString() : "",
                             IdPerCompany = c.IdPerCompany,
                             UpdateDate = c.UpdateDate.HasValue ? c.UpdateDate.Value.ToShortDateString() : "",
@@ -356,7 +356,7 @@ namespace WebSite.DataLayer
             {
                 return ErrorHandler<GetCasesList_Out>.SetDBProblem(result, ex.Message);
             }
-            return result;           
+            return result;
         }
 
         public GetCase_Out GetCase(string token, int caseId, string privateKey)
@@ -378,7 +378,7 @@ namespace WebSite.DataLayer
 
                 EmployeeCase employeeCase = (from EmployeeCase ec in _context.EmployeeCase
                                              join c in _context.Case on ec.CaseUid equals c.Uid
-                                             where userRole=="director" ? (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseId && ec.EmployeeUid == userUidFromToken ) :
+                                             where userRole == "director" ? (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseId && ec.EmployeeUid == userUidFromToken) :
                                                                           (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseId && ec.EmployeeUid == userUidFromToken && !c.IsClosed)
                                              select ec)
                                              .FirstOrDefault();
@@ -388,17 +388,17 @@ namespace WebSite.DataLayer
                 byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
 
                 var _case = (from c in _context.Case
-                              join cm in _context.Company on c.CompanyUid equals cm.Uid
-                              where cm.Uid == companyUidFromToken && c.IdPerCompany == caseId
-                              select new
-                              {
-                                  Title = c.Title,
-                                  Info = HelperSecurity.DecriptByAes(c.Info, symmetricKey),
-                                  DateCreate = c.Date.Value.ToShortDateString(),
-                                  UpdateDate = c.UpdateDate.Value.ToShortDateString() + " " + c.UpdateDate.Value.ToShortTimeString(),
-                                  IsClosed = c.IsClosed,
-                                  UID = c.Uid
-                              }).FirstOrDefault();
+                             join cm in _context.Company on c.CompanyUid equals cm.Uid
+                             where cm.Uid == companyUidFromToken && c.IdPerCompany == caseId
+                             select new
+                             {
+                                 Title = c.Title,
+                                 Info = HelperSecurity.DecriptByAes(c.Info, symmetricKey),
+                                 DateCreate = c.Date.Value.ToShortDateString(),
+                                 UpdateDate = c.UpdateDate.Value.ToShortDateString() + " " + c.UpdateDate.Value.ToShortTimeString(),
+                                 IsClosed = c.IsClosed,
+                                 UID = c.Uid
+                             }).FirstOrDefault();
 
                 result.CanManage = userRole == "director" || employeeCase.IsOwner;
                 result.Title = _case.Title;
@@ -418,7 +418,7 @@ namespace WebSite.DataLayer
                                                   Name = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
                                                   EmployeeUid = e.Uid,
                                                   IsOwner = ec.IsOwner,
-                                                  CanManageThisEmployee = (userRole == "director" && r.RoleName != "director" && !ec.IsOwner) || 
+                                                  CanManageThisEmployee = (userRole == "director" && r.RoleName != "director" && !ec.IsOwner) ||
                                                                           (employeeCase.IsOwner && r.RoleName != "director" && userUidFromToken != e.Uid)
                                                   //IsDirector = r.RoleName=="director"
                                               }).ToArray();
@@ -437,17 +437,31 @@ namespace WebSite.DataLayer
                                                  }).ToArray();
 
                 result.Figurants = (from f in _context.Figurant
-                                    join r in _context.FigurantRole on f.FigurantRoleUid equals r.Uid
+                                    join rLeft in _context.FigurantRole on f.FigurantRoleUid equals rLeft.Uid into rTemp
+                                    from r in rTemp.DefaultIfEmpty()
                                     where f.CaseUid == result.CaseUid
                                     select new Case_Figurant()
                                     {
-                                        FullName = f.Surname + " " + f.Name + " " + f.SecondName,
+                                        // TODO : доделать проверку на NULL
+                                        FullName = (string.IsNullOrEmpty(f.Surname) ? "" : f.Surname) + " " + (string.IsNullOrEmpty(f.Name) ? "" : f.Name) + " " + (string.IsNullOrEmpty(f.SecondName) ? "" : f.SecondName),
                                         Uid = f.Uid,
-                                        Phone = f.Phone,
+                                        Phone = (string.IsNullOrEmpty(f.Phone) ? "" : f.Phone),
                                         Role = r.RoleName
                                     }).ToArray();
 
-                result.Status = ResultBase.StatusOk;   
+                result.Notes = (from n in _context.Note
+                                join e in _context.Employee on n.EmployeeUid equals e.Uid
+                                where n.CaseUid == result.CaseUid
+                                select new Case_Note()
+                                {
+                                    Uid = n.Uid,
+                                    Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
+                                    EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
+                                    Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
+                                    Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey)
+                                }).ToArray();
+                result.FigurantRoleOptions = DBHelper.GetFigurantRoleOptions(companyUidFromToken, _context);
+                result.Status = ResultBase.StatusOk;
 
                 //TODO : доделать метод
             }
@@ -458,6 +472,14 @@ namespace WebSite.DataLayer
             return result;
         }
 
+        /// <summary>
+        /// Открывает доступ к делу определенному сотруднику
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="userUid">Сотрудник, которому надо открыть доступ</param>
+        /// <param name="caseUid">Дело, к которому надо открыть доступ</param>
+        /// <param name="privateKey">Приватный ключ открывающего (для расшифровки симметричного ключа)</param>
+        /// <returns></returns>
         public ResultBase GrantAccessToCase(string token, Guid userUid, Guid caseUid, string privateKey)
         {
             ResultBase result = new GetCase_Out();
@@ -471,15 +493,22 @@ namespace WebSite.DataLayer
                 if (userRole != "director")
                 {
                     Guid ownerUID = _context.EmployeeCase
-                                            .Where(e => e.CaseUid == caseUid && e.IsOwner) 
+                                            .Where(e => e.CaseUid == caseUid && e.IsOwner)
                                             .Select(e => e.EmployeeUid)
                                             .FirstOrDefault();
 
-                    if (ownerUID != userUidFromToken)
+                    if (userUidFromToken != ownerUID)
                     {
                         return ErrorHandler<ResultBase>.SetDBProblem(result, "Недостаточно прав для осуществления данной операции");
                     }
                 }
+
+                // проверяем, есть ли у юзера уже доступ
+                EmployeeCase employeeCase = _context.EmployeeCase.Where(e => e.EmployeeUid == userUid && e.CaseUid == caseUid).FirstOrDefault();
+                if (employeeCase != null)
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "У пользователя уже есть доступ к данному делу");
+
+                // Если нет:
                 byte[] employeePublicKey = _context.Employee
                                                     .Where(e => e.Uid == userUid)
                                                     .Select(e => e.PublicKey)
@@ -491,7 +520,7 @@ namespace WebSite.DataLayer
                                             .FirstOrDefault();
                 byte[] aesKey = HelperSecurity.DecryptByRSA(privateKey, encriptedAesKey);
 
-                EmployeeCase employeeCase = new EmployeeCase()
+                employeeCase = new EmployeeCase()
                 {
                     CaseUid = caseUid,
                     EmployeeUid = userUid,
@@ -509,19 +538,74 @@ namespace WebSite.DataLayer
             return result;
         }
 
-        public NewCaseGetModel_Out NewCaseGetModel()
+        /// <summary>
+        /// Закрывает доступ сотрудника к делу
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="employeeUid">Сотрудник, которому надо закрыть доступ</param>
+        /// <param name="caseUid">Дело, к которому надо закрыть дступ</param>
+        /// <returns></returns>
+        public ResultBase RemoveAccessToCase(string token, Guid employeeUid, Guid caseUid)
+        {
+            ResultBase result = new ResultBase();
+            try
+            {
+                JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+                Guid userUidFromToken = JWTValues.employeeUid;
+                Guid companyUidFromToken = JWTValues.companyUid;
+                string userRole = JWTValues.role;
+
+                Guid ownerUID = _context.EmployeeCase
+                                        .Where(e => e.CaseUid == caseUid && e.IsOwner)
+                                        .Select(e => e.EmployeeUid)
+                                        .FirstOrDefault();
+
+                if (!(userRole == "director" || userUidFromToken == ownerUID))
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Недостаточно прав для осуществления данной операции");
+
+                var employeeInfo = (from e in _context.Employee
+                                    join r in _context.Role on e.RoleUid equals r.Uid
+                                    join ec in _context.EmployeeCase on e.Uid equals ec.EmployeeUid
+                                    where e.Uid == employeeUid && ec.CaseUid == caseUid && e.CompanyUid == companyUidFromToken
+                                    select new
+                                    {
+                                        isOwner = ec.IsOwner,
+                                        role = r.RoleName
+                                    }).FirstOrDefault();
+
+                if (employeeInfo == null)
+                {
+                    result.Status = ResultBase.StatusOk;
+                    return result;
+                }
+
+                if (employeeInfo.isOwner || employeeInfo.role == "director")
+                {
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Невозможно закрыть доступ к делу данному пользователю");
+                }
+
+                EmployeeCase employeeCase = _context.EmployeeCase.FirstOrDefault(e => e.CaseUid == caseUid && e.EmployeeUid == employeeUid);
+                if (employeeCase != null)
+                {
+                    _context.EmployeeCase.Remove(employeeCase);
+                    _context.SaveChanges();
+                }
+                result.Status = ResultBase.StatusOk;
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
+        public NewCaseGetModel_Out NewCaseGetModel(string token)
         {
             NewCaseGetModel_Out result = new NewCaseGetModel_Out();
-
-            try 
+            Guid companyUid = HelperSecurity.GetCompanyUidByJWT(token);
+            try
             {
-                result.FigurantRoleOptions = _context.FigurantRole.Select(f => new ItemView()
-                {
-                    Id = f.Uid.ToString(),
-                    Name = f.RoleName
-                })
-                .OrderBy(f=>f.Name)
-                .ToArray();
+                result.FigurantRoleOptions = DBHelper.GetFigurantRoleOptions(companyUid, _context);
             }
             catch (Exception ex)
             {
@@ -529,13 +613,92 @@ namespace WebSite.DataLayer
             }
             return result;
         }
-        
+
+        // добавление фигуранта к делу
+        public ResultBase AddNewFigurantToCase(string token, NewCase_In figurantIn, Guid caseUid, string privateKey)
+        {
+            ResultBase result = new ResultBase();
+            try
+            {
+                JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+                Guid userUidFromToken = JWTValues.employeeUid;
+                string userRole = JWTValues.role;
+
+                var employeeCaseInfo = _context.EmployeeCase
+                                                    .Where(e => e.EmployeeUid == userUidFromToken && e.CaseUid == caseUid)
+                                                    .Select(e => new
+                                                    {
+                                                        EncriptedAesKey = e.EncriptedAesKey,
+                                                        IsOwner = e.IsOwner
+                                                    })
+                                                    .FirstOrDefault();
+                if(!employeeCaseInfo.IsOwner && userRole!="director")
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Недостаточно прав для добавления фигуранта дела");
+
+                byte[] aesKey = HelperSecurity.DecryptByRSA(privateKey, employeeCaseInfo.EncriptedAesKey);
+
+                NewCase_Figurant_In figurant = figurantIn.Figurants.First();
+                Figurant newFigurant = new Figurant()
+                {
+                    CaseUid = caseUid,
+                    Email = figurant.Email,
+                    FigurantRoleUid = figurant.RoleUid,
+                    Name = figurant.Name,
+                    Surname = figurant.Surname,
+                    SecondName = figurant.SecondName,
+                    Phone = figurant.Phone,
+                    Description = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(figurant.Description) ? "" : figurant.Description, aesKey)
+                };
+                _context.Figurant.Add(newFigurant);
+                _context.SaveChanges();
+                result.Status = ResultBase.StatusOk;
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
+        // Удаление фигуранта дела
+        public ResultBase RemoveFigurantFromCase(string token, Guid caseUid, Guid figurantUid)
+        {
+            ResultBase result = new ResultBase();
+            try
+            {
+                JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+                Guid userUidFromToken = JWTValues.employeeUid;
+                string userRole = JWTValues.role;
+
+                bool isOwner = _context.EmployeeCase
+                                    .Where(e => e.EmployeeUid == userUidFromToken && e.CaseUid == caseUid)
+                                    .Select(e =>  e.IsOwner)
+                                    .FirstOrDefault();
+
+                if (!isOwner && userRole != "director")
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Недостаточно прав для удаления фигуранта дела");
+
+                Figurant figurant = _context.Figurant.FirstOrDefault(f => f.CaseUid == caseUid && f.Uid == figurantUid);
+                if (figurant != null)
+                {
+                    _context.Figurant.Remove(figurant);
+                    _context.SaveChanges();
+                }
+                result.Status = ResultBase.StatusOk;
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
         public ResultBase CreateNewCase(NewCase_In inputValue)
         {
             ResultBase result = new ResultBase();
             try
             {
-                if(string.IsNullOrEmpty(inputValue.Title))
+                if (string.IsNullOrEmpty(inputValue.Title))
                     return ErrorHandler<ResultBase>.SetDBProblem(result, "Дело не создано. Введите название.");
                 JWTClaims jWTClaims = HelperSecurity.GetJWTClaimsValues(inputValue.Token);
                 Guid userUID = jWTClaims.employeeUid;
@@ -568,13 +731,13 @@ namespace WebSite.DataLayer
 
                 DateTime dateTime = DateTime.Now;
                 Case newCase = new Case()
-                {                    
+                {
                     CompanyUid = userInfo.companyUid,
                     Date = dateTime,
                     UpdateDate = dateTime,
                     Title = inputValue.Title,
                     IsClosed = false,
-                    Info = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(inputValue.Info)?"": inputValue.Info, aesKey),
+                    Info = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(inputValue.Info) ? "" : inputValue.Info, aesKey),
                     IdPerCompany = caseId
                 };
                 _context.Case.Add(newCase);
@@ -625,7 +788,7 @@ namespace WebSite.DataLayer
                             Surname = figurant.Surname,
                             SecondName = figurant.SecondName,
                             Phone = figurant.Phone,
-                            Description = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(figurant.Description) ? "" : inputValue.Info, aesKey)
+                            Description = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(figurant.Description) ? "" : figurant.Description, aesKey)
                         };
                         _context.Figurant.Add(newFigurant);
                     }
@@ -640,11 +803,11 @@ namespace WebSite.DataLayer
             }
             return result;
         }
-#endregion
+        #endregion
 // -----------------------------------------------------------------------------------------------------------------------------------------
 
 // --------------------------------------------------    Личный кабинет      ---------------------------------------------------------------
-#region Личный кабинет
+        #region Личный кабинет
         public GetCabinetInfo_Out GetCabinetInfo(string token)
         {
             GetCabinetInfo_Out result;
@@ -661,12 +824,12 @@ namespace WebSite.DataLayer
                               Name = e.Name,
                               Surname = e.Surname,
                               SecondName = e.SecondName,
-                              PublicKey = e.PublicKey==null?"": Convert.ToBase64String(e.PublicKey),
+                              PublicKey = e.PublicKey == null ? "" : Convert.ToBase64String(e.PublicKey),
                               Birthday = e.Birthday.Value.Date.ToString(),
                               Email = e.Email,
                               Phone = e.Phone,
                               Role = r.RoleName,
-                               UserUid = e.Uid
+                              UserUid = e.Uid
                           }).FirstOrDefault();
                 result.Status = ResultBase.StatusOk;
 
@@ -693,7 +856,7 @@ namespace WebSite.DataLayer
                 emp.Email = cabinetInfo.Email;
 
                 DateTime bDay;
-                bool bDaySuccessParse =  DateTime.TryParse(cabinetInfo.Birthday, out bDay);
+                bool bDaySuccessParse = DateTime.TryParse(cabinetInfo.Birthday, out bDay);
                 if (bDaySuccessParse)
                     emp.Birthday = bDay;
 
@@ -706,7 +869,7 @@ namespace WebSite.DataLayer
             }
             return result;
         }
-#endregion
-// -----------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
+        // -----------------------------------------------------------------------------------------------------------------------------------------
     }
 }

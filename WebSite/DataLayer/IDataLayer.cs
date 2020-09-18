@@ -21,8 +21,12 @@ namespace WebSite.DataLayer
 
         GetCase_Out GetCase(string token, int caseId, string privateKey);
         GetCabinetInfo_Out GetCabinetInfo(string token);
-        NewCaseGetModel_Out NewCaseGetModel();
+        NewCaseGetModel_Out NewCaseGetModel(string token);
+        ResultBase AddNewFigurantToCase(string token, NewCase_In figurantIn, Guid caseUid, string privateKey);
+        ResultBase RemoveFigurantFromCase(string token, Guid caseUid, Guid figurantUid);
         ResultBase GrantAccessToCase(string token, Guid userUid, Guid caseUid, string privateKey);
+        ResultBase RemoveAccessToCase(string token, Guid userUid, Guid caseUid);
+        
 
         Registration_Out CreateUserByInvite(Registration_In value);
 

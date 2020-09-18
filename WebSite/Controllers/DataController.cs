@@ -72,7 +72,22 @@ namespace WebSite.Controllers
 
         public IActionResult NewCaseGetModel()
         {
-            NewCaseGetModel_Out result = dl.NewCaseGetModel();
+            string token = GetToken();
+            NewCaseGetModel_Out result = dl.NewCaseGetModel(token);
+            return Ok(result);
+        }
+
+        public IActionResult AddNewFigurantToCase(NewCase_In figurant, Guid caseUid, string privateKey)
+        {
+            string token = GetToken();
+            ResultBase result = dl.AddNewFigurantToCase(token, figurant, caseUid, privateKey);
+            return Ok(result);
+        }
+
+        public IActionResult RemoveFigurantFromCase( Guid caseUid, Guid figurantUid)
+        {
+            string token = GetToken();
+            ResultBase result = dl.RemoveFigurantFromCase(token, caseUid, figurantUid);
             return Ok(result);
         }
 
@@ -96,7 +111,14 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
-//-------------------------------------------------------------------------------------------------------------------------------------
+        public IActionResult RemoveAccessToCase(Guid userUid, Guid caseUid)
+        {
+            string token = GetToken();
+            ResultBase result = dl.RemoveAccessToCase(token, userUid, caseUid);
+            return Ok(result);
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------
 
         public IActionResult GetMainPage()
         {

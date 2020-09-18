@@ -20,6 +20,7 @@ namespace Avokates_CRM.Models.Outputs
         public Case_Note[] Notes { get; set; }
         public bool CanManage { get; set; }
         public bool HasAccess { get; set; }
+        public ItemView[] FigurantRoleOptions { get; set; }
 
     }
 
@@ -41,6 +42,10 @@ namespace Avokates_CRM.Models.Outputs
 
     public class Case_Note
     {
-
+        public Guid Uid { get; set; }
+        public string EmployeeInfo { get; set; }
+        public string Date { get; set; }
+        public string Title { get; set; }
+        public string Text { get; set; }
     }
 }
