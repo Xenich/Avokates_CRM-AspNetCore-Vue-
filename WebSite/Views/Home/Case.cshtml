@@ -4,83 +4,171 @@
 
 
 <label id="errorLabel" style='display:none'>Ошибка</label>
+<style>
+
+    h4 {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+    .card-header {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        padding : 5px;
+    }
+    .btn {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        padding: 2px;
+    }
+</style>
+
 <div id="caseVueModel">
 
     <input type="hidden" id="caseId" value="@ViewData["id"]" />
     <input type="hidden" id="userUid" value="@ViewData["userUid"]" />
     <div class="row">
         <div class="col-11"></div>
-        <h5 class="col-1">#@ViewData["id"]</h5>
+        <div class="col-1">
+            <h5  class="col-1">#@ViewData["id"]</h5>
+        </div>
+
     </div>
-    <h3 align="center" class="col-11">{{title}}</h3>
-    <div class="row">
-        <label class="col">Краткое описание</label>
-        <textarea class="col-9" rows="5" style="width: 100%;" v-model="info"></textarea>
-    </div>
-    <div class="row">
-        <label class="col">Дата создания: {{dateCreate}}</label>
-    </div>
-    <div class="row">
-        <label class="col">Изменено: {{updateDate}}</label>
-    </div>
-    <div class="row">
-        <label v-if="isClosed">Статус: закрыто</label>
-        <label v-else>Статус: открыто</label>
-    </div>
-    <hr noshade size="10">
-    <div>
-        <h4 align="center">Доступ сотрудников к делу</h4>
-        <div class="row">
-            <div class="col">
-                <h5 align="center">Сотрудники, имеющие доступ</h5>
-                <employeewithaccess v-for="employee in employeesWithAccess"
-                                    v-bind:key="employee.employeeUid"
-                                    v-bind:employee="employee"
-                                    v-bind:useruid="userUid"
-                                    v-bind:caseuid="caseUid">
-                </employeewithaccess>
+    <h3 align="center" class="col-12">{{title}}</h3>
+
+
+
+    <div class="accordion" id="accordionExample">
+
+        <!--                                                             КРАТКОЕ ОПИСАНИЕ                        -->
+        <div class="card">
+            <div class="card-header" id="headingNul">
+                <h2 class="mb-0"  align="center">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseNul" aria-expanded="true" aria-controls="collapseNul">
+                        <h4>Краткое описание</h4>
+                    </button>
+                </h2>
             </div>
-            <div class="col-1"></div>
-            <div class="col">
-                <h5 align="center">Сотрудники, не имеющие доступ</h5>
-                <employeewithoutaccess v-for="employee in employeesWithoutAccess"
-                                       v-bind:key="employee.employeeUid"
-                                       v-bind:employee="employee"
-                                       v-bind:useruid="userUid"
-                                       v-bind:caseuid="caseUid">
-                </employeewithoutaccess>
+
+            <div id="collapseNul" class="collapse show" aria-labelledby="headingNul" data-parent="#accordionExample">
+                <div class="card-body">
+                    <div class="row">
+                        <textarea rows="5" style="width: 100%;" v-model="info"></textarea>
+                    </div>
+                    <div class="row">
+                        <label class="col">Дата создания: {{dateCreate}}</label>
+                    </div>
+                    <div class="row">
+                        <label class="col">Изменено: {{updateDate}}</label>
+                    </div>
+                    <div class="row">
+                        <label v-if="isClosed">Статус: закрыто</label>
+                        <label v-else>Статус: открыто</label>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <hr noshade size="10">
 
-    <div>
-        <h4 align="center">Фигуранты дела</h4>
-        <figurantstable v-bind:figurants="figurants"
-                        v-bind:caseuid="caseUid"
-                        v-bind:canmanage="canManage">
-        </figurantstable>
-        <div v-if="canManage">
-            <input v-if="newFigurantNotCreating" type="button" v-on:click="AddFigurant" value="Добавить фигуранта" />
+
+        <!--                                                        ДОСТУП СОТРУДНИКОВ К ДЕЛУ                                 -->
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h2  align="center" class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        <h4> Доступ сотрудников к делу</h4>
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col">
+                            <h5 align="center">Сотрудники, имеющие доступ</h5>
+                            <employeewithaccess v-for="employee in employeesWithAccess"
+                                                v-bind:key="employee.employeeUid"
+                                                v-bind:employee="employee"
+                                                v-bind:useruid="userUid"
+                                                v-bind:caseuid="caseUid">
+                            </employeewithaccess>
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col">
+                            <h5 align="center">Сотрудники, не имеющие доступ</h5>
+                            <employeewithoutaccess v-for="employee in employeesWithoutAccess"
+                                                   v-bind:key="employee.employeeUid"
+                                                   v-bind:employee="employee"
+                                                   v-bind:useruid="userUid"
+                                                   v-bind:caseuid="caseUid">
+                            </employeewithoutaccess>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <newfigurant v-if="newFigurantCreating"
-                     v-bind:key="1"
-                     v-bind:parentmodel="this"></newfigurant>
+
+        <!--                                                               ФИГУРАНТЫ ДЕЛА                                   -->
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+                <h2 align="center" class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <h4 >Фигуранты дела</h4>
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                <div class="card-body">
+                    <figurantstable v-bind:figurants="figurants"
+                                    v-bind:caseuid="caseUid"
+                                    v-bind:canmanage="canManage">
+                    </figurantstable>
+                    <div v-if="canManage">
+                        <input v-if="newFigurantNotCreating" type="button" v-on:click="AddFigurant" value="Добавить фигуранта" />
+                    </div>
+                    <newfigurant v-if="newFigurantCreating"
+                                 v-bind:key="1"
+                                 v-bind:parentmodel="this"></newfigurant>
+                </div>
+            </div>
+        </div>
+
+        <!--                                                            ЗАПИСИ ПО ДЕЛУ                                        -->
+        <div class="card">
+            <div class="card-header" id="headingThree">
+                <h2 align="center" class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <h4>Записи по делу</h4>
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                <div class="card-body">
+
+                    <div class="card-body">
+                        <note v-for="note in notes"
+                              v-bind:note="note"
+                              v-bind:canmanage="canManage"
+                              v-bind:caseuid="caseUid">
+                        </note>
+                    </div>
+                    <div v-if="canManage">
+                        <input v-if="newNoteNotCreating" type="button" v-on:click="AddNote" value="Добавить новую запись" />
+                    </div>
+                    <newnote v-if="newNoteCreating"
+                             v-bind:key="1"
+                             v-bind:parentmodel="this">
+                    </newnote>
+                </div>
+            </div>
+        </div>
+
 
     </div>
 
-    <hr noshade size="10">
-    <div>
-        <h4 align="center">Записи по делу</h4>
-        <note v-for="note in notes"
-              v-bind:note="note"
-              v-bind:canmanage="canManage"
-               v-bind:caseuid="caseUid">
-        </note>
-    </div>
 
-    
 
 </div>
+
+
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/js/Case.js"></script>

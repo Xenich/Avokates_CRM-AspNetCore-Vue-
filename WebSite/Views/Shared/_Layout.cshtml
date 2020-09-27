@@ -8,6 +8,9 @@
     @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+
+
+    
     <link rel="stylesheet" href="~/css/site.css" />
 
 
@@ -18,7 +21,7 @@
         }
 
         .allignCenter {
-            position : center
+            position: center
         }
 
         body {
@@ -38,7 +41,6 @@
         }
 
         h3 {
-
             margin-bottom: 40px;
         }
 
@@ -78,28 +80,26 @@
             margin: 10px 0px 0 10px;
         }
 
-        .col {           
+        .col {
             padding: 0px
         }
+
         .col-3 {
             padding: 0px;
-
         }
+
         .col-9 {
             padding: 0px;
-
         }
-        .col-8 {
 
+        .col-8 {
             padding: 0px
         }
-
-
     </style>
 
 </head>
 <body>
-    
+
     <div id="bodyVueModel">
         <h1 id="companyName">{{CompanyName}}</h1>
         <div id="header" class="row">
@@ -120,15 +120,17 @@
     <div id="content">
         <div class="container body-content">
             @RenderBody()
-           <br>
+            <br>
         </div>
     </div>
     <div id="footer">&copy; 2020 - Advokates CRM, Leachman Production</div>
+
 
 </body>
 </html>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/bootstrap/js/bootstrap.js"></script>
 <script src="~/js/main.js"></script>
 <script src="~/js/Layout.js"></script>
 

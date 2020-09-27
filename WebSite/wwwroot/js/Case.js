@@ -56,7 +56,7 @@
                        </div>`
         });
 //------------------------------------------------------------------------------------------------------------------------------
-    // таблица фигурантов по делу
+    // компонент - таблица фигурантов по делу
     Vue.component('figurantstable',
         {
             props: ['figurants', 'canmanage','caseuid'],
@@ -235,6 +235,59 @@
 </div>
             `
         });
+
+//------------------------------------------------------------------------------------------------------------------------------
+        // компонент новой записи по делу
+    Vue.component('newnote',
+        {
+            props: ['parentmodel'],
+            data: function () {
+                return {
+                    notetext : ''
+                }
+            },
+            methods: {
+                Add() {
+                    var body =
+                    {
+                        'note':
+                        {
+                            
+                        },
+                        privateKey: localStorage.getItem("privateKey" + this.parentmodel.userUid),
+                        caseUid: this.parentmodel.caseUid,
+
+                    }
+
+                    DataRequest('AddNewNoteToCase', body, true,
+                        function (result) {
+                            location.reload();
+                        });
+                },
+                Cancel() {
+                    this.parentmodel.newNoteCreating = false;
+                    this.parentmodel.newNoteNotCreating = true;
+                }
+            },
+            template: `
+                    <transition  appear name="bounce" leave-active-class="animated bounceOutRight">
+                        <div>
+                            <div class="row">
+                                <div class="col-12" style="display: flex; flex-direction:column">
+                                    <div>
+                                        <label>Текст</label>   
+                                        <textarea rows="10" style="width: 100%;" v-model="notetext"></textarea>
+                                    </div>
+                                    <div  style="margin-left: auto; margin-top: auto;">
+                                        <input type="button" v-on:click="Cancel" value="Отмена" />  
+                                        <input type="button" v-on:click="Add" value="Сохранить" />  
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </transition>`
+        });
 //------------------------------------------------------------------------------------------------------------------------------
 
     var vm = new Vue(				// объект класса vue
@@ -255,9 +308,11 @@
                 employeesWithAccess: [],
                 employeesWithoutAccess: [],
                 figurants: [],
-                notes: [],
                 newFigurantCreating: false,
                 newFigurantNotCreating: true,
+                notes: [],
+                newNoteCreating: false,
+                newNoteNotCreating: true,
                 figurantRoleOptions : []
             },
             methods:					// объект, в котором будут хранится функции
@@ -266,6 +321,11 @@
                 {
                     this.newFigurantCreating = true;
                     this.newFigurantNotCreating = false;
+                },
+                AddNote()
+                {
+                    this.newNoteCreating = true;
+                    this.newNoteNotCreating = false;
                 }
             },
             created: function () {			// выполнение кода после создания экземпляра Vue

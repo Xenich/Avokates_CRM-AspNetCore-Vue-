@@ -78,6 +78,12 @@ namespace WebSite.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public IActionResult Test()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
