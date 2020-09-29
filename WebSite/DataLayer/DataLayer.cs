@@ -17,6 +17,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Avokates_CRM.Helpers;
 using System.Security.Cryptography;
+using Avokates_CRM.Models.ApiModels;
 
 namespace WebSite.DataLayer
 {
@@ -454,11 +455,13 @@ namespace WebSite.DataLayer
                                 where n.CaseUid == result.CaseUid
                                 select new Case_Note()
                                 {
+                                    Id = n.Id,
                                     Uid = n.Uid,
                                     Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
                                     EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
                                     Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
-                                    Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey)
+                                    Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
+                                    CanDelete = (userRole == "director" || employeeCase.IsOwner) || n.EmployeeUid == userUidFromToken
                                 }).ToArray();
                 result.FigurantRoleOptions = DBHelper.GetFigurantRoleOptions(companyUidFromToken, _context);
                 result.Status = ResultBase.StatusOk;
@@ -468,6 +471,88 @@ namespace WebSite.DataLayer
             catch (Exception ex)
             {
                 return ErrorHandler<GetCase_Out>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
+        public GetCaseNotes_Out GetCaseNotes(string token, Guid caseUid, string privateKey)
+        {
+            GetCaseNotes_Out result = new GetCaseNotes_Out();
+            try
+            {
+                JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+                Guid userUidFromToken = JWTValues.employeeUid;
+                Guid companyUidFromToken = JWTValues.companyUid;
+                string userRole = JWTValues.role;
+
+                EmployeeCase employeeCase = (from EmployeeCase ec in _context.EmployeeCase
+                                             join c in _context.Case on ec.CaseUid equals c.Uid
+                                             where userRole == "director" ? (c.CompanyUid == companyUidFromToken && c.Uid == caseUid && ec.EmployeeUid == userUidFromToken) :
+                                                                          (c.CompanyUid == companyUidFromToken && c.Uid == caseUid && ec.EmployeeUid == userUidFromToken && !c.IsClosed)
+                                             select ec)
+                             .FirstOrDefault();
+                if (employeeCase == null)
+                    return ErrorHandler<GetCaseNotes_Out>.SetDBProblem(result, "Нет права доступа. Обратитесь к администратору");
+
+                byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
+
+                result.Notes = (from n in _context.Note
+                                join e in _context.Employee on n.EmployeeUid equals e.Uid
+                                where n.CaseUid == caseUid
+                                select new Case_Note()
+                                {
+                                    Id = n.Id,
+                                    Uid = n.Uid,
+                                    Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
+                                    EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
+                                    Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
+                                    Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
+                                    CanDelete = (userRole == "director" || employeeCase.IsOwner) || n.EmployeeUid == userUidFromToken
+                                }).ToArray();
+
+                result.Status = ResultBase.StatusOk;
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler<GetCaseNotes_Out>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
+        // добавление новой записи к делу
+        public ResultBase AddNewNoteToCase(string token, NewNote_In note, Guid caseUid, string privateKey)
+        {
+            ResultBase result = new ResultBase();
+            try
+            {
+                EmployeeCaseInfo employeeCaseInfo = HelperSecurity.GetEmployeeCaseInfo(token, caseUid, _context);
+                //if (!employeeCaseInfo.isOwner && employeeCaseInfo.userRole != "director")
+                //    return ErrorHandler<ResultBase>.SetDBProblem(result, "Недостаточно прав для добавления записи по делу");
+                bool employeeAccessExists = _context.EmployeeCase
+                                .Where(e => e.EmployeeUid == employeeCaseInfo.employeeGuid && e.CaseUid == caseUid)
+                                .Any();
+                if (!employeeAccessExists)
+                {
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Недостаточно прав для осуществления данной операции");
+                }
+
+                byte[] aesKey = HelperSecurity.DecryptByRSA(privateKey, employeeCaseInfo.encriptedAesKey);
+                DateTime date = DateTime.Now;
+                Note newNote = new Note()
+                {
+                    CaseUid = caseUid,
+                    EmployeeUid = employeeCaseInfo.employeeGuid,
+                    Text = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(note.Text) ? "" : note.Text, aesKey),
+                    Date = date,
+                    Updatedate = date
+                };
+                _context.Note.Add(newNote);
+                _context.SaveChanges();
+                result.Status = ResultBase.StatusOk;
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
             }
             return result;
         }
@@ -482,7 +567,7 @@ namespace WebSite.DataLayer
         /// <returns></returns>
         public ResultBase GrantAccessToCase(string token, Guid userUid, Guid caseUid, string privateKey)
         {
-            ResultBase result = new GetCase_Out();
+            ResultBase result = new ResultBase();
             try
             {
                 JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
@@ -513,11 +598,15 @@ namespace WebSite.DataLayer
                                                     .Where(e => e.Uid == userUid)
                                                     .Select(e => e.PublicKey)
                                                     .FirstOrDefault();
-
+                
                 byte[] encriptedAesKey = _context.EmployeeCase
                                             .Where(e => e.CaseUid == caseUid && e.EmployeeUid == userUidFromToken)
                                             .Select(e => e.EncriptedAesKey)
                                             .FirstOrDefault();
+                // если у этого юзера нет доступа к делу (это сотрудник другой компании), то encriptedAesKey = null
+                if(encriptedAesKey == null)
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Нет доступа к делу");
+
                 byte[] aesKey = HelperSecurity.DecryptByRSA(privateKey, encriptedAesKey);
 
                 employeeCase = new EmployeeCase()
@@ -620,22 +709,11 @@ namespace WebSite.DataLayer
             ResultBase result = new ResultBase();
             try
             {
-                JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
-                Guid userUidFromToken = JWTValues.employeeUid;
-                string userRole = JWTValues.role;
-
-                var employeeCaseInfo = _context.EmployeeCase
-                                                    .Where(e => e.EmployeeUid == userUidFromToken && e.CaseUid == caseUid)
-                                                    .Select(e => new
-                                                    {
-                                                        EncriptedAesKey = e.EncriptedAesKey,
-                                                        IsOwner = e.IsOwner
-                                                    })
-                                                    .FirstOrDefault();
-                if(!employeeCaseInfo.IsOwner && userRole!="director")
+                EmployeeCaseInfo employeeCaseInfo = HelperSecurity.GetEmployeeCaseInfo(token, caseUid, _context);
+                if(!employeeCaseInfo.isOwner && employeeCaseInfo.userRole != "director")
                     return ErrorHandler<ResultBase>.SetDBProblem(result, "Недостаточно прав для добавления фигуранта дела");
 
-                byte[] aesKey = HelperSecurity.DecryptByRSA(privateKey, employeeCaseInfo.EncriptedAesKey);
+                byte[] aesKey = HelperSecurity.DecryptByRSA(privateKey, employeeCaseInfo.encriptedAesKey);
 
                 NewCase_Figurant_In figurant = figurantIn.Figurants.First();
                 Figurant newFigurant = new Figurant()
@@ -659,6 +737,8 @@ namespace WebSite.DataLayer
             }
             return result;
         }
+
+        
 
         // Удаление фигуранта дела
         public ResultBase RemoveFigurantFromCase(string token, Guid caseUid, Guid figurantUid)
@@ -693,6 +773,7 @@ namespace WebSite.DataLayer
             return result;
         }
 
+        // Создание нового дела
         public ResultBase CreateNewCase(NewCase_In inputValue)
         {
             ResultBase result = new ResultBase();

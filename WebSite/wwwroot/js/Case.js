@@ -203,11 +203,10 @@
     // компонент записи по делу
     Vue.component('note',
         {
-            props: ['note', 'canmanage', 'caseuid'],
+            props: ['note', 'canmanage', 'candelete', 'caseuid'],
             methods:
             {
-                Remove() {
-                    console.log(this.note.uid);
+                Remove() {                    
                     var body =
                     {
                         
@@ -221,16 +220,17 @@
             template: `
 <div>
     <div class="row">
-        <h6  class="col-8">Запись № {{note.uid}}</h6>
+        <h6  class="col-8">Запись № {{note.id}}</h6>
         <label  class="col-4">Дата: {{note.date}}</label>  
     </div>
     <label class="row">Автор: {{note.employeeInfo}}</label>        
     <h5 class="row">{{note.title}}</h5>
     <div class="row">
         <div class="col-1"></div>
-        <textarea class="col-11" rows="20" style="width: 100%;" v-model="note.text"></textarea>
+        <label  class="col-11"  style="background-color:#f1f1f1"> {{note.text}}</label>
+        <!-- <textarea class="col-11" rows="20" style="width: 100%;" v-model="note.text"></textarea> -->
     </div>
-    <input  v-if='canmanage' type="button" v-on:click="Remove" value="Удалить запись" />
+    <input  v-if='candelete' type="button" v-on:click="Remove" value="Удалить запись" />
     <hr>
 </div>
             `
@@ -252,16 +252,15 @@
                     {
                         'note':
                         {
-                            
+                            text: this.notetext
                         },
                         privateKey: localStorage.getItem("privateKey" + this.parentmodel.userUid),
-                        caseUid: this.parentmodel.caseUid,
-
+                        caseUid: this.parentmodel.caseUid
                     }
-
+                    var model = this.parentmodel;
                     DataRequest('AddNewNoteToCase', body, true,
                         function (result) {
-                            location.reload();
+                            GetCaseNotes(model);    
                         });
                 },
                 Cancel() {
@@ -358,6 +357,23 @@ function GetCaseInfo(model) {
             model.newFigurantNotCreating = true;
             model.figurantRoleOptions = result.figurantRoleOptions;
             //model.hasAccess = result.hasAccess;
+        },
+        function (errorMsg) {
+            ErrorHandler(lbl, errorMsg)
+        });
+}
+
+function GetCaseNotes(model) {
+    var data = {
+        'caseUid': model.caseUid,
+        'privateKey': localStorage.getItem("privateKey" + model.userUid)
+    }
+    var lbl = document.getElementById("errorLabel");
+    DataRequest('GetCaseNotes', data, true,
+        function (result) {
+            model.notes = result.notes;
+            model.newNoteCreating = false;
+            model.newNoteNotCreating = true;
         },
         function (errorMsg) {
             ErrorHandler(lbl, errorMsg)

@@ -84,6 +84,13 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
+        public IActionResult AddNewNoteToCase(NewNote_In note, Guid caseUid, string privateKey)
+        {
+            string token = GetToken();
+            ResultBase result = dl.AddNewNoteToCase(token, note, caseUid, privateKey);
+            return Ok(result);
+        }
+
         public IActionResult RemoveFigurantFromCase( Guid caseUid, Guid figurantUid)
         {
             string token = GetToken();
@@ -101,6 +108,13 @@ namespace WebSite.Controllers
         {
             string token = GetToken();
             GetCase_Out result = dl.GetCase(token, id, privateKey);
+            return Ok(result);
+        }
+
+        public IActionResult GetCaseNotes(Guid caseUid, string privateKey)
+        {
+            string token = GetToken();
+            GetCaseNotes_Out result = dl.GetCaseNotes(token, caseUid, privateKey);
             return Ok(result);
         }
 

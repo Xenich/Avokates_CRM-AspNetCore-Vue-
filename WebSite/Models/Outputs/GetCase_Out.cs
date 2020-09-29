@@ -42,10 +42,12 @@ namespace Avokates_CRM.Models.Outputs
 
     public class Case_Note
     {
+        public long Id { get; set; }
         public Guid Uid { get; set; }
         public string EmployeeInfo { get; set; }
         public string Date { get; set; }
         public string Title { get; set; }
         public string Text { get; set; }
+        public bool CanDelete { get; set; }
     }
 }

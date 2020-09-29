@@ -12,6 +12,8 @@ using Avokates_CRM.Models.Outputs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
+using Avokates_CRM.Models.ApiModels;
+using Avokates_CRM.Models.DB;
 
 namespace WebSite.Helpers
 {
@@ -215,7 +217,28 @@ namespace WebSite.Helpers
             }
         }
 
-#endregion
+        #endregion
+
+        // Получение информации по юзеру касательно определённого дела
+        public static EmployeeCaseInfo GetEmployeeCaseInfo(string token, Guid caseUid, LawyerCRMContext _context)
+        {
+            JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+            Guid userUidFromToken = JWTValues.employeeUid;
+            //Guid companyUidFromToken = JWTValues.companyUid;
+            EmployeeCaseInfo employeeCaseInfo = _context.EmployeeCase
+                                                .Where(e => e.EmployeeUid == userUidFromToken && e.CaseUid == caseUid )
+                                                .Select(e => new EmployeeCaseInfo
+                                                {
+                                                    encriptedAesKey = e.EncriptedAesKey,
+                                                    isOwner = e.IsOwner,
+                                                    employeeGuid = userUidFromToken
+                                                })
+                                                .FirstOrDefault();
+            employeeCaseInfo.userRole = JWTValues.role;
+
+            return employeeCaseInfo;
+        }
+
 
         #region Криптография
         //-------------------------------------     Создание ключей шифрования      ------------------------------------

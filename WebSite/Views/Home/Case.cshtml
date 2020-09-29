@@ -148,12 +148,13 @@
                         <note v-for="note in notes"
                               v-bind:note="note"
                               v-bind:canmanage="canManage"
+                              v-bind:candelete="note.canDelete"
                               v-bind:caseuid="caseUid">
                         </note>
                     </div>
-                    <div v-if="canManage">
+                    @*<div v-if="canManage">*@
                         <input v-if="newNoteNotCreating" type="button" v-on:click="AddNote" value="Добавить новую запись" />
-                    </div>
+                    @*</div>*@
                     <newnote v-if="newNoteCreating"
                              v-bind:key="1"
                              v-bind:parentmodel="this">

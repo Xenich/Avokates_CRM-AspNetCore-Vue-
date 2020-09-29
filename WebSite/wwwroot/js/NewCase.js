@@ -129,7 +129,7 @@ Vue.component('figurant',
 
                     DataRequest('CreateNewCase', body, true,
                         function (result) {
-
+                            // TODO : доделать
                         });
                 }
             },       
