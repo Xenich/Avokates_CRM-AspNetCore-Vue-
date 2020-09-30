@@ -24,6 +24,7 @@ namespace WebSite.DataLayer
         NewCaseGetModel_Out NewCaseGetModel(string token);
         ResultBase AddNewFigurantToCase(string token, NewCase_In figurantIn, Guid caseUid, string privateKey);
         ResultBase AddNewNoteToCase(string token, NewNote_In note, Guid caseUid, string privateKey);
+        ResultBase RemoveNoteFromCase(string token, Guid caseUid, Guid noteUid);
         GetCaseNotes_Out GetCaseNotes (string token, Guid caseUid, string privateKey);
         ResultBase RemoveFigurantFromCase(string token, Guid caseUid, Guid figurantUid);
         ResultBase GrantAccessToCase(string token, Guid userUid, Guid caseUid, string privateKey);

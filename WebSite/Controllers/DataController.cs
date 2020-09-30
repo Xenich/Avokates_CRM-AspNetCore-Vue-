@@ -91,6 +91,13 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
+        public IActionResult RemoveNoteFromCase(Guid caseUid, Guid noteUid)
+        {
+            string token = GetToken();
+            ResultBase result = dl.RemoveNoteFromCase(token, caseUid, noteUid);
+            return Ok(result);
+        }
+
         public IActionResult RemoveFigurantFromCase( Guid caseUid, Guid figurantUid)
         {
             string token = GetToken();
@@ -136,14 +143,8 @@ namespace WebSite.Controllers
 
         public IActionResult GetMainPage()
         {
-            string token = GetToken();
-            if (HelperSecurity.IsTokenValid(token))
-            {
-                GetMainPage_Out result = dl.GetMainPage(GetToken());
-                return Ok(result);
-            }
-            else
-                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
+            GetMainPage_Out result = dl.GetMainPage(GetToken());
+            return Ok(result);
         }
 
 
@@ -151,29 +152,16 @@ namespace WebSite.Controllers
         public IActionResult GetCabinetInfo()
         {
             string token = GetToken();
-            if (HelperSecurity.IsTokenValid(token))
-            {
-                GetCabinetInfo_Out result  = dl.GetCabinetInfo(token);
-                return Ok(result);
-                //return Ok(ErrorHandler<ResultBase>.TokenNotValid());
-                
-                //GetCase_Out result 
-                //return Ok(result);
-            }
-            else
-                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
+            GetCabinetInfo_Out result  = dl.GetCabinetInfo(token);
+            return Ok(result);
+
         }
 
         public IActionResult CabinetInfoSaveChanges(GetCabinetInfo_Out cabinetInfo)
         {
             string token = GetToken();
-            if (HelperSecurity.IsTokenValid(token))
-            {
-                ResultBase result = dl.CabinetInfoSaveChanges(token, cabinetInfo);
-                return Ok(result);
-            }
-            else
-                return Ok(ErrorHandler<ResultBase>.TokenNotValid());
+            ResultBase result = dl.CabinetInfoSaveChanges(token, cabinetInfo);
+            return Ok(result);
         }
 
         private string GetToken()

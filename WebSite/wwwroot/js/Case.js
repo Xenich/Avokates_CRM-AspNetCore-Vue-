@@ -209,7 +209,8 @@
                 Remove() {                    
                     var body =
                     {
-                        
+                        caseUid: this.caseuid,
+                        noteUid: this.note.uid
                     }
                     DataRequest('RemoveNoteFromCase', body, true,
                         function (result) {

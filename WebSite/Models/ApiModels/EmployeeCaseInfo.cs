@@ -11,5 +11,6 @@ namespace Avokates_CRM.Models.ApiModels
         public bool isOwner;
         public string userRole;
         public Guid employeeGuid;
+        public Guid companyUid;
     }
 }

@@ -557,6 +557,72 @@ namespace WebSite.DataLayer
             return result;
         }
 
+        public ResultBase RemoveNoteFromCase(string token, Guid caseUid, Guid noteUid)
+        {
+            ResultBase result = new ResultBase();
+            try
+            {
+                EmployeeCaseInfo employeeCaseInfo = HelperSecurity.GetEmployeeCaseInfo(token, caseUid, _context);
+                if(employeeCaseInfo == null)
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Нет доступа");
+                bool canDelete = false;
+
+                var noteInfo = (from n in _context.Note
+                               join c in _context.Case on n.CaseUid equals c.Uid
+                               where n.CaseUid == caseUid && n.Uid == noteUid && c.CompanyUid == employeeCaseInfo.companyUid
+                                select new                                   
+                                {
+                                    employeeUid = n.EmployeeUid,
+                                    companyUid = c.CompanyUid,
+                                    caseOwner = _context.EmployeeCase
+                                                        .Where(c=>c.CaseUid == caseUid && c.IsOwner)
+                                                        .Select(e=>e.EmployeeUid)
+                                                        .FirstOrDefault(),
+                                    isDirectorNote = (from e in _context.Employee
+                                                     join r in _context.Role on e.RoleUid equals r.Uid
+                                                     where e.Uid == n.EmployeeUid
+                                                     select r.RoleName).FirstOrDefault() == "director"
+                                }).FirstOrDefault();
+                
+                if(noteInfo==null)
+                    return ErrorHandler<ResultBase>.SetDBProblem(result, "Запись не найдена");
+
+                if (employeeCaseInfo.userRole == "director")
+                    canDelete = true;
+                else
+                {
+                    if (noteInfo.caseOwner == employeeCaseInfo.employeeGuid)
+                    {
+                        if (noteInfo.isDirectorNote)
+                            return ErrorHandler<ResultBase>.SetDBProblem(result, "Вы не можете удалить запись, сделанную директором компании");
+                        else
+                            canDelete = true;
+                    }
+                    else
+                    {
+                        if (noteInfo.employeeUid == employeeCaseInfo.employeeGuid)
+                            canDelete = true;
+                        else
+                            return ErrorHandler<ResultBase>.SetDBProblem(result, "Нет прав на удаление данной записи");
+                    }
+                }
+
+                if (canDelete)
+                {
+                    Note note = _context.Note.FirstOrDefault(n => n.Uid == noteUid);
+                    _context.Note.Remove(note);
+                    _context.SaveChanges();
+                }
+                result.Status = ResultBase.StatusOk;
+
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler<ResultBase>.SetDBProblem(result, ex.Message);
+            }
+            return result;
+        }
+
         /// <summary>
         /// Открывает доступ к делу определенному сотруднику
         /// </summary>

@@ -231,10 +231,11 @@ namespace WebSite.Helpers
                                                 {
                                                     encriptedAesKey = e.EncriptedAesKey,
                                                     isOwner = e.IsOwner,
-                                                    employeeGuid = userUidFromToken
+                                                    employeeGuid = userUidFromToken,
+                                                    companyUid = JWTValues.companyUid,
+                                                    userRole = JWTValues.role
                                                 })
                                                 .FirstOrDefault();
-            employeeCaseInfo.userRole = JWTValues.role;
 
             return employeeCaseInfo;
         }
