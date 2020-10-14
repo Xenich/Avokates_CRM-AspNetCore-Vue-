@@ -450,19 +450,21 @@ namespace WebSite.DataLayer
                                         Role = r.RoleName
                                     }).ToArray();
 
-                result.Notes = (from n in _context.Note
-                                join e in _context.Employee on n.EmployeeUid equals e.Uid
-                                where n.CaseUid == result.CaseUid
-                                select new Case_Note()
-                                {
-                                    Id = n.Id,
-                                    Uid = n.Uid,
-                                    Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
-                                    EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
-                                    Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
-                                    Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
-                                    CanDelete = (userRole == "director" || employeeCase.IsOwner) || n.EmployeeUid == userUidFromToken
-                                }).ToArray();
+                result.Notes = DBHelper.GetCaseNotes(_case.UID, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, _context);
+                //(from n in _context.Note
+                //                join e in _context.Employee on n.EmployeeUid equals e.Uid
+                //                where n.CaseUid == result.CaseUid
+                //                orderby n.Updatedate descending
+                //                select new Case_Note()
+                //                {
+                //                    Id = n.Id,
+                //                    Uid = n.Uid,
+                //                    Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
+                //                    EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
+                //                    Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
+                //                    Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
+                //                    CanDelete = (userRole == "director" || employeeCase.IsOwner) || n.EmployeeUid == userUidFromToken
+                //                }).ToArray();
                 result.FigurantRoleOptions = DBHelper.GetFigurantRoleOptions(companyUidFromToken, _context);
                 result.Status = ResultBase.StatusOk;
 
@@ -475,6 +477,7 @@ namespace WebSite.DataLayer
             return result;
         }
 
+        // метод вызывается при обновлении списка записей (например при добавлении новой записи)
         public GetCaseNotes_Out GetCaseNotes(string token, Guid caseUid, string privateKey)
         {
             GetCaseNotes_Out result = new GetCaseNotes_Out();
@@ -496,19 +499,21 @@ namespace WebSite.DataLayer
 
                 byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
 
-                result.Notes = (from n in _context.Note
-                                join e in _context.Employee on n.EmployeeUid equals e.Uid
-                                where n.CaseUid == caseUid
-                                select new Case_Note()
-                                {
-                                    Id = n.Id,
-                                    Uid = n.Uid,
-                                    Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
-                                    EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
-                                    Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
-                                    Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
-                                    CanDelete = (userRole == "director" || employeeCase.IsOwner) || n.EmployeeUid == userUidFromToken
-                                }).ToArray();
+                result.Notes = DBHelper.GetCaseNotes(caseUid, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, _context);
+                    //(from n in _context.Note
+                    //            join e in _context.Employee on n.EmployeeUid equals e.Uid
+                    //            where n.CaseUid == caseUid
+                    //            orderby n.Updatedate descending
+                    //            select new Case_Note()
+                    //            {
+                    //                Id = n.Id,
+                    //                Uid = n.Uid,
+                    //                Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
+                    //                EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
+                    //                Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
+                    //                Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
+                    //                CanDelete = (userRole == "director" || employeeCase.IsOwner) || n.EmployeeUid == userUidFromToken
+                    //            }).ToArray();
 
                 result.Status = ResultBase.StatusOk;
             }
@@ -544,7 +549,8 @@ namespace WebSite.DataLayer
                     EmployeeUid = employeeCaseInfo.employeeGuid,
                     Text = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(note.Text) ? "" : note.Text, aesKey),
                     Date = date,
-                    Updatedate = date
+                    Updatedate = date,
+                    Title = HelperSecurity.EncryptByAes(string.IsNullOrEmpty(note.Title) ? "" : note.Title, aesKey)
                 };
                 _context.Note.Add(newNote);
                 _context.SaveChanges();

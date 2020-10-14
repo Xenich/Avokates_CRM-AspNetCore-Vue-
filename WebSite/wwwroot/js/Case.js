@@ -244,7 +244,8 @@
             props: ['parentmodel'],
             data: function () {
                 return {
-                    notetext : ''
+                    notetext: '',
+                    notetitle: ''
                 }
             },
             methods: {
@@ -253,7 +254,9 @@
                     {
                         'note':
                         {
-                            text: this.notetext
+                            text: this.notetext,
+                            title: this.notetitle
+
                         },
                         privateKey: localStorage.getItem("privateKey" + this.parentmodel.userUid),
                         caseUid: this.parentmodel.caseUid
@@ -272,6 +275,11 @@
             template: `
                     <transition  appear name="bounce" leave-active-class="animated bounceOutRight">
                         <div>
+                            <h2>Новая запись по делу</h2>
+                            <div class="row">
+                                <label>Заголовок</label>   
+                                <textarea rows="2" style="width: 100%;" v-model="notetitle"></textarea>
+                            </div>
                             <div class="row">
                                 <div class="col-12" style="display: flex; flex-direction:column">
                                     <div>

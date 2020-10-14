@@ -35,7 +35,7 @@
             <tbody id="CasesTableBody" v-cloak>
                 <tr v-for="_case in casesList">
                     <td>{{_case.idPerCompany}}</td>
-                    <td><a target="_blank" v-bind:href="'Case?id='+_case.idPerCompany">{{_case.caseTitle}}</a></td>
+                    <td><a  v-bind:href="'Case?id='+_case.idPerCompany">{{_case.caseTitle}}</a></td>
                     <td>{{_case.caseOwner}}</td>
                     <td>{{_case.createDate}}</td>
                     <td>{{_case.updateDate}}</td>
