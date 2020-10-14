@@ -6,3 +6,4 @@ WebSite/appsettings.json
 WebSite/WebSite.csproj
 WebSite/WebSite.csproj.user
 .vs/
+WebSite/wwwroot/Files/

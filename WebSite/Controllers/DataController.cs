@@ -84,10 +84,10 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
-        public IActionResult AddNewNoteToCase(NewNote_In note, Guid caseUid, string privateKey)
+        public IActionResult AddNewNoteToCase(NewNote_In note, IFormFile[] files, Guid caseUid, string privateKey)
         {
             string token = GetToken();
-            ResultBase result = dl.AddNewNoteToCase(token, note, caseUid, privateKey);
+            ResultBase result = dl.AddNewNoteToCase(token, note, files, caseUid, privateKey);
             return Ok(result);
         }
 

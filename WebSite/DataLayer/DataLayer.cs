@@ -18,6 +18,8 @@ using System.Text.RegularExpressions;
 using Avokates_CRM.Helpers;
 using System.Security.Cryptography;
 using Avokates_CRM.Models.ApiModels;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace WebSite.DataLayer
 {
@@ -451,20 +453,7 @@ namespace WebSite.DataLayer
                                     }).ToArray();
 
                 result.Notes = DBHelper.GetCaseNotes(_case.UID, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, _context);
-                //(from n in _context.Note
-                //                join e in _context.Employee on n.EmployeeUid equals e.Uid
-                //                where n.CaseUid == result.CaseUid
-                //                orderby n.Updatedate descending
-                //                select new Case_Note()
-                //                {
-                //                    Id = n.Id,
-                //                    Uid = n.Uid,
-                //                    Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
-                //                    EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
-                //                    Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
-                //                    Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
-                //                    CanDelete = (userRole == "director" || employeeCase.IsOwner) || n.EmployeeUid == userUidFromToken
-                //                }).ToArray();
+
                 result.FigurantRoleOptions = DBHelper.GetFigurantRoleOptions(companyUidFromToken, _context);
                 result.Status = ResultBase.StatusOk;
 
@@ -500,20 +489,6 @@ namespace WebSite.DataLayer
                 byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
 
                 result.Notes = DBHelper.GetCaseNotes(caseUid, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, _context);
-                    //(from n in _context.Note
-                    //            join e in _context.Employee on n.EmployeeUid equals e.Uid
-                    //            where n.CaseUid == caseUid
-                    //            orderby n.Updatedate descending
-                    //            select new Case_Note()
-                    //            {
-                    //                Id = n.Id,
-                    //                Uid = n.Uid,
-                    //                Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
-                    //                EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
-                    //                Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
-                    //                Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
-                    //                CanDelete = (userRole == "director" || employeeCase.IsOwner) || n.EmployeeUid == userUidFromToken
-                    //            }).ToArray();
 
                 result.Status = ResultBase.StatusOk;
             }
@@ -525,7 +500,7 @@ namespace WebSite.DataLayer
         }
 
         // добавление новой записи к делу
-        public ResultBase AddNewNoteToCase(string token, NewNote_In note, Guid caseUid, string privateKey)
+        public ResultBase AddNewNoteToCase(string token, NewNote_In note, IFormFile[] files, Guid caseUid, string privateKey)
         {
             ResultBase result = new ResultBase();
             try
@@ -554,6 +529,38 @@ namespace WebSite.DataLayer
                 };
                 _context.Note.Add(newNote);
                 _context.SaveChanges();
+
+                string filesDirectory = Directory.GetCurrentDirectory() + "\\wwwroot\\" + "Files";
+                if (!Directory.Exists(filesDirectory))
+                    Directory.CreateDirectory(filesDirectory);
+                
+
+                for (int i = 0; i < files.Length; i++)
+                {
+                    IFormFile file = files[i];
+                    string[] splitedFileName = file.FileName.Split(".", StringSplitOptions.None);
+                    string extension = "";
+                    if (splitedFileName.Length >1)
+                        extension = "." + splitedFileName.Last();
+                    Guid guid = Guid.NewGuid();
+                    string fileName = guid + extension;
+                    string path = filesDirectory + "\\" + fileName;
+                    FileStream fStreem = new FileStream(path, FileMode.Create);
+                    // TODO: сделать криптострим
+
+                    file.CopyTo(fStreem);
+                    fStreem.Close();
+
+                    MediaFile mediaFile = new MediaFile()
+                    {
+                        Uid = guid,
+                        NoteUid = newNote.Uid,
+                        FilePath = "Files" + "\\" + fileName
+                    };                                       
+                    _context.MediaFile.Add(mediaFile);
+                }
+                _context.SaveChanges();
+
                 result.Status = ResultBase.StatusOk;
             }
             catch (Exception ex)

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace WebSite.DataLayer
 {
@@ -23,7 +24,7 @@ namespace WebSite.DataLayer
         GetCabinetInfo_Out GetCabinetInfo(string token);
         NewCaseGetModel_Out NewCaseGetModel(string token);
         ResultBase AddNewFigurantToCase(string token, NewCase_In figurantIn, Guid caseUid, string privateKey);
-        ResultBase AddNewNoteToCase(string token, NewNote_In note, Guid caseUid, string privateKey);
+        ResultBase AddNewNoteToCase(string token, NewNote_In note, IFormFile[] files, Guid caseUid, string privateKey);
         ResultBase RemoveNoteFromCase(string token, Guid caseUid, Guid noteUid);
         GetCaseNotes_Out GetCaseNotes (string token, Guid caseUid, string privateKey);
         ResultBase RemoveFigurantFromCase(string token, Guid caseUid, Guid figurantUid);
