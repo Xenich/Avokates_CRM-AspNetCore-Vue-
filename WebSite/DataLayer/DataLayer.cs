@@ -533,29 +533,23 @@ namespace WebSite.DataLayer
                 string filesDirectory = Directory.GetCurrentDirectory() + "\\wwwroot\\" + "Files";
                 if (!Directory.Exists(filesDirectory))
                     Directory.CreateDirectory(filesDirectory);
-                
+
+
 
                 for (int i = 0; i < files.Length; i++)
                 {
                     IFormFile file = files[i];
-                    string[] splitedFileName = file.FileName.Split(".", StringSplitOptions.None);
-                    string extension = "";
-                    if (splitedFileName.Length >1)
-                        extension = "." + splitedFileName.Last();
                     Guid guid = Guid.NewGuid();
-                    string fileName = guid + extension;
-                    string path = filesDirectory + "\\" + fileName;
-                    FileStream fStreem = new FileStream(path, FileMode.Create);
-                    // TODO: сделать криптострим
-
-                    file.CopyTo(fStreem);
-                    fStreem.Close();
+                    string path = filesDirectory + "\\" + guid;
+                   
+                    HelperSecurity.WriteToEncriptedFile(file, aesKey, path);                    
 
                     MediaFile mediaFile = new MediaFile()
                     {
                         Uid = guid,
                         NoteUid = newNote.Uid,
-                        FilePath = "Files" + "\\" + fileName
+                        FilePath = "Files" + "\\" + guid,
+                        NameCripted = HelperSecurity.EncryptByAes(file.FileName, aesKey)
                     };                                       
                     _context.MediaFile.Add(mediaFile);
                 }

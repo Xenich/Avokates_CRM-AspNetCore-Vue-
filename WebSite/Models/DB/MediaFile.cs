@@ -9,6 +9,7 @@ namespace Avokates_CRM.Models.DB
         public int Id { get; set; }
         public string FilePath { get; set; }
         public Guid? NoteUid { get; set; }
+        public byte[] NameCripted { get; set; }
 
         public Note NoteU { get; set; }
     }

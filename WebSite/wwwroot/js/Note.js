@@ -50,31 +50,17 @@
             },
             methods: {
                 Add() {
-                    //var body =
-                    //{
-                    //    'note':
-                    //    {
-                    //        text: this.notetext,
-                    //        title: this.notetitle,
-                    //        files: this.files
-                    //    },
-                    //    privateKey: localStorage.getItem("privateKey" + this.parentmodel.userUid),
-                    //    caseUid: this.parentmodel.caseUid
-                    //}
                     var model = this.parentmodel;
                     var data = new FormData();
-
                     for (var i = 0; i != this.files.length; i++)
                     {
                         data.append("files", this.files[i]);
                     };
-
                     data.append("files", this.files);
                     data.append("caseUid", this.parentmodel.caseUid);
                     data.append('title', this.notetitle);
                     data.append('text', this.notetext);
                     data.append('privateKey', localStorage.getItem("privateKey" + this.parentmodel.userUid));
-
                     $.ajax({
                         url: '/Data/AddNewNoteToCase/',
                         type: 'POST',
@@ -86,14 +72,8 @@
                         success: function (respond, textStatus, jqXHR)
                         {
                             GetCaseNotes(model);
-                            //console.log('ОШИБКИ AJAX запроса: ' + textStatus);
                         }
                     });
-
-                    //DataRequest('AddNewNoteToCase', body, true,
-                    //    function (result) {
-                    //        GetCaseNotes(model);
-                    //    });
                 },
                 Cancel()
                 {
