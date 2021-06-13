@@ -44,6 +44,7 @@ namespace WebSite
             services.AddDbContext<LawyerCRMContext>(options =>
                 options.UseSqlServer(connection));
 
+                // регистрируем сервисы - зависимости
             services.AddScoped<ISecuryty, Security>();
             services.AddScoped<IDataLayer, DataLayerDB>();
 

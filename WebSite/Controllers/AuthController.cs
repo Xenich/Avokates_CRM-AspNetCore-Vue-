@@ -24,11 +24,6 @@ namespace Avokates_CRM.Controllers
             dl = dataLayer;
         }
 
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
-
         [AllowAnonymous]
         public IActionResult Authorization()
         {

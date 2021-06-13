@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
 using Avokates_CRM.Models.ApiModels;
 using Avokates_CRM.Models.DB;
+using System.IO;
 
 namespace WebSite.Helpers
 {
@@ -287,6 +288,38 @@ namespace WebSite.Helpers
             byte[] bufer = Encoding.UTF8.GetBytes(text);
             byte[] encriptedText = aes.IV.Concat(encryptor.TransformFinalBlock(bufer, 0, bufer.Length)).ToArray();
             return encriptedText;
+        }
+
+
+        /// <summary>
+        /// Шифрование входящего файла алгоритмом AES и запиь зашифрованных данных в файл 
+        /// </summary>
+        /// <param name="file">Незашифровнный файл</param>
+        /// <param name="key">AES - ключ</param>
+        /// <param name="path">Путь для записи зашифрованного файла</param>
+        /// <returns></returns>
+        public static bool WriteToEncriptedFile(IFormFile file,  byte[] key, string path)
+        {
+            using (FileStream fileStream = new FileStream(path, FileMode.Create))
+            {
+                byte[] buffer = new byte[file.Length];
+                file.OpenReadStream().Read(buffer, 0, buffer.Length);
+                Aes aes = Aes.Create();
+                aes.Key = key;
+                aes.GenerateIV();
+                ICryptoTransform encryptor = aes.CreateEncryptor();
+                using (CryptoStream cryptoStream = new CryptoStream(fileStream, encryptor, CryptoStreamMode.Write))
+                {
+                    cryptoStream.Write(buffer, 0, buffer.Length);
+                }
+            }            
+            return true;
+        }
+
+        public static bool DecriptFile(IFormFile file, byte[] key, string path)
+        {
+
+            return true;
         }
 
         /// <summary>
