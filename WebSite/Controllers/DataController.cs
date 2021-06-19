@@ -9,14 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using WebSite.DataLayer;
 using WebSite.Helpers;
-
-using Avokates_CRM.Models.Outputs;
 using Microsoft.AspNetCore.Http;
 
-namespace WebSite.Controllers
+namespace Avokates_CRM.Controllers
 {
     [Authorize]
-    public class DataController : Controller
+    public class DataController : BaseController
     {
         private readonly IDataLayer dl;      // dataLayer
         public DataController(IDataLayer dataLayer)      // в Startup : AddScoped<IDataLayer, DataLayer>();
@@ -56,7 +54,9 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
+
 //----------------------------------------------    ДЕЛО    -------------------------------------------------------
+        #region CASE
 
         public IActionResult GetCasesList()
         {            
@@ -77,12 +77,31 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
+        #region CASE_FIGURANTS
+
         public IActionResult AddNewFigurantToCase(NewCase_In figurant, Guid caseUid, string privateKey)
         {
             string token = GetToken();
             ResultBase result = dl.AddNewFigurantToCase(token, figurant, caseUid, privateKey);
             return Ok(result);
         }
+        public IActionResult RemoveFigurantFromCase( Guid caseUid, Guid figurantUid)
+        {
+            string token = GetToken();
+            ResultBase result = dl.RemoveFigurantFromCase(token, caseUid, figurantUid);
+            return Ok(result);
+        }
+
+        #endregion
+
+        public IActionResult GetCaseNotes(Guid caseUid, string privateKey)
+        {
+            string token = GetToken();
+            GetCaseNotes_Out result = dl.GetCaseNotes(token, caseUid, privateKey);
+            return Ok(result);
+        }
+
+        #region NOTE
 
         public IActionResult AddNewNoteToCase(NewNote_In note, IFormFile[] files, Guid caseUid, string privateKey)
         {
@@ -97,13 +116,10 @@ namespace WebSite.Controllers
             ResultBase result = dl.RemoveNoteFromCase(token, caseUid, noteUid);
             return Ok(result);
         }
+        
+        #endregion
 
-        public IActionResult RemoveFigurantFromCase( Guid caseUid, Guid figurantUid)
-        {
-            string token = GetToken();
-            ResultBase result = dl.RemoveFigurantFromCase(token, caseUid, figurantUid);
-            return Ok(result);
-        }
+
 
         public IActionResult CreateNewCase(NewCase_In value)
         {
@@ -115,13 +131,6 @@ namespace WebSite.Controllers
         {
             string token = GetToken();
             GetCase_Out result = dl.GetCase(token, id, privateKey);
-            return Ok(result);
-        }
-
-        public IActionResult GetCaseNotes(Guid caseUid, string privateKey)
-        {
-            string token = GetToken();
-            GetCaseNotes_Out result = dl.GetCaseNotes(token, caseUid, privateKey);
             return Ok(result);
         }
 
@@ -139,7 +148,9 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
-        //-------------------------------------------------------------------------------------------------------------------------------------
+#endregion
+
+//-------------------------------------------------------------------------------------------------------------------------------------
 
         public IActionResult GetMainPage()
         {
@@ -147,7 +158,7 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
-
+        #region CABINET
 
         public IActionResult GetCabinetInfo()
         {
@@ -164,10 +175,6 @@ namespace WebSite.Controllers
             return Ok(result);
         }
 
-        private string GetToken()
-        {
-            string b = Request.Headers["authorization"].ToString();
-            return b.Substring(7, b.Length - 7);    // первые 7 символов - это слово bearer_            
-        }
+        #endregion
     }
 }

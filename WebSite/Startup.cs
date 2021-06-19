@@ -15,7 +15,7 @@ using System;
 
 using Avokates_CRM;
 
-using Avokates_CRM.Models.DB;
+using Avokates_CRM.DB.Models;
 using WebSite.Helpers;
 using WebSite.DataLayer;
 using Avokates_CRM.Helpers;
@@ -35,7 +35,7 @@ namespace WebSite
             BaseHelper.Init(configuration);
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+            // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // получаем строку подключения из файла конфигурации
@@ -114,7 +114,7 @@ namespace WebSite
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -126,39 +126,21 @@ namespace WebSite
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseSession();               // конфигурировать сессии, чтоб можно было получать из них токен
-
-            //внедряем токен в хидер поступающих запросов
+                //внедряем токен в хидер поступающих запросов
             app.Use(async (context, next) =>
             {
-                //string[] s = context.Request.Path.Value.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                //if (!(s.Length > 0 && s[0] == "Data"))
-                //{
                 var token = context.Session.GetString("token");
-                //StringValues token_;
-                //context.Request.Headers.TryGetValue("Authorization", out token_);
                 if (!string.IsNullOrEmpty(token))
                 {
                     context.Request.Headers.Add("Authorization", "Bearer " + token);
                 }
-                
-                //else
-                //{       // перехват запроса и возврат на авторизацию
-                //    context.Request.Path = "/Auth/Authorization/";
-                //}
-                //context.Request.Headers.TryGetValue("Authorization", out token_);
-                //}
                 await next.Invoke();
             });
-
             app.UseAuthentication();
-
-
             app.UseCors("EnableCors");
-
             app.UseStatusCodePages(async context =>
             {
                 //var request = context.HttpContext.Request;
@@ -169,14 +151,12 @@ namespace WebSite
                     response.Redirect("/Auth/Authorization/");
                 }
             });
-
-            //BaseHelper.Init(Configuration);
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Auth}/{action=Authorization}/{id?}");
+                    // template: "{controller=Auth}/{action=Authorization}/{id?}");
+                    template: "{controller=Home}/{action=Index}");
             });
         }
     }

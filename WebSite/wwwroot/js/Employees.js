@@ -15,7 +15,7 @@
                         email: this.inviteEmail
                         
                     }
-                    DataRequest('CreateInvite', body, true,
+                    DataRequest('Data', 'CreateInvite', body, true,
                         function (result) {
                             location.reload();
                         });

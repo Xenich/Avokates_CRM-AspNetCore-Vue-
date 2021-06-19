@@ -4,14 +4,14 @@
 // isAsync - bool переменная, показывающая, будет ли запрос асинхронным
 // func - функция которая должна вызваться после получения ответа от сервера
 // errorHandlerFunction - 
-function DataRequest(method, body, isAsync, func)
+function DataRequest(controller, method, body, isAsync, func)
 {
     //errorLabel.style.display = 'block';
     var res;
     $.ajax(
         {
             type: 'POST',
-            url: '/Data/' + method + '/',
+            url: '/' + controller+'/' + method + '/',
             data: body,
             async: isAsync
         })

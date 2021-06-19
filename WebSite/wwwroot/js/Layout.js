@@ -19,7 +19,7 @@
 
 function GetLayoutModel(model)
 {
-    DataRequest('GetMainPage', null, true, 
+    DataRequest('Data', 'GetMainPage', null, true, 
         function (result) {
             model.CompanyName = result.companyName;
             model.Name = result.name;

@@ -1,7 +1,6 @@
 ﻿using Avokates_CRM.Models.Outputs;
 using Avokates_CRM;
 
-using Avokates_CRM.Models.DB;
 using Avokates_CRM.Models.Inputs;
 using StoredProcedureEFCore;
 using System;
@@ -20,6 +19,7 @@ using System.Security.Cryptography;
 using Avokates_CRM.Models.ApiModels;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Avokates_CRM.DB.Models;
 
 namespace WebSite.DataLayer
 {
@@ -499,7 +499,7 @@ namespace WebSite.DataLayer
             return result;
         }
 
-        // добавление новой записи к делу
+            // добавление новой записи к делу
         public ResultBase AddNewNoteToCase(string token, NewNote_In note, IFormFile[] files, Guid caseUid, string privateKey)
         {
             ResultBase result = new ResultBase();
@@ -949,6 +949,7 @@ namespace WebSite.DataLayer
                 }
                 _context.SaveChanges();
 
+                result.Status = ResultBase.StatusOk;
                 // TODO : доделать метод
             }
             catch (Exception ex)

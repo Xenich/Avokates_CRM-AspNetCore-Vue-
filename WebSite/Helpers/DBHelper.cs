@@ -1,4 +1,4 @@
-﻿using Avokates_CRM.Models.DB;
+﻿using Avokates_CRM.DB.Models;
 using Avokates_CRM.Models.Outputs;
 using System;
 using System.Collections.Generic;

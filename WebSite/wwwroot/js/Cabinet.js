@@ -29,7 +29,7 @@
                         email: this.email,
                         phone: this.phone
                     }
-                    DataRequest('CabinetInfoSaveChanges', body, true,
+                    DataRequest('Data', 'CabinetInfoSaveChanges', body, true,
                         function (result) {
                             location.reload();
                         });
@@ -46,7 +46,7 @@
 
 function GetCabinetInfo(model)
 {
-    DataRequest('GetCabinetInfo', null, true,
+    DataRequest('Data', 'GetCabinetInfo', null, true,
         function (result) {
             model.name = result.name;
             model.surname = result.surname;

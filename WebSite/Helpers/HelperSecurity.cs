@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
 using Avokates_CRM.Models.ApiModels;
-using Avokates_CRM.Models.DB;
+using Avokates_CRM.DB.Models;
 using System.IO;
 
 namespace WebSite.Helpers

@@ -25,7 +25,7 @@ function GetCasesList(model)
 {
     var lbl = document.getElementById("errorLabel");
     var result;
-    DataRequest('GetCasesList', null, true,
+    DataRequest('Data', 'GetCasesList', null, true,
         function (result) {
             model.casesList = result.casesList;
         },

@@ -51,9 +51,7 @@ namespace Avokates_CRM.Controllers
                 HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
                // return Ok(res);
                return Redirect("~/Home/Index");
-
             }
-
         }
     }
 }

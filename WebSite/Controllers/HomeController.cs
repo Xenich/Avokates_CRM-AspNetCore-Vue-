@@ -13,10 +13,10 @@ using WebSite.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
-namespace WebSite.Controllers
+namespace Avokates_CRM.Controllers
 {
     [Authorize]
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly IDataLayer dl;      // dataLayer
         public HomeController(IDataLayer dataLayer)      // в Startup : AddScoped<IDataLayer, DataLayer>();
@@ -64,7 +64,7 @@ namespace WebSite.Controllers
             return View();
         }
 
-        // получение определенного дела
+            // получение определенного дела
         public IActionResult Case(int id)
         {
             string token = GetToken();
@@ -88,12 +88,6 @@ namespace WebSite.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        private string GetToken()
-        {
-            string b = Request.Headers["authorization"].ToString();
-            return b.Substring(7, b.Length - 7);    // первые 7 символов - это слово "Bearer "
         }
     }
 }

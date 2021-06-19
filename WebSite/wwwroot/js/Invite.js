@@ -17,7 +17,7 @@
                         password: this.password,
                         invitingToken: $('#inviteToken').html()
                     }
-                    DataRequest('CreateUserByInvite', body, true,
+                    DataRequest('Data', 'CreateUserByInvite', body, true,
                         function (result)
                         {
                             localStorage.setItem("privateKey" + result.userUid, result.privateKey);

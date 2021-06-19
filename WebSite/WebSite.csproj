@@ -15,13 +15,17 @@
     <PackageReference Include="MailKit" Version="2.13.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
     <PackageReference Include="RestSharp" Version="106.11.7" />
 	 <PackageReference Include="StoredProcedureEFCore" Version="1.0.5" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ModelsTest\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Avokates_CRM.DB\Avokates_CRM.DB.csproj" />
   </ItemGroup>
 
 </Project>

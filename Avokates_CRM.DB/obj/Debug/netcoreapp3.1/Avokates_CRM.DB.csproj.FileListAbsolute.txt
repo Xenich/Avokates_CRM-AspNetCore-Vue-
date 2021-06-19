@@ -1,0 +1,9 @@
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Data_Layer\Avokates_CRM.DB\bin\Debug\netcoreapp3.1\Avokates_CRM.DB.deps.json
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Data_Layer\Avokates_CRM.DB\bin\Debug\netcoreapp3.1\Avokates_CRM.DB.dll
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Data_Layer\Avokates_CRM.DB\obj\Debug\netcoreapp3.1\Avokates_CRM.DB.csprojAssemblyReference.cache
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Data_Layer\Avokates_CRM.DB\obj\Debug\netcoreapp3.1\Avokates_CRM.DB.AssemblyInfoInputs.cache
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Data_Layer\Avokates_CRM.DB\obj\Debug\netcoreapp3.1\Avokates_CRM.DB.AssemblyInfo.cs
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Data_Layer\Avokates_CRM.DB\bin\Debug\netcoreapp3.1\Avokates_CRM.DB.pdb
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Data_Layer\Avokates_CRM.DB\obj\Debug\netcoreapp3.1\Avokates_CRM.DB.csproj.CoreCompileInputs.cache
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Data_Layer\Avokates_CRM.DB\obj\Debug\netcoreapp3.1\Avokates_CRM.DB.dll
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Data_Layer\Avokates_CRM.DB\obj\Debug\netcoreapp3.1\Avokates_CRM.DB.pdb
