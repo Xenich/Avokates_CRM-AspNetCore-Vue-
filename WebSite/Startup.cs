@@ -13,15 +13,16 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using System;
 
-using Avokates_CRM;
 
-using Avokates_CRM.DB.Models;
-using WebSite.Helpers;
-using WebSite.DataLayer;
-using Avokates_CRM.Helpers;
+
+using Advokates_CRM.DB.Models;
+
 using Microsoft.Extensions.Primitives;
 using System.Net;
 using System.Threading.Tasks;
+using Advokates_CRM.Layer_Interfaces;
+using Advokates_CRM.BL;
+using Advokates_CRM.BL.Helpers;
 
 namespace WebSite
 {

@@ -21,11 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ModelsTest\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Avokates_CRM.DB\Avokates_CRM.DB.csproj" />
+    <ProjectReference Include="..\Advokates_CRM.BL\Advokates_CRM.BL.csproj" />
+    <ProjectReference Include="..\Advokates_CRM.DB\Advokates_CRM.DB.csproj" />
+    <ProjectReference Include="..\Advokates_CRM.Layer_Interfaces\Advokates_CRM.Layer_Interfaces.csproj" />
+    <ProjectReference Include="..\Advokates_CRM_BL_Models\Advokates_CRM.BL_Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -5,7 +5,13 @@ VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebSite", "WebSite\WebSite.csproj", "{9C6B2CE0-2D7D-4808-A343-B30333CB795C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avokates_CRM.DB", "Avokates_CRM.DB\Avokates_CRM.DB.csproj", "{D1FEF33D-01E8-4046-982B-5D33DA7C4DB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Advokates_CRM.DB", "Advokates_CRM.DB\Advokates_CRM.DB.csproj", "{D1FEF33D-01E8-4046-982B-5D33DA7C4DB1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Advokates_CRM.BL", "Advokates_CRM.BL\Advokates_CRM.BL.csproj", "{1EFBC67C-C535-4D7B-9573-B85F4A8766C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Advokates_CRM.BL_Models", "Advokates_CRM_BL_Models\Advokates_CRM.BL_Models.csproj", "{1A8F54CA-4F83-4632-AB04-B00B3AA4A6B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Advokates_CRM.Layer_Interfaces", "Advokates_CRM.Layer_Interfaces\Advokates_CRM.Layer_Interfaces.csproj", "{D0928F29-EF62-44CA-B549-1DC12565671E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{D1FEF33D-01E8-4046-982B-5D33DA7C4DB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1FEF33D-01E8-4046-982B-5D33DA7C4DB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1FEF33D-01E8-4046-982B-5D33DA7C4DB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EFBC67C-C535-4D7B-9573-B85F4A8766C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EFBC67C-C535-4D7B-9573-B85F4A8766C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EFBC67C-C535-4D7B-9573-B85F4A8766C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EFBC67C-C535-4D7B-9573-B85F4A8766C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A8F54CA-4F83-4632-AB04-B00B3AA4A6B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A8F54CA-4F83-4632-AB04-B00B3AA4A6B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A8F54CA-4F83-4632-AB04-B00B3AA4A6B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A8F54CA-4F83-4632-AB04-B00B3AA4A6B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0928F29-EF62-44CA-B549-1DC12565671E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0928F29-EF62-44CA-B549-1DC12565671E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0928F29-EF62-44CA-B549-1DC12565671E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0928F29-EF62-44CA-B549-1DC12565671E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

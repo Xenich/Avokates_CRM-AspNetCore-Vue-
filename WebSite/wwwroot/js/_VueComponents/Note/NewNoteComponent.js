@@ -66,8 +66,7 @@
                                         <input type="button" v-on:click="Add" value="Сохранить" />  
                                     </div>
                                 </div>
-                            </div>
-                            
+                            </div>                            
                         </div>
                     </transition>`
         });

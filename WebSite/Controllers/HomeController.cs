@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Avokates_CRM.Models.Outputs;
+using Advokates_CRM_BL_Models.Outputs;
 using Microsoft.AspNetCore.Mvc;
 
 using Avokates_CRM.Models;
-using Avokates_CRM.Models.ApiModels;
-using WebSite.DataLayer;
-using WebSite.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Advokates_CRM.Layer_Interfaces;
+using Advokates_CRM.BL.Helpers;
 
 namespace Avokates_CRM.Controllers
 {

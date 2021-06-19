@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.2",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.2": {
+      "Advokates_CRM_BL_Models/1.0.0": {
+        "runtime": {
+          "Advokates_CRM_BL_Models.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Advokates_CRM_BL_Models/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

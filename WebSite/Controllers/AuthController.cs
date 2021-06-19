@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Avokates_CRM.Models.Outputs;
+using Advokates_CRM_BL_Models.Outputs;
 
-using Avokates_CRM.Models.Inputs;
+using Advokates_CRM_BL_Models.Inputs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Avokates_CRM.Models;
-using WebSite.DataLayer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Avokates_CRM.Models.ApiModels;
 using System.Net;
+using Advokates_CRM.Layer_Interfaces;
 
 namespace Avokates_CRM.Controllers
 {
