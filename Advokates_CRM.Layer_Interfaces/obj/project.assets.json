@@ -251,14 +251,14 @@
           "lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.dll": {}
         }
       },
-      "Advokates_CRM.BL_Models/1.0.0": {
+      "Advokates_CRM.DTO/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v2.2",
         "compile": {
-          "bin/placeholder/Advokates_CRM.BL_Models.dll": {}
+          "bin/placeholder/Advokates_CRM.DTO.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Advokates_CRM.BL_Models.dll": {}
+          "bin/placeholder/Advokates_CRM.DTO.dll": {}
         }
       }
     }
@@ -809,15 +809,15 @@
         "version.txt"
       ]
     },
-    "Advokates_CRM.BL_Models/1.0.0": {
+    "Advokates_CRM.DTO/1.0.0": {
       "type": "project",
-      "path": "../Advokates_CRM_BL_Models/Advokates_CRM.BL_Models.csproj",
-      "msbuildProject": "../Advokates_CRM_BL_Models/Advokates_CRM.BL_Models.csproj"
+      "path": "../Advokates_CRM_BL_Models/Advokates_CRM.DTO.csproj",
+      "msbuildProject": "../Advokates_CRM_BL_Models/Advokates_CRM.DTO.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.2": [
-      "Advokates_CRM.BL_Models >= 1.0.0",
+      "Advokates_CRM.DTO >= 1.0.0",
       "Microsoft.AspNetCore.Http.Features >= 2.1.1",
       "Microsoft.NETCore.App >= 2.2.0"
     ]
@@ -852,8 +852,8 @@
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj": {
-              "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj"
+            "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj": {
+              "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj"
             }
           }
         }

@@ -14,3 +14,4 @@ D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.DB\obj\
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.DB\obj\Debug\netcoreapp2.2\Advokates_CRM.DB.AssemblyInfo.cs
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.DB\obj\Debug\netcoreapp2.2\Advokates_CRM.DB.dll
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.DB\obj\Debug\netcoreapp2.2\Advokates_CRM.DB.pdb
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.DB\obj\Debug\netcoreapp2.2\Advokates_CRM.DB.csprojAssemblyReference.cache

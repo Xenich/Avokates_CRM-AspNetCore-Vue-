@@ -1,4 +1,4 @@
-﻿using Advokates_CRM_BL_Models.Outputs;
+﻿using Advokates_CRM_DTO.Outputs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +11,10 @@ namespace Advokates_CRM.BL.Helpers
         public static T SetDBProblem(T t, string text)
         {
             t.Status = ResultBase.StatusBad;
-            t.ErrorMessages = new List<ErrorMessageResult>
-            {
-                new ErrorMessageResult
-                {
-                    message = text
-                }
-            };
+            t.ErrorMessages.Add(new ErrorMessageResult
+                                    {
+                                        message = text
+                                    });
             return t;
         }
 
@@ -25,13 +22,11 @@ namespace Advokates_CRM.BL.Helpers
         {
             ResultBase result = new ResultBase();
             result.Status = ResultBase.StatusBad;
-            result.ErrorMessages = new List<ErrorMessageResult>()
-            {
-                new ErrorMessageResult
-                {
-                    message = "Token Invalid"
-                }
-            };
+            result.Status = ResultBase.StatusBad;
+            result.ErrorMessages.Add(new ErrorMessageResult
+                                        {
+                                            message = "Token Invalid"
+                                        });
             return result;
         }
     }

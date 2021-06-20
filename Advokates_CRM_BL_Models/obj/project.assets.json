@@ -693,9 +693,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj",
-      "projectName": "Advokates_CRM.BL_Models",
-      "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj",
+      "projectUniqueName": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj",
+      "projectName": "Advokates_CRM.DTO",
+      "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj",
       "packagesPath": "C:\\Users\\Orfeus\\.nuget\\packages\\",
       "outputPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\obj\\",
       "projectStyle": "PackageReference",

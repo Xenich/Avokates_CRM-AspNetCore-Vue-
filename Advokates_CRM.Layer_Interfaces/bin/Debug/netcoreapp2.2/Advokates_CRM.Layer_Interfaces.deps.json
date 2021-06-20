@@ -8,7 +8,7 @@
     ".NETCoreApp,Version=v2.2": {
       "Advokates_CRM.Layer_Interfaces/1.0.0": {
         "dependencies": {
-          "Advokates_CRM.BL_Models": "1.0.0",
+          "Advokates_CRM.DTO": "1.0.0",
           "Microsoft.AspNetCore.Http.Features": "2.1.1"
         },
         "runtime": {
@@ -47,9 +47,9 @@
           }
         }
       },
-      "Advokates_CRM.BL_Models/1.0.0": {
+      "Advokates_CRM.DTO/1.0.0": {
         "runtime": {
-          "Advokates_CRM.BL_Models.dll": {}
+          "Advokates_CRM.DTO.dll": {}
         }
       }
     }
@@ -88,7 +88,7 @@
       "path": "system.runtime.compilerservices.unsafe/4.5.1",
       "hashPath": "system.runtime.compilerservices.unsafe.4.5.1.nupkg.sha512"
     },
-    "Advokates_CRM.BL_Models/1.0.0": {
+    "Advokates_CRM.DTO/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

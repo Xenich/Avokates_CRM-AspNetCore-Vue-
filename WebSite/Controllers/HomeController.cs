@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Advokates_CRM_BL_Models.Outputs;
+using Advokates_CRM_DTO.Outputs;
 using Microsoft.AspNetCore.Mvc;
 
 using Avokates_CRM.Models;

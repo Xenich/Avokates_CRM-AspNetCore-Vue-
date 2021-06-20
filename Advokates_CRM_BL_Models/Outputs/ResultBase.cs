@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Advokates_CRM_BL_Models.Outputs
+namespace Advokates_CRM_DTO.Outputs
 {
     public class ResultBase
     {
         public string Status { get; set; }
-        public List<ErrorMessageResult> ErrorMessages { get; set; }
+        public List<ErrorMessageResult> ErrorMessages = new List<ErrorMessageResult>();
 
         public static string StatusOk = "ok";
         public static string StatusBad = "bad";

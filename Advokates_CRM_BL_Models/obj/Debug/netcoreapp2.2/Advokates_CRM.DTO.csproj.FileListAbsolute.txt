@@ -1,0 +1,9 @@
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM_BL_Models\bin\Debug\netcoreapp2.2\Advokates_CRM.DTO.deps.json
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM_BL_Models\bin\Debug\netcoreapp2.2\Advokates_CRM.DTO.dll
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM_BL_Models\bin\Debug\netcoreapp2.2\Advokates_CRM.DTO.pdb
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM_BL_Models\obj\Debug\netcoreapp2.2\Advokates_CRM.DTO.csproj.CoreCompileInputs.cache
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM_BL_Models\obj\Debug\netcoreapp2.2\Advokates_CRM.DTO.AssemblyInfoInputs.cache
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM_BL_Models\obj\Debug\netcoreapp2.2\Advokates_CRM.DTO.AssemblyInfo.cs
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM_BL_Models\obj\Debug\netcoreapp2.2\Advokates_CRM.DTO.dll
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM_BL_Models\obj\Debug\netcoreapp2.2\Advokates_CRM.DTO.pdb
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM_BL_Models\obj\Debug\netcoreapp2.2\Advokates_CRM.DTO.csprojAssemblyReference.cache

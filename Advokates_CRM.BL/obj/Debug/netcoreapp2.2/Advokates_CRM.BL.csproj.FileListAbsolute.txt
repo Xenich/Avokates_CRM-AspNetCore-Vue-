@@ -14,11 +14,11 @@ D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\obj\
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\obj\Debug\netcoreapp2.2\Advokates_CRM.BL.AssemblyInfo.cs
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\obj\Debug\netcoreapp2.2\Advokates_CRM.BL.dll
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\obj\Debug\netcoreapp2.2\Advokates_CRM.BL.pdb
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\bin\Debug\netcoreapp2.2\Advokates_CRM.BL_Models.dll
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\bin\Debug\netcoreapp2.2\Advokates_CRM.DB.dll
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\bin\Debug\netcoreapp2.2\Advokates_CRM.Layer_Interfaces.dll
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\bin\Debug\netcoreapp2.2\Advokates_CRM.DB.pdb
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\bin\Debug\netcoreapp2.2\Advokates_CRM.Layer_Interfaces.pdb
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\bin\Debug\netcoreapp2.2\Advokates_CRM.BL_Models.pdb
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\obj\Debug\netcoreapp2.2\Advokates_CRM.BL.csproj.CopyComplete
 D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\obj\Debug\netcoreapp2.2\Advokates_CRM.BL.csproj.CoreCompileInputs.cache
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\bin\Debug\netcoreapp2.2\Advokates_CRM.DTO.dll
+D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Advokates_CRM.BL\bin\Debug\netcoreapp2.2\Advokates_CRM.DTO.pdb

@@ -45,9 +45,7 @@ namespace WebSite
             services.AddDbContext<LawyerCRMContext>(options =>
                 options.UseSqlServer(connection));
 
-                // регистрируем сервисы - зависимости
-            services.AddScoped<ISecuryty, Security>();
-            services.AddScoped<IDataLayer, DataLayerDB>();
+            RegisterDependencies(services);            
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -113,6 +111,20 @@ namespace WebSite
             //});
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+        }
+
+        /// <summary>
+        /// Регистрация зависимостей
+        /// </summary>
+        /// <param name="services"></param>
+        private void RegisterDependencies(IServiceCollection services)
+        {
+            services.AddScoped<ISecurity, Security>();
+            services.AddScoped<IDataLayer, DataLayerDB>();
+            services.AddScoped<IDataLayerCabinet, DataLayerCabinet>();
+            services.AddScoped<IDataLayerCase, DataLayerCase>();
+            services.AddScoped<IDataLayerNote, DataLayerNote>();
+            services.AddScoped<IErrorHandler, _ErrorHandler>();
         }
 
             // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

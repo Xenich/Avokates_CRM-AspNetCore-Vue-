@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0kbbmqpqVGEQRrjwjNGCQAmt0SyqHHe5cHWhGAs8RXMbBQzI9SjQ01mBw+doyoQmaQq2PLRyZnW4M7vh0fGfmg==",
+  "dgSpecHash": "TQ7WerOzsePaeCFxj5VPkmj6n2iEV2OE9MK6faeiD1/92yBxg3EeS5oBknKWfSLa4wmQVFWANQgVNSTJp2KcSw==",
   "success": true,
-  "projectFilePath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj",
+  "projectFilePath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Orfeus\\.nuget\\packages\\microsoft.netcore.app\\2.2.0\\microsoft.netcore.app.2.2.0.nupkg.sha512",
     "C:\\Users\\Orfeus\\.nuget\\packages\\microsoft.netcore.dotnetapphost\\2.2.0\\microsoft.netcore.dotnetapphost.2.2.0.nupkg.sha512",

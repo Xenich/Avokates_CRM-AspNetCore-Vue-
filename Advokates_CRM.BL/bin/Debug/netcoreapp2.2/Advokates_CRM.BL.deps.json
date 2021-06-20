@@ -8,8 +8,8 @@
     ".NETCoreApp,Version=v2.2": {
       "Advokates_CRM.BL/1.0.0": {
         "dependencies": {
-          "Advokates_CRM.BL_Models": "1.0.0",
           "Advokates_CRM.DB": "1.0.0",
+          "Advokates_CRM.DTO": "1.0.0",
           "Advokates_CRM.Layer_Interfaces": "1.0.0",
           "MailKit": "2.13.0",
           "Microsoft.IdentityModel.Tokens": "6.11.1",
@@ -555,11 +555,6 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "Advokates_CRM.BL_Models/1.0.0": {
-        "runtime": {
-          "Advokates_CRM.BL_Models.dll": {}
-        }
-      },
       "Advokates_CRM.DB/1.0.0": {
         "dependencies": {
           "StoredProcedureEFCore": "1.0.5"
@@ -568,9 +563,14 @@
           "Advokates_CRM.DB.dll": {}
         }
       },
+      "Advokates_CRM.DTO/1.0.0": {
+        "runtime": {
+          "Advokates_CRM.DTO.dll": {}
+        }
+      },
       "Advokates_CRM.Layer_Interfaces/1.0.0": {
         "dependencies": {
-          "Advokates_CRM.BL_Models": "1.0.0",
+          "Advokates_CRM.DTO": "1.0.0",
           "Microsoft.AspNetCore.Http.Features": "2.1.1"
         },
         "runtime": {
@@ -1019,12 +1019,12 @@
       "path": "system.threading.tasks/4.3.0",
       "hashPath": "system.threading.tasks.4.3.0.nupkg.sha512"
     },
-    "Advokates_CRM.BL_Models/1.0.0": {
+    "Advokates_CRM.DB/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Advokates_CRM.DB/1.0.0": {
+    "Advokates_CRM.DTO/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

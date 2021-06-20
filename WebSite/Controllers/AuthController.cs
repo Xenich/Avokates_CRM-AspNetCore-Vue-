@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Advokates_CRM_BL_Models.Outputs;
+using Advokates_CRM_DTO.Outputs;
 
-using Advokates_CRM_BL_Models.Inputs;
+using Advokates_CRM_DTO.Inputs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +17,8 @@ namespace Avokates_CRM.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly ISecuryty dl;      // dataLayer
-        public AuthController(ISecuryty dataLayer)      // в Startup : AddScoped<ISecuryty, Security>();
+        private readonly ISecurity dl;      // dataLayer
+        public AuthController(ISecurity dataLayer)      // в Startup : AddScoped<ISecuryty, Security>();
         {
             dl = dataLayer;
         }

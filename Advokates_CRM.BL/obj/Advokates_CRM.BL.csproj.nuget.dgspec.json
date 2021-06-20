@@ -36,8 +36,8 @@
               "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM.Layer_Interfaces\\Advokates_CRM.Layer_Interfaces.csproj": {
                 "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM.Layer_Interfaces\\Advokates_CRM.Layer_Interfaces.csproj"
               },
-              "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj": {
-                "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj"
+              "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj": {
+                "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj"
               }
             }
           }
@@ -180,8 +180,8 @@
         "frameworks": {
           "netcoreapp2.2": {
             "projectReferences": {
-              "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj": {
-                "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj"
+              "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj": {
+                "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj"
               }
             }
           }
@@ -220,12 +220,12 @@
         }
       }
     },
-    "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj": {
+    "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj",
-        "projectName": "Advokates_CRM.BL_Models",
-        "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.BL_Models.csproj",
+        "projectUniqueName": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj",
+        "projectName": "Advokates_CRM.DTO",
+        "projectPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\Advokates_CRM.DTO.csproj",
         "packagesPath": "C:\\Users\\Orfeus\\.nuget\\packages\\",
         "outputPath": "D:\\Projects\\GoogleDrive\\Programming\\C#\\ASPNet\\Avokates_CRM\\Advokates_CRM_BL_Models\\obj\\",
         "projectStyle": "PackageReference",

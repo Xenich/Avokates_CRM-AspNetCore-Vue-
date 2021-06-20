@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Advokates_CRM_BL_Models\Advokates_CRM.BL_Models.csproj" />
+    <ProjectReference Include="..\Advokates_CRM_BL_Models\Advokates_CRM.DTO.csproj" />
   </ItemGroup>
 
 </Project>

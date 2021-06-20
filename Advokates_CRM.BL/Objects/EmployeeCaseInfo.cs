@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Advokates_CRM_BL_Models.ApiModels
+namespace Advokates_CRM.BL.Objects
 {
     public class EmployeeCaseInfo
     {

@@ -6,12 +6,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.Linq;
-using Advokates_CRM_BL_Models.Outputs;
+using Advokates_CRM_DTO.Outputs;
 using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
 using Advokates_CRM.DB.Models;
 using System.IO;
-using Advokates_CRM_BL_Models.ApiModels;
+using Advokates_CRM.BL.Objects;
 
 namespace Advokates_CRM.BL.Helpers
 {

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Advokates_CRM_BL_Models.Inputs;
-using Advokates_CRM_BL_Models.Outputs;
+using Advokates_CRM_DTO.Inputs;
+using Advokates_CRM_DTO.Outputs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -16,10 +16,19 @@ namespace Avokates_CRM.Controllers
     [Authorize]
     public class DataController : BaseController
     {
-        private readonly IDataLayer dl;      // dataLayer
-        public DataController(IDataLayer dataLayer)      // в Startup : AddScoped<IDataLayer, DataLayer>();
+        private readonly IDataLayer _dl;      // dataLayer
+        private readonly IDataLayerCabinet _dlCabinet;
+        private readonly IDataLayerCase _dlCase;
+        private readonly IDataLayerNote _dlNote;
+        private readonly IErrorHandler _errorHandler;
+        public DataController(IDataLayer dataLayer, IDataLayerCabinet dlCabinet, IDataLayerCase dlCase, IDataLayerNote dlNote, IErrorHandler errorHandler)      // в Startup : AddScoped<IDataLayer, DataLayer>();
         {
-            dl = dataLayer;
+            _dl = dataLayer;
+            _dlCabinet = dlCabinet;
+            _dlCase = dlCase;
+            _dlNote = dlNote;
+            _errorHandler = errorHandler;
+
         }
 
         public IActionResult Test([FromBody] BaseAuth_In auth)
@@ -27,7 +36,7 @@ namespace Avokates_CRM.Controllers
             var c = HttpContext.Request;
             if (HelperSecurity.IsTokenValid(auth.Token))
             {
-                GetCasesList_Out result = dl.GetCasesList(auth.Token);
+                GetCasesList_Out result = _dl.GetCasesList(auth.Token);
                 return Ok(result);
             }
             else
@@ -38,7 +47,7 @@ namespace Avokates_CRM.Controllers
         [Authorize(Roles = "admin, director")]
         public IActionResult CreateInvite(string email)
         {          
-            ResultBase result = dl.CreateInvite(GetToken(), email);
+            ResultBase result = _dl.CreateInvite(GetToken(), email);
             return Ok(result);
         }
 
@@ -46,7 +55,7 @@ namespace Avokates_CRM.Controllers
         [AllowAnonymous]
         public IActionResult CreateUserByInvite(Registration_In value)
         {
-            Registration_Out result = dl.CreateUserByInvite(value);
+            Registration_Out result = _dl.CreateUserByInvite(value);
             if (result.Status == ResultBase.StatusOk)
             {
                 HttpContext.Session.SetString("token", result.JWT);
@@ -55,26 +64,23 @@ namespace Avokates_CRM.Controllers
         }
 
 
-//----------------------------------------------    ДЕЛО    -------------------------------------------------------
-        #region CASE
+        public IActionResult GetMainPage()
+        {
+            string token = GetToken();
+            GetMainPage_Out result = _dl.GetMainPage(token);
+            return Ok(result);
+        }
 
         public IActionResult GetCasesList()
         {            
             string token = GetToken();
             if (HelperSecurity.IsTokenValid(token))
             {
-                GetCasesList_Out result = dl.GetCasesList(token);
+                GetCasesList_Out result = _dl.GetCasesList(token);
                 return Ok(result);
             }
             else
                 return Ok(ErrorHandler<ResultBase>.TokenNotValid());
-        }
-
-        public IActionResult NewCaseGetModel()
-        {
-            string token = GetToken();
-            NewCaseGetModel_Out result = dl.NewCaseGetModel(token);
-            return Ok(result);
         }
 
         #region CASE_FIGURANTS
@@ -82,99 +88,165 @@ namespace Avokates_CRM.Controllers
         public IActionResult AddNewFigurantToCase(NewCase_In figurant, Guid caseUid, string privateKey)
         {
             string token = GetToken();
-            ResultBase result = dl.AddNewFigurantToCase(token, figurant, caseUid, privateKey);
+            ResultBase result = _dl.AddNewFigurantToCase(token, figurant, caseUid, privateKey);
             return Ok(result);
         }
         public IActionResult RemoveFigurantFromCase( Guid caseUid, Guid figurantUid)
         {
             string token = GetToken();
-            ResultBase result = dl.RemoveFigurantFromCase(token, caseUid, figurantUid);
+            ResultBase result = _dl.RemoveFigurantFromCase(token, caseUid, figurantUid);
             return Ok(result);
         }
 
         #endregion
 
-        public IActionResult GetCaseNotes(Guid caseUid, string privateKey)
-        {
-            string token = GetToken();
-            GetCaseNotes_Out result = dl.GetCaseNotes(token, caseUid, privateKey);
-            return Ok(result);
-        }
+        //----------------------------------------------    Запись по делу    -------------------------------------------------------
 
         #region NOTE
 
         public IActionResult AddNewNoteToCase(NewNote_In note, IFormFile[] files, Guid caseUid, string privateKey)
         {
-            string token = GetToken();
-            ResultBase result = dl.AddNewNoteToCase(token, note, files, caseUid, privateKey);
-            return Ok(result);
+            Lambda lambda = () =>
+            {
+                string token = GetToken();
+                ResultBase result = _dlNote.AddNewNoteToCase(token, note, files, caseUid, privateKey);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
         }
 
         public IActionResult RemoveNoteFromCase(Guid caseUid, Guid noteUid)
         {
-            string token = GetToken();
-            ResultBase result = dl.RemoveNoteFromCase(token, caseUid, noteUid);
-            return Ok(result);
+            Lambda lambda = () =>
+            {
+                string token = GetToken();
+                ResultBase result = _dlNote.RemoveNoteFromCase(token, caseUid, noteUid);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
         }
         
         #endregion
 
+//----------------------------------------------    ДЕЛО    -------------------------------------------------------
 
+        #region CASE
 
         public IActionResult CreateNewCase(NewCase_In value)
         {
-            value.Token = GetToken();
-            ResultBase result = dl.CreateNewCase(value);
-            return Ok(result);
+            Lambda lambda = () =>
+            {
+                value.Token = GetToken();
+                ResultBase result = _dlCase.CreateNewCase(value);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
         }
-        public IActionResult GetCaseInfo(int id,string privateKey)
+
+        public IActionResult NewCaseGetModel()
         {
-            string token = GetToken();
-            GetCase_Out result = dl.GetCase(token, id, privateKey);
-            return Ok(result);
+            Lambda lambda = () =>
+            {
+                string token = GetToken();
+                NewCaseGetModel_Out result = _dlCase.NewCaseGetModel(token);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
+        }
+
+            // метод вызывается при обновлении списка записей (например при добавлении новой записи)
+        public IActionResult GetCaseNotes(Guid caseUid, string privateKey)
+        {
+            Lambda lambda = () =>
+            {
+                string token = GetToken();
+                GetCaseNotes_Out result = _dlCase.GetCaseNotes(token, caseUid, privateKey);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
+        }
+
+        public IActionResult GetCaseInfo(int id, string privateKey)
+        {
+            Lambda lambda = () =>
+            {
+                string token = GetToken();
+                GetCase_Out result = _dlCase.GetCase(token, id, privateKey);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
         }
 
         public IActionResult GrantAccessToCase(Guid userUid, Guid caseUid, string privateKey)
         {
-            string token = GetToken();
-            ResultBase result = dl.GrantAccessToCase(token, userUid, caseUid, privateKey);
-            return Ok(result);
+            Lambda lambda = () =>
+            {
+                string token = GetToken();
+                ResultBase result = _dlCase.GrantAccessToCase(token, userUid, caseUid, privateKey);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
         }
 
         public IActionResult RemoveAccessToCase(Guid userUid, Guid caseUid)
         {
-            string token = GetToken();
-            ResultBase result = dl.RemoveAccessToCase(token, userUid, caseUid);
-            return Ok(result);
+            Lambda lambda = () =>
+            {
+                string token = GetToken();
+                ResultBase result = _dlCase.RemoveAccessToCase(token, userUid, caseUid);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
         }
 
 #endregion
 
-//-------------------------------------------------------------------------------------------------------------------------------------
-
-        public IActionResult GetMainPage()
-        {
-            GetMainPage_Out result = dl.GetMainPage(GetToken());
-            return Ok(result);
-        }
+//----------------------------------------------    Личный кабинет      -----------------------------------------------------------------------------------
 
         #region CABINET
 
+        delegate ResultBase Lambda();
+
         public IActionResult GetCabinetInfo()
         {
-            string token = GetToken();
-            GetCabinetInfo_Out result  = dl.GetCabinetInfo(token);
-            return Ok(result);
-
+            Lambda lambda = ()=>
+            {
+                string token = GetToken();
+                GetCabinetInfo_Out result = _dlCabinet.GetCabinetInfo(token);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
         }
 
-        public IActionResult CabinetInfoSaveChanges(GetCabinetInfo_Out cabinetInfo)
+        public IActionResult CabinetInfoSaveChanges(CabinetInfo_In cabinetInfo)
         {
-            string token = GetToken();
-            ResultBase result = dl.CabinetInfoSaveChanges(token, cabinetInfo);
-            return Ok(result);
+            Lambda lambda = () =>
+            {
+                string token = GetToken();
+                ResultBase result = _dlCabinet.CabinetInfoSaveChanges(token, cabinetInfo);
+                return result;
+            };
+            return HandleRequestBasic(lambda);
         }
 
         #endregion
+
+        private IActionResult HandleRequestBasic(Lambda lambda)
+        {
+            ResultBase result;
+            try
+            {
+                result = lambda();
+                if(string.IsNullOrEmpty(result.Status))
+                    result.Status = ResultBase.StatusOk;
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                result = new ResultBase();
+                result.Status = ResultBase.StatusBad;
+                return Ok(_errorHandler.SetDBProblem<ResultBase>(result, ex.Message));
+            }
+        }
     }
 }

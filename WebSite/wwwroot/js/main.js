@@ -16,50 +16,41 @@ function DataRequest(controller, method, body, isAsync, func)
             async: isAsync
         })
         .done(function (result)
-        {
-            
+        {           
             var errorMsg = result.errorMessages;
-            if (errorMsg == null) {
+            var status = result.status;
+            if (status == 'ok')
+            {
                 func(result);
+                if (errorMsg.length != 0)
+                    ErrorHandler(errorMsg);                
             }
             else
             {
-                ErrorHandler( errorMsg);
-            //    if (errorLabel != null)
-            //    {
-            //        var errormes = "Произошла ошибка! ";
-            //        for (var i = 0; i < errorMsg.length; i++) {
-            //            errormes += errorMsg[i].message + "  " + errorMsg[i].errorMessage + "; ";
-            //        }
-
-
-            //        errorLabel.style.display = 'block';
-            //        errorLabel.innerHTML = errormes;
-            //    }
+                ErrorHandler(errorMsg);
             }
         })
-        .fail(function (e) {
+        .fail(function (e)
+        {
             ErrorHandler(null);
-            //if (errorLabel != null) {
-            //    var errormes = "Произошла ошибка! ";
-            //    errorLabel.innerHTML = errormes;
-            //   errorLabel.style.display = "block";
-            //} 
         });
 }
 
 function ErrorHandler(errorMsg)
 {
-    
+    var errormes = '';
     if (errorMsg == null)
     {
-        var errormes = "Произошла ошибка! ";
+        errormes = "Произошла ошибка! ";
     }
     else
     {
         for (var i = 0; i < errorMsg.length; i++)
         {
-            errormes += errorMsg[i].message + "  " + errorMsg[i].errorMessage + "; ";
+            if (errorMsg[i].message != '' && errorMsg[i].message != null)
+                errormes += errorMsg[i].message + "  ";
+            if (errorMsg[i].errorMessage != '' && errorMsg[i].errorMessage != null)
+                errormes += errorMsg[i].errorMessage + "; ";
         }
     }
     errorLabel.innerHTML = errormes;

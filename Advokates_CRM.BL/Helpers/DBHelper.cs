@@ -1,5 +1,5 @@
 ﻿using Advokates_CRM.DB.Models;
-using Advokates_CRM_BL_Models.Outputs;
+using Advokates_CRM_DTO.Outputs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +47,6 @@ namespace Advokates_CRM.BL.Helpers
                  Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
                  CanDelete = (userRole == "director" || isOwner) || n.EmployeeUid == userUidFromToken
              }).ToArray();
-
         }
     }
 }

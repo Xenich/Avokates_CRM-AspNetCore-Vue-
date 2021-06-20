@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Advokates_CRM.DB", "Advokat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Advokates_CRM.BL", "Advokates_CRM.BL\Advokates_CRM.BL.csproj", "{1EFBC67C-C535-4D7B-9573-B85F4A8766C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Advokates_CRM.BL_Models", "Advokates_CRM_BL_Models\Advokates_CRM.BL_Models.csproj", "{1A8F54CA-4F83-4632-AB04-B00B3AA4A6B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Advokates_CRM.DTO", "Advokates_CRM_BL_Models\Advokates_CRM.DTO.csproj", "{1A8F54CA-4F83-4632-AB04-B00B3AA4A6B5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Advokates_CRM.Layer_Interfaces", "Advokates_CRM.Layer_Interfaces\Advokates_CRM.Layer_Interfaces.csproj", "{D0928F29-EF62-44CA-B549-1DC12565671E}"
 EndProject

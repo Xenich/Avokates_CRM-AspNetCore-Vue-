@@ -1,17 +1,17 @@
 ﻿using Advokates_CRM.DB.Models;
-using Advokates_CRM_BL_Models.Inputs;
+using Advokates_CRM_DTO.Inputs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using StoredProcedureEFCore;
-using Advokates_CRM_BL_Models.Outputs;
+using Advokates_CRM_DTO.Outputs;
 using Advokates_CRM.Layer_Interfaces;
 using Advokates_CRM.BL.Helpers;
 
 namespace Advokates_CRM.BL
 {
-    public class Security : ISecuryty
+    public class Security : ISecurity
     {
         private readonly LawyerCRMContext _context;
         public Security(LawyerCRMContext context)
