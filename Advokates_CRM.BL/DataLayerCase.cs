@@ -20,110 +20,105 @@ namespace Advokates_CRM.BL
         /// Получение информации по делу
         /// </summary>
         /// <param name="token">Токен пользователя</param>
-        /// <param name="caseId">Id дела в БД</param>
+        /// <param name="caseIdPerCompany">Id дела в пересчёте на компанию в БД</param>
         /// <param name="privateKey">Приватный ключ пользователя</param>
         /// <returns></returns>
-        public GetCase_Out GetCase(string token, int caseId, string privateKey)
+        public GetCase_Out GetCase(string token, int caseIdPerCompany, string privateKey)
         {
 
             GetCase_Out result = new GetCase_Out();
-            try
-            {
-                //string userUidFromToken = HelperSecurity.GetUserUidByJWT(token);
-                //Dictionary<string, string> jwtValues = HelperSecurity.GetJWTClaimsValues(token);
-                //int companyId = int.Parse(jwtValues["companyId"]);
 
-                JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
-                Guid userUidFromToken = JWTValues.employeeUid;
-                Guid companyUidFromToken = JWTValues.companyUid;
-                string userRole = JWTValues.role;
+            //string userUidFromToken = HelperSecurity.GetUserUidByJWT(token);
+            //Dictionary<string, string> jwtValues = HelperSecurity.GetJWTClaimsValues(token);
+            //int companyId = int.Parse(jwtValues["companyId"]);
 
+            JWTClaims JWTValues = HelperSecurity.GetJWTClaimsValues(token);
+            Guid userUidFromToken = JWTValues.employeeUid;
+            Guid companyUidFromToken = JWTValues.companyUid;
+            string userRole = JWTValues.role;
 
 
-                EmployeeCase employeeCase = (from EmployeeCase ec in _context.EmployeeCase
-                                             join c in _context.Case on ec.CaseUid equals c.Uid
-                                             where userRole == "director" ? (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseId && ec.EmployeeUid == userUidFromToken) :
-                                                                          (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseId && ec.EmployeeUid == userUidFromToken && !c.IsClosed)
-                                             select ec)
-                                             .FirstOrDefault();
-                if (employeeCase == null)
-                    return ErrorHandler<GetCase_Out>.SetDBProblem(result, "Нет права доступа. Обратитесь к администратору");
 
-                byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
+            EmployeeCase employeeCase = (from EmployeeCase ec in _context.EmployeeCase
+                                         join c in _context.Case on ec.CaseUid equals c.Uid
+                                         where userRole == "director" ? (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseIdPerCompany && ec.EmployeeUid == userUidFromToken) :
+                                                                      (c.CompanyUid == companyUidFromToken && c.IdPerCompany == caseIdPerCompany && ec.EmployeeUid == userUidFromToken && !c.IsClosed)
+                                         select ec)
+                                         .FirstOrDefault();
+            if (employeeCase == null)
+                return ErrorHandler<GetCase_Out>.SetDBProblem(result, "Нет права доступа. Обратитесь к администратору");
 
-                var _case = (from c in _context.Case
-                             join cm in _context.Company on c.CompanyUid equals cm.Uid
-                             where cm.Uid == companyUidFromToken && c.IdPerCompany == caseId
-                             select new
-                             {
-                                 Title = c.Title,
-                                 Info = HelperSecurity.DecriptByAes(c.Info, symmetricKey),
-                                 DateCreate = c.Date.Value.ToShortDateString(),
-                                 UpdateDate = c.UpdateDate.Value.ToShortDateString() + " " + c.UpdateDate.Value.ToShortTimeString(),
-                                 IsClosed = c.IsClosed,
-                                 UID = c.Uid
-                             }).FirstOrDefault();
+            byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
 
-                result.CanManage = userRole == "director" || employeeCase.IsOwner;
-                result.Title = _case.Title;
-                result.Info = _case.Info;
-                result.DateCreate = _case.DateCreate;
-                result.UpdateDate = _case.UpdateDate;
-                result.IsClosed = _case.IsClosed;
-                result.CaseUid = _case.UID;
+            var _case = (from c in _context.Case
+                         join cm in _context.Company on c.CompanyUid equals cm.Uid
+                         where cm.Uid == companyUidFromToken && c.IdPerCompany == caseIdPerCompany
+                         select new
+                         {
+                             Title = c.Title,
+                             Info = HelperSecurity.DecriptByAes(c.Info, symmetricKey),
+                             DateCreate = c.Date.Value.ToShortDateString(),
+                             UpdateDate = c.UpdateDate.Value.ToShortDateString() + " " + c.UpdateDate.Value.ToShortTimeString(),
+                             IsClosed = c.IsClosed,
+                             UID = c.Uid
+                         }).FirstOrDefault();
 
-                result.EmployeesWithAccess = (from e in _context.Employee
-                                              join ec in _context.EmployeeCase on e.Uid equals ec.EmployeeUid
-                                              join rLeft in _context.Role on e.RoleUid equals rLeft.Uid into rTemp
-                                              from r in rTemp.DefaultIfEmpty()
-                                              where ec.CaseUid == _case.UID
-                                              select new Case_Employee()
-                                              {
-                                                  Name = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
-                                                  EmployeeUid = e.Uid,
-                                                  IsOwner = ec.IsOwner,
-                                                  CanManageThisEmployee = (userRole == "director" && r.RoleName != "director" && !ec.IsOwner) ||
-                                                                          (employeeCase.IsOwner && r.RoleName != "director" && userUidFromToken != e.Uid)
-                                                  //IsDirector = r.RoleName=="director"
-                                              }).ToArray();
+            result.CanManage = userRole == "director" || employeeCase.IsOwner;
+            result.Title = _case.Title;
+            result.Info = _case.Info;
+            result.DateCreate = _case.DateCreate;
+            result.UpdateDate = _case.UpdateDate;
+            result.IsClosed = _case.IsClosed;
+            result.CaseUid = _case.UID;
 
-                result.EmployeesWithoutAccess = (from e in _context.Employee
-                                                 where e.CompanyUid == companyUidFromToken && !result.EmployeesWithAccess
-                                                                                                         .Select(ee => ee.EmployeeUid)
-                                                                                                         .Contains(e.Uid)
-                                                 select new Case_Employee()
-                                                 {
-                                                     Name = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
-                                                     EmployeeUid = e.Uid,
-                                                     IsOwner = false,
-                                                     CanManageThisEmployee = (userRole == "director" || employeeCase.IsOwner)
-                                                     //IsDirector = false
-                                                 }).ToArray();
+            result.EmployeesWithAccess = (from e in _context.Employee
+                                          join ec in _context.EmployeeCase on e.Uid equals ec.EmployeeUid
+                                          join rLeft in _context.Role on e.RoleUid equals rLeft.Uid into rTemp
+                                          from r in rTemp.DefaultIfEmpty()
+                                          where ec.CaseUid == _case.UID
+                                          select new Case_Employee()
+                                          {
+                                              Name = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
+                                              EmployeeUid = e.Uid,
+                                              IsOwner = ec.IsOwner,
+                                              CanManageThisEmployee = (userRole == "director" && r.RoleName != "director" && !ec.IsOwner) ||
+                                                                      (employeeCase.IsOwner && r.RoleName != "director" && userUidFromToken != e.Uid)
+                                              //IsDirector = r.RoleName=="director"
+                                          }).ToArray();
 
-                result.Figurants = (from f in _context.Figurant
-                                    join rLeft in _context.FigurantRole on f.FigurantRoleUid equals rLeft.Uid into rTemp
-                                    from r in rTemp.DefaultIfEmpty()
-                                    where f.CaseUid == result.CaseUid
-                                    select new Case_Figurant()
-                                    {
-                                        // TODO : доделать проверку на NULL
-                                        FullName = (string.IsNullOrEmpty(f.Surname) ? "" : f.Surname) + " " + (string.IsNullOrEmpty(f.Name) ? "" : f.Name) + " " + (string.IsNullOrEmpty(f.SecondName) ? "" : f.SecondName),
-                                        Uid = f.Uid,
-                                        Phone = (string.IsNullOrEmpty(f.Phone) ? "" : f.Phone),
-                                        Role = r.RoleName
-                                    }).ToArray();
+            result.EmployeesWithoutAccess = (from e in _context.Employee
+                                             where e.CompanyUid == companyUidFromToken && !result.EmployeesWithAccess
+                                                                                                     .Select(ee => ee.EmployeeUid)
+                                                                                                     .Contains(e.Uid)
+                                             select new Case_Employee()
+                                             {
+                                                 Name = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
+                                                 EmployeeUid = e.Uid,
+                                                 IsOwner = false,
+                                                 CanManageThisEmployee = (userRole == "director" || employeeCase.IsOwner)
+                                                 //IsDirector = false
+                                             }).ToArray();
 
-                result.Notes = DBHelper.GetCaseNotes(_case.UID, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, _context);
+            result.Figurants = (from f in _context.Figurant
+                                join rLeft in _context.FigurantRole on f.FigurantRoleUid equals rLeft.Uid into rTemp
+                                from r in rTemp.DefaultIfEmpty()
+                                where f.CaseUid == result.CaseUid
+                                select new Case_Figurant()
+                                {
+                                    // TODO : доделать проверку на NULL
+                                    FullName = (string.IsNullOrEmpty(f.Surname) ? "" : f.Surname) + " " + (string.IsNullOrEmpty(f.Name) ? "" : f.Name) + " " + (string.IsNullOrEmpty(f.SecondName) ? "" : f.SecondName),
+                                    Uid = f.Uid,
+                                    Phone = (string.IsNullOrEmpty(f.Phone) ? "" : f.Phone),
+                                    Role = r.RoleName
+                                }).ToArray();
 
-                result.FigurantRoleOptions = DBHelper.GetFigurantRoleOptions(companyUidFromToken, _context);
-                result.Status = ResultBase.StatusOk;
+            result.Notes = DBHelper.GetCaseNotes(_case.UID, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, _context);
 
-                //TODO : доделать метод
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandler<GetCase_Out>.SetDBProblem(result, ex.Message);
-            }
+            result.FigurantRoleOptions = DBHelper.GetFigurantRoleOptions(companyUidFromToken, _context);
+            result.Status = ResultBase.StatusOk;
+
+            //TODO : доделать метод
+
             return result;
         }
 

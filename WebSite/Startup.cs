@@ -124,7 +124,10 @@ namespace WebSite
             services.AddScoped<IDataLayerCabinet, DataLayerCabinet>();
             services.AddScoped<IDataLayerCase, DataLayerCase>();
             services.AddScoped<IDataLayerNote, DataLayerNote>();
-            services.AddScoped<IErrorHandler, _ErrorHandler>();
+            services.AddScoped<IDataLayerFigurant, DataLayerFigurant>();
+
+            services.AddScoped<IErrorHandler, DataLayerError>();
+            services.AddScoped<IDataLayerEmployee, DataLayerEmployee>();
         }
 
             // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

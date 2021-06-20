@@ -12,19 +12,9 @@ namespace Advokates_CRM.Layer_Interfaces
     {
         string CheckConnectionToDB();
 
-        ResultBase CreateInvite(string token, string email);
-        InviteResult Invite(string inviteToken);
-
         GetMainPage_Out GetMainPage(string token);
 
         GetCasesList_Out GetCasesList(string token);
 
-        ResultBase AddNewFigurantToCase(string token, NewCase_In figurantIn, Guid caseUid, string privateKey);
-        ResultBase RemoveFigurantFromCase(string token, Guid caseUid, Guid figurantUid);
-      
-
-        Registration_Out CreateUserByInvite(Registration_In value);
-
-        // ResultBase GetFigurantRoles( BaseAuth_In inputValue);
     }
 }

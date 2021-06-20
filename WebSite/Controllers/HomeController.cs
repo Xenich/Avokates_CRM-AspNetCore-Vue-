@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Advokates_CRM_DTO.Outputs;
 using Microsoft.AspNetCore.Mvc;
-
 using Avokates_CRM.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Advokates_CRM.Layer_Interfaces;
-using Advokates_CRM.BL.Helpers;
 
 namespace Avokates_CRM.Controllers
 {
@@ -18,37 +12,42 @@ namespace Avokates_CRM.Controllers
     public class HomeController : BaseController
     {
         private readonly IDataLayer dl;      // dataLayer
-        public HomeController(IDataLayer dataLayer)      // в Startup : AddScoped<IDataLayer, DataLayer>();
+        private readonly IDataLayerEmployee _dlEmployee;
+
+        public HomeController(IDataLayer dataLayer, IDataLayerEmployee dlEmployee, IErrorHandler errorHandler)      // в Startup : AddScoped<IDataLayer, DataLayer>();
+            : base(errorHandler)
         {
             dl = dataLayer;
+            _dlEmployee = dlEmployee;
         }
 
         public IActionResult Index()
         {
-            string token = GetToken();
-            if (HelperSecurity.IsTokenValid(token))
+            ViewLambda viewLambda = () =>
             {
+                string token = GetToken();
                 GetMainPage_Out result = dl.GetMainPage(token);
                 return View(result);
-            }
-            else
-                return View("ErrorView");
+            };
+            return HandleRequestView(viewLambda);
         }
 
         public IActionResult UnLogin()
         {
             HttpContext.Session.Clear();
             return Redirect("~/Auth/Authorization");
-
         }
-
 
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Invite(string token)
         {
-            InviteResult result = dl.Invite(token);
-            return View(result);
+            ViewLambda viewLambda = () =>
+            {
+                InviteResult result = _dlEmployee.Invite(token);
+                return View(result);
+            };
+            return HandleRequestView(viewLambda);
         }
 
         public IActionResult Cabinet()
@@ -63,13 +62,17 @@ namespace Avokates_CRM.Controllers
             return View();
         }
 
-            // получение определенного дела
+        // получение определенного дела
         public IActionResult Case(int id)
         {
-            string token = GetToken();
-            ViewData["id"] = id.ToString();
-            ViewData["userUid"] = HelperSecurity.GetUserUidByJWT(token).ToString();               
-            return View();
+            ViewLambda viewLambda = () =>
+            {
+                string token = GetToken();
+                ViewData["id"] = id.ToString();
+                ViewData["userUid"] = _dlEmployee.GetUserUidByJWT(token);
+                return View();
+            };
+            return HandleRequestView(viewLambda);
         }
 
         public IActionResult NewCase()

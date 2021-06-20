@@ -6,32 +6,20 @@ using Advokates_CRM_DTO.Outputs;
 
 namespace Advokates_CRM.BL
 {
-    public class _ErrorHandler :IErrorHandler
+    public class DataLayerError :IErrorHandler
     {
-        public  T SetDBProblem<T>(T t, string text) where T : ResultBase
+        public  T SetDBProblem<T>(T result, string text) where T : ResultBase
         {
-            t.Status = ResultBase.StatusBad;
-            t.ErrorMessages = new List<ErrorMessageResult>
-            {
-                new ErrorMessageResult
-                {
-                    message = text
-                }
-            };
-            return t;
+            result.Status = ResultBase.StatusBad;
+            result.ErrorMessages.Add(new ErrorMessageResult { message = text });
+            return result;
         }
 
         public ResultBase TokenNotValid()
         {
             ResultBase result = new ResultBase();
             result.Status = ResultBase.StatusBad;
-            result.ErrorMessages = new List<ErrorMessageResult>()
-            {
-                new ErrorMessageResult
-                {
-                    message = "Token Invalid"
-                }
-            };
+            result.ErrorMessages.Add(new ErrorMessageResult { message = "Token Invalid" });
             return result;
         }
     }
