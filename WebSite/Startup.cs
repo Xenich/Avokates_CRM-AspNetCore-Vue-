@@ -5,18 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using System;
-
-
-
 using Advokates_CRM.DB.Models;
-
 using Microsoft.Extensions.Primitives;
 using System.Net;
 using System.Threading.Tasks;
@@ -32,8 +27,7 @@ namespace WebSite
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            HelperSecurity.Init(configuration);
-            BaseHelper.Init(configuration);
+            BisnesLogicInitialisation.Init(configuration);            
         }
 
             // This method gets called by the runtime. Use this method to add services to the container.
