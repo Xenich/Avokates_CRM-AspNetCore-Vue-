@@ -1,17 +1,17 @@
 WebSite/bin/
 WebSite/obj/
 
-Advokates_CRM.BL/bin
-Advokates_CRM.BL/obj
+Advokates_CRM.BL\bin\
+Advokates_CRM.BL/obj/
 
-Advokates_CRM.DB/bin
-Advokates_CRM.DB/obj
+Advokates_CRM.DB/bin/
+Advokates_CRM.DB/obj/
 
-Advokates_CRM.Layer_Interfaces/bin
-Advokates_CRM.Layer_Interfaces/obj
+Advokates_CRM.Layer_Interfaces/bin/
+Advokates_CRM.Layer_Interfaces/obj/
 
-Advokates_CRM_BL_Models/bin
-Advokates_CRM_BL_Models/obj
+Advokates_CRM_BL_Models/bin/
+Advokates_CRM_BL_Models/obj/
 
 .vs/
 WebSite/wwwroot/Files/
