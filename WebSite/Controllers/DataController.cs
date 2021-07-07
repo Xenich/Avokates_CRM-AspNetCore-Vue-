@@ -150,12 +150,12 @@ namespace Avokates_CRM.Controllers
         }
 
             // метод вызывается при обновлении списка записей (например при добавлении новой записи)
-        public IActionResult GetCaseNotes(Guid caseUid, string privateKey, int elementsCount = 10, int currentPage = 1)
+        public IActionResult GetCaseNotes(int caseIdPerCompany, string privateKey, int elementsCount = 10, int currentPage = 1)
         {
             LambdaDelegate lambda = () =>
             {
                 string token = GetToken();
-                GetCaseNotes_Out result = _dlCase.GetCaseNotes(token, caseUid, privateKey, elementsCount, currentPage);
+                GetCaseNotes_Out result = _dlCase.GetCaseNotes(token, caseIdPerCompany, privateKey, elementsCount, currentPage);
                 return result;
             };
             return _basicRequestHandler.HandleRequest(lambda, _errorHandler);

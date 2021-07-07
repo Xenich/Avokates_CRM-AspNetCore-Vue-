@@ -6,7 +6,8 @@
             props: ['_pageCount', '_currentPage', '_gotopagemethod'],
             methods:
             {
-                isCurrentPage: function (n) {
+                isCurrentPage: function (n)
+                {
                     return n == this._currentPage;
                 }
             },

@@ -4,7 +4,10 @@
     RegisterEmployeeWithoutAccessComponent();       // Компонент сотрудника без доступом к данному делу
     RegisterFigurantsTableComponent();              // компонент - таблица фигурантов по делу
     RegisterNewFigurantComponent();                 // компонент нового фигуранта
-   
+    RegisterNotesListWithPaginationComponent();     // компонент списка заметок с пагинацией
+    RegisterPaginatorComponent();                   // компонент с пагинацией
+    RegisterNoteComponent();                        // компонент записи по делу
+
 //------------------------------------------------------------------------------------------------------------------------------
 
     var vm = new Vue(				// объект класса vue
@@ -47,12 +50,14 @@
             },
             created: function () {			// выполнение кода после создания экземпляра Vue
                 GetCaseInfo(this);
+                GetCaseNotes(this);
             }
         });
 })
 
 
-function GetCaseInfo(model) {
+function GetCaseInfo(model)
+{
     var data = {
         'id': model.caseId,
         'privateKey': localStorage.getItem("privateKey" + model.userUid)
@@ -70,7 +75,7 @@ function GetCaseInfo(model) {
             model.employeesWithAccess = result.employeesWithAccess;
             model.employeesWithoutAccess = result.employeesWithoutAccess;
             model.figurants = result.figurants;
-            model.notes = result.notes;
+            //model.notes = result.notes;
             model.newFigurantCreating = false;
             model.newFigurantNotCreating = true;
             model.figurantRoleOptions = result.figurantRoleOptions;
@@ -81,3 +86,22 @@ function GetCaseInfo(model) {
         });
 }
 
+
+
+function GetCaseNotes(model)
+{
+    var data = {
+        'caseIdPerCompany': model.caseId,
+        'privateKey': localStorage.getItem("privateKey" + model.userUid)
+    }
+    var lbl = document.getElementById("errorLabel");
+    DataRequest('Data', 'GetCaseNotes', data, true,
+        function (result) {
+            model.notes = result.notes;
+            model.newNoteCreating = false;
+            model.newNoteNotCreating = true;
+        },
+        function (errorMsg) {
+            ErrorHandler(lbl, errorMsg)
+        });
+}

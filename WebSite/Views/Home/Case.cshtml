@@ -144,7 +144,11 @@
             </div>
             <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
                 <div class="card-body">
-
+                    <noteslistwithpaginationcomponent v-bind:_notes="notes"
+                                                      v-bind:_canManage="canManage"
+                                                      v-bind:_caseUid="caseUid">
+                    </noteslistwithpaginationcomponent>
+                    <!--
                     <div class="card-body">
                         <note v-for="note in notes"
                               v-bind:note="note"
@@ -154,6 +158,7 @@
                               v-bind:caseuid="caseUid">
                         </note>
                     </div>
+                        -->
                     @*<div v-if="canManage">*@
                     <input v-if="newNoteNotCreating" type="button" v-on:click="AddNote" value="Добавить новую запись" />
                     @*</div>*@
@@ -170,15 +175,18 @@
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
 
-    <!-- Регистрация компонентов Vue -->
+<!-- Регистрация компонентов Vue -->
 <script src="~/js/_VueComponents/Case/EmployeeWithAccessComponent.js"></script>
 <script src="~/js/_VueComponents/Case/EmployeeWithoutAccessComponent.js"></script>
 <script src="~/js/_VueComponents/Case/FigurantsTableComponent.js"></script>
 <script src="~/js/_VueComponents/Case/NewFigurantComponent.js"></script>
-<script src="~/js/_VueComponents/PaginatorComponent.js"></script>
+
 <script src="~/js/_VueComponents/Note/NoteComponent.js"></script>
 <script src="~/js/_VueComponents/Note/NewNoteComponent.js"></script>
+<script src="~/js/_VueComponents/Case/NotesListWithPaginationComponent.js"></script>
+<script src="~/js/_VueComponents/PaginatorComponent.js"></script>
 
-    <!-- -->
+<!--
 <script src="~/js/Note/Note.js"></script>
+    -->
 <script src="~/js/Case/Case.js"></script>

@@ -112,7 +112,7 @@ namespace Advokates_CRM.BL
                                     Role = r.RoleName
                                 }).ToArray();
 
-            result.Notes = DBHelper.GetCaseNotes(_case.UID, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, elementsCount, currentPage,  _context);
+           //result.Notes = DBHelper.GetCaseNotes(_case.UID, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, elementsCount, currentPage,  _context);
 
             result.FigurantRoleOptions = DBHelper.GetFigurantRoleOptions(companyUidFromToken, _context);
             result.Status = ResultBase.StatusOk;
@@ -234,7 +234,7 @@ namespace Advokates_CRM.BL
             return result;
         }
 
-        public GetCaseNotes_Out GetCaseNotes(string token, Guid caseUid, string privateKey, int elementsCount, int currentPage)
+        public GetCaseNotes_Out GetCaseNotes(string token, int caseIdPerCompany, string privateKey, int elementsCount, int currentPage)
         {
             GetCaseNotes_Out result = new GetCaseNotes_Out();
 
@@ -242,6 +242,11 @@ namespace Advokates_CRM.BL
             Guid userUidFromToken = JWTValues.employeeUid;
             Guid companyUidFromToken = JWTValues.companyUid;
             string userRole = JWTValues.role;
+
+            Guid caseUid = _context.Case.Where(c => c.IdPerCompany == caseIdPerCompany && c.CompanyUid == companyUidFromToken)
+                                        .Select(c => c.Uid).FirstOrDefault();
+            if(caseUid == Guid.Empty)
+                return ErrorHandler<GetCaseNotes_Out>.SetDBProblem(result, "Ошибка получения доступа к делу");
 
             EmployeeCase employeeCase = (from EmployeeCase ec in _context.EmployeeCase
                                          join c in _context.Case on ec.CaseUid equals c.Uid
