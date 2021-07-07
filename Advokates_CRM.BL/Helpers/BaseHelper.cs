@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Advokates_CRM.BL.Helpers
 {
-    public class BaseHelper
+    internal class BaseHelper
     {
         static IConfiguration Configuration;
         public static void Init(IConfiguration configuration)

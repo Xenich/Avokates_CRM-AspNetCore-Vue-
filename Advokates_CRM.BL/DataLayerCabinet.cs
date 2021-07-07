@@ -48,6 +48,7 @@ namespace Advokates_CRM.BL
             emp.SecondName = cabinetInfo.SecondName;
             emp.Phone = cabinetInfo.Phone;
             emp.Email = cabinetInfo.Email;
+            
 
             DateTime bDay;
             bool bDaySuccessParse = DateTime.TryParse(cabinetInfo.Birthday, out bDay);

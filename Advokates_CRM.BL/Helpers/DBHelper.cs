@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Advokates_CRM.BL.Helpers
 {
-    public class DBHelper
+    internal class DBHelper
     {
         public static ItemView[] GetFigurantRoleOptions(Guid companyUid, LawyerCRMContext _context)
         {
@@ -31,7 +31,7 @@ namespace Advokates_CRM.BL.Helpers
         /// <param name="userUidFromToken">Guid пользователя, вызывающего метод</param>
         /// <param name="_context">контекст базы данных</param>
         /// <returns>Массив объектов типа Case_Note</returns>
-        public static Case_Note[] GetCaseNotes(Guid caseUid, byte[] symmetricKey, string userRole, bool isOwner, Guid userUidFromToken, LawyerCRMContext _context)
+        public static Case_Note[] GetCaseNotes(Guid caseUid, byte[] symmetricKey, string userRole, bool isOwner, Guid userUidFromToken, int elementsCount, int currentPage, LawyerCRMContext _context)
         {
              return (from n in _context.Note
              join e in _context.Employee on n.EmployeeUid equals e.Uid

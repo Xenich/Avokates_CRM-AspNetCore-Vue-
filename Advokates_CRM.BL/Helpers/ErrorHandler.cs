@@ -8,7 +8,7 @@ namespace Advokates_CRM.BL.Helpers
 {
     public static class ErrorHandler<T> where T : ResultBase
     {
-        public static T SetDBProblem(T t, string text)
+        internal static T SetDBProblem(T t, string text)
         {
             t.Status = ResultBase.StatusBad;
             t.ErrorMessages.Add(new ErrorMessageResult

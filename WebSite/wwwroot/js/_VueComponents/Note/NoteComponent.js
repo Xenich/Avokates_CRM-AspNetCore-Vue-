@@ -21,10 +21,13 @@
             template: `
                 <div>
                     <div class="row">
-                        <h6  class="col-8">Запись № {{note.id}}</h6>
-                        <label  class="col-4">Дата: {{note.date}}</label>  
+                        <h6  class="col-6">Запись № {{note.id}}</h6>
+                        <label class="col-6">Дата: {{note.date}}</label>  
                     </div>
-                    <label class="row">Добавил: {{note.employeeInfo}}</label>        
+                    <div class="row">
+                        <div class="col-6"></div>
+                        <label class="col-6">Добавил: {{note.employeeInfo}}</label>  
+                    </div>
                     <h5 class="row">{{note.title}}</h5>
                     <div class="row">
                         <div class="col-1"></div>

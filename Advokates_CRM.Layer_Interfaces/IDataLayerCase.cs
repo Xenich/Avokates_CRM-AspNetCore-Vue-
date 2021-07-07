@@ -6,10 +6,10 @@ namespace Advokates_CRM.Layer_Interfaces
 {
     public interface IDataLayerCase
     {
-        GetCase_Out GetCase(string token, int caseId, string privateKey);
+        GetCase_Out GetCase(string token, int caseId, string privateKey, int elementsCount, int currentPage);
         ResultBase CreateNewCase(NewCase_In inputValue);
         NewCaseGetModel_Out NewCaseGetModel(string token);
-        GetCaseNotes_Out GetCaseNotes(string token, Guid caseUid, string privateKey);
+        GetCaseNotes_Out GetCaseNotes(string token, Guid caseUid, string privateKey, int elementsCount, int currentPage);
         ResultBase GrantAccessToCase(string token, Guid userUid, Guid caseUid, string privateKey);
         ResultBase RemoveAccessToCase(string token, Guid userUid, Guid caseUid);
     }

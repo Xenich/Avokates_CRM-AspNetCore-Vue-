@@ -23,7 +23,7 @@ namespace Advokates_CRM.BL
         /// <param name="caseIdPerCompany">Id дела в пересчёте на компанию в БД</param>
         /// <param name="privateKey">Приватный ключ пользователя</param>
         /// <returns></returns>
-        public GetCase_Out GetCase(string token, int caseIdPerCompany, string privateKey)
+        public GetCase_Out GetCase(string token, int caseIdPerCompany, string privateKey, int elementsCount = 10, int currentPage = 1)
         {
 
             GetCase_Out result = new GetCase_Out();
@@ -112,7 +112,7 @@ namespace Advokates_CRM.BL
                                     Role = r.RoleName
                                 }).ToArray();
 
-            result.Notes = DBHelper.GetCaseNotes(_case.UID, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, _context);
+            result.Notes = DBHelper.GetCaseNotes(_case.UID, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, elementsCount, currentPage,  _context);
 
             result.FigurantRoleOptions = DBHelper.GetFigurantRoleOptions(companyUidFromToken, _context);
             result.Status = ResultBase.StatusOk;
@@ -234,7 +234,7 @@ namespace Advokates_CRM.BL
             return result;
         }
 
-        public GetCaseNotes_Out GetCaseNotes(string token, Guid caseUid, string privateKey)
+        public GetCaseNotes_Out GetCaseNotes(string token, Guid caseUid, string privateKey, int elementsCount, int currentPage)
         {
             GetCaseNotes_Out result = new GetCaseNotes_Out();
 
@@ -253,7 +253,7 @@ namespace Advokates_CRM.BL
                 return ErrorHandler<GetCaseNotes_Out>.SetDBProblem(result, "Нет права доступа. Обратитесь к администратору");
 
             byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
-            result.Notes = DBHelper.GetCaseNotes(caseUid, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, _context);
+            result.Notes = DBHelper.GetCaseNotes(caseUid, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, elementsCount, currentPage, _context);
 
             result.Status = ResultBase.StatusOk;
             return result;

@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Advokates_CRM.Layer_Interfaces;
 using Advokates_CRM.BL;
 using Advokates_CRM.BL.Helpers;
+using Avokates_CRM.RequestHandlers;
 
 namespace WebSite
 {
@@ -122,6 +123,9 @@ namespace WebSite
 
             services.AddScoped<IErrorHandler, DataLayerError>();
             services.AddScoped<IDataLayerEmployee, DataLayerEmployee>();
+
+            services.AddScoped<IBasicRequestHandler, BasicRequestHandler>();
+            services.AddScoped<IViewRequestHandler, ViewRequestHandler>();
         }
 
             // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

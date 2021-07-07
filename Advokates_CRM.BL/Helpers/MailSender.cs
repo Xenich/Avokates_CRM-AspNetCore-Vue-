@@ -4,7 +4,7 @@ using MailKit.Net.Smtp;
 
 namespace Advokates_CRM.BL.Helpers
 {
-    class MailSender
+    internal class MailSender
     {
         public async static Task SendEmail(string email, string subject, string message)
         {

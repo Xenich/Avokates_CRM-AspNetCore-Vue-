@@ -15,7 +15,7 @@ using Advokates_CRM.BL.Objects;
 
 namespace Advokates_CRM.BL.Helpers
 {
-    public static class HelperSecurity
+    internal static class HelperSecurity
     {
         static IConfiguration Configuration;
         public static void Init(IConfiguration configuration)

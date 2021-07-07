@@ -5,6 +5,7 @@ using Avokates_CRM.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Advokates_CRM.Layer_Interfaces;
+using Avokates_CRM.RequestHandlers;
 
 namespace Avokates_CRM.Controllers
 {
@@ -13,23 +14,25 @@ namespace Avokates_CRM.Controllers
     {
         private readonly IDataLayer dl;      // dataLayer
         private readonly IDataLayerEmployee _dlEmployee;
+        private readonly IViewRequestHandler _viewRequestHandler;
 
-        public HomeController(IDataLayer dataLayer, IDataLayerEmployee dlEmployee, IErrorHandler errorHandler)      // в Startup : AddScoped<IDataLayer, DataLayer>();
+        public HomeController(IDataLayer dataLayer, IDataLayerEmployee dlEmployee, IViewRequestHandler viewRequestHandler, IErrorHandler errorHandler)      // в Startup : AddScoped<IDataLayer, DataLayer>();
             : base(errorHandler)
         {
             dl = dataLayer;
             _dlEmployee = dlEmployee;
+            _viewRequestHandler = viewRequestHandler;
         }
 
         public IActionResult Index()
         {
-            ViewLambda viewLambda = () =>
+            ViewLambdaDelegate viewLambda = () =>
             {
                 string token = GetToken();
                 GetMainPage_Out result = dl.GetMainPage(token);
                 return View(result);
             };
-            return HandleRequestView(viewLambda);
+            return _viewRequestHandler.HandleRequest(viewLambda, _errorHandler);
         }
 
         public IActionResult UnLogin()
@@ -42,12 +45,12 @@ namespace Avokates_CRM.Controllers
         [HttpGet]
         public IActionResult Invite(string token)
         {
-            ViewLambda viewLambda = () =>
+            ViewLambdaDelegate viewLambda = () =>
             {
                 InviteResult result = _dlEmployee.Invite(token);
                 return View(result);
             };
-            return HandleRequestView(viewLambda);
+            return _viewRequestHandler.HandleRequest(viewLambda, _errorHandler);
         }
 
         public IActionResult Cabinet()
@@ -65,14 +68,14 @@ namespace Avokates_CRM.Controllers
         // получение определенного дела
         public IActionResult Case(int id)
         {
-            ViewLambda viewLambda = () =>
+            ViewLambdaDelegate viewLambda = () =>
             {
                 string token = GetToken();
                 ViewData["id"] = id.ToString();
                 ViewData["userUid"] = _dlEmployee.GetUserUidByJWT(token);
                 return View();
             };
-            return HandleRequestView(viewLambda);
+            return _viewRequestHandler.HandleRequest(viewLambda, _errorHandler);
         }
 
         public IActionResult NewCase()

@@ -1,8 +1,0 @@
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Avokates_CRM.BL\bin\Debug\netcoreapp2.2\Avokates_CRM.BL.deps.json
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Avokates_CRM.BL\bin\Debug\netcoreapp2.2\Avokates_CRM.BL.dll
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Avokates_CRM.BL\bin\Debug\netcoreapp2.2\Avokates_CRM.BL.pdb
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Avokates_CRM.BL\obj\Debug\netcoreapp2.2\Avokates_CRM.BL.csproj.CoreCompileInputs.cache
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Avokates_CRM.BL\obj\Debug\netcoreapp2.2\Avokates_CRM.BL.AssemblyInfoInputs.cache
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Avokates_CRM.BL\obj\Debug\netcoreapp2.2\Avokates_CRM.BL.AssemblyInfo.cs
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Avokates_CRM.BL\obj\Debug\netcoreapp2.2\Avokates_CRM.BL.dll
-D:\Projects\GoogleDrive\Programming\C#\ASPNet\Avokates_CRM\Avokates_CRM.BL\obj\Debug\netcoreapp2.2\Avokates_CRM.BL.pdb
