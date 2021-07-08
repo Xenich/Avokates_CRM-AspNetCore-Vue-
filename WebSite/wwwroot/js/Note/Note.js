@@ -5,6 +5,7 @@
 
 })
 
+/*
 function GetCaseNotes(model) {
     var data = {
         'caseUid': model.caseUid,
@@ -21,3 +22,4 @@ function GetCaseNotes(model) {
             ErrorHandler(lbl, errorMsg)
         });
 }
+*/

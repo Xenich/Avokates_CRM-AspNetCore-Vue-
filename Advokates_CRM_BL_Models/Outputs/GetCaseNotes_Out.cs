@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Advokates_CRM.DTO.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Advokates_CRM_DTO.Outputs
 {
-    public class GetCaseNotes_Out : ResultBase
+    public class GetCaseNotes_Out : ResultBase, IPaginable
     {
         /// <summary>
         /// Общее количесмтво страниц

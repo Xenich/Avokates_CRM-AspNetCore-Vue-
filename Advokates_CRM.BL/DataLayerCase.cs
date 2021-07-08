@@ -258,7 +258,7 @@ namespace Advokates_CRM.BL
                 return ErrorHandler<GetCaseNotes_Out>.SetDBProblem(result, "Нет права доступа. Обратитесь к администратору");
 
             byte[] symmetricKey = HelperSecurity.DecryptByRSA(privateKey, employeeCase.EncriptedAesKey);
-            result.Notes = DBHelper.GetCaseNotes(caseUid, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, elementsCount, currentPage, _context);
+            result = DBHelper.GetCaseNotes(caseUid, symmetricKey, userRole, employeeCase.IsOwner, userUidFromToken, elementsCount, currentPage, _context);
 
             result.Status = ResultBase.StatusOk;
             return result;

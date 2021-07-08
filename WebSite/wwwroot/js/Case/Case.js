@@ -30,7 +30,14 @@
                 figurants: [],
                 newFigurantCreating: false,
                 newFigurantNotCreating: true,
-                notes: [],
+                notesTable:
+                    {
+                        notes: [],
+                        pageCount: 1,  
+                        elementsCount: 5,
+                        currentPage: 1
+                    },                
+
                 newNoteCreating: false,
                 newNoteNotCreating: true,
                 figurantRoleOptions : []
@@ -46,6 +53,12 @@
                 {
                     this.newNoteCreating = true;
                     this.newNoteNotCreating = false;
+                },
+
+                GotoPage: function (currentPage)
+                {
+                    this.notesTable.currentPage = currentPage;
+                    GetCaseNotes(this);
                 }
             },
             created: function () {			// выполнение кода после создания экземпляра Vue
@@ -87,19 +100,21 @@ function GetCaseInfo(model)
 }
 
 
-
 function GetCaseNotes(model)
 {
     var data = {
         'caseIdPerCompany': model.caseId,
-        'privateKey': localStorage.getItem("privateKey" + model.userUid)
+        'privateKey': localStorage.getItem("privateKey" + model.userUid),
+        'elementsCount': model.notesTable.elementsCount,
+        'currentPage': model.notesTable.currentPage
     }
     var lbl = document.getElementById("errorLabel");
     DataRequest('Data', 'GetCaseNotes', data, true,
         function (result) {
-            model.notes = result.notes;
+            model.notesTable.notes = result.notes;
             model.newNoteCreating = false;
             model.newNoteNotCreating = true;
+            model.notesTable.pageCount = result.pageCount;
         },
         function (errorMsg) {
             ErrorHandler(lbl, errorMsg)

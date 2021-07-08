@@ -31,22 +31,35 @@ namespace Advokates_CRM.BL.Helpers
         /// <param name="userUidFromToken">Guid пользователя, вызывающего метод</param>
         /// <param name="_context">контекст базы данных</param>
         /// <returns>Массив объектов типа Case_Note</returns>
-        public static Case_Note[] GetCaseNotes(Guid caseUid, byte[] symmetricKey, string userRole, bool isOwner, Guid userUidFromToken, int elementsCount, int currentPage, LawyerCRMContext _context)
+        public static GetCaseNotes_Out GetCaseNotes(Guid caseUid, byte[] symmetricKey, string userRole, bool isOwner, Guid userUidFromToken, int elementsCount, int currentPage, LawyerCRMContext _context)
         {
-             return (from n in _context.Note
-             join e in _context.Employee on n.EmployeeUid equals e.Uid
-             where n.CaseUid == caseUid
-             orderby n.Updatedate descending
-             select new Case_Note()
-             {
-                 Id = n.Id,
-                 Uid = n.Uid,
-                 Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
-                 EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
-                 Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
-                 Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
-                 CanDelete = (userRole == "director" || isOwner) || n.EmployeeUid == userUidFromToken
-             }).ToArray();
+
+            int skip = PaginationHelper.CalculateOffset(currentPage, elementsCount);
+
+            IQueryable<Case_Note> query = from n in _context.Note
+                    join e in _context.Employee on n.EmployeeUid equals e.Uid
+                    where n.CaseUid == caseUid
+                    orderby n.Updatedate descending
+                    select new Case_Note()
+                    {
+                        Id = n.Id,
+                        Uid = n.Uid,
+                        Date = n.Updatedate.Value.ToShortDateString() + " " + n.Updatedate.Value.ToShortTimeString(),
+                        EmployeeInfo = (string.IsNullOrEmpty(e.Surname) ? "" : e.Surname) + " " + (string.IsNullOrEmpty(e.Name) ? "" : e.Name) + " " + (string.IsNullOrEmpty(e.SecondName) ? "" : e.SecondName),
+                        Title = n.Title == null ? "" : HelperSecurity.DecriptByAes(n.Title, symmetricKey),
+                        Text = n.Text == null ? "" : HelperSecurity.DecriptByAes(n.Text, symmetricKey),
+                        CanDelete = (userRole == "director" || isOwner) || n.EmployeeUid == userUidFromToken
+                    };
+
+            int count = query.Count();
+
+            GetCaseNotes_Out result = new GetCaseNotes_Out();
+
+            result.CurrentPage = currentPage;
+            result.PageCount = (int)Math.Ceiling((decimal)count / elementsCount);
+            result.Notes = query.Skip(skip).Take(elementsCount).ToArray();
+
+            return result;
         }
     }
 }
