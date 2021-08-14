@@ -19,6 +19,10 @@ using Advokates_CRM.Layer_Interfaces;
 using Advokates_CRM.BL;
 using Advokates_CRM.BL.Helpers;
 using Avokates_CRM.RequestHandlers;
+using Advokates_CRM.DB.Migrations;
+using System.Data.SqlClient;
+using FluentMigrator.Runner;
+using System.IO;
 
 namespace WebSite
 {
@@ -40,7 +44,29 @@ namespace WebSite
             services.AddDbContext<LawyerCRMContext>(options =>
                 options.UseSqlServer(connection));
 
-            RegisterDependencies(services);            
+            RegisterDependencies(services);
+
+                // Работаем с миграциями
+            string scriptsFolder = Configuration.GetSection("ScriptsFolder").Value;
+            BaseMigration.scriptsFolder = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "\\Advokates_CRM.DB\\", scriptsFolder);        // Устанавливаем начальный скрипт для БД
+
+            services.AddFluentMigratorCore()
+                   .ConfigureRunner
+                   (
+                       config =>
+                       {
+                           EnsureDBCreated();       // проверяем существование БД. Если БД нет - создаём её
+                           config.AddSqlServer()
+                           .WithGlobalConnectionString(connection)
+                                                    // Определяем сборку, в которой находятся нужные миграции
+                           //.ScanIn(Assembly.GetExecutingAssembly()).For.All()
+                           .ScanIn(typeof(_1_InitDB).Assembly).For.Migrations();
+                       }
+                   )
+                   .AddLogging(config => config.AddFluentMigratorConsole());
+
+
+
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -108,27 +134,7 @@ namespace WebSite
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
-        /// <summary>
-        /// Регистрация зависимостей
-        /// </summary>
-        /// <param name="services"></param>
-        private void RegisterDependencies(IServiceCollection services)
-        {
-            services.AddScoped<ISecurity, Security>();
-            services.AddScoped<IDataLayer, DataLayerDB>();
-            services.AddScoped<IDataLayerCabinet, DataLayerCabinet>();
-            services.AddScoped<IDataLayerCase, DataLayerCase>();
-            services.AddScoped<IDataLayerNote, DataLayerNote>();
-            services.AddScoped<IDataLayerFigurant, DataLayerFigurant>();
-
-            services.AddScoped<IErrorHandler, DataLayerError>();
-            services.AddScoped<IDataLayerEmployee, DataLayerEmployee>();
-
-            services.AddScoped<IBasicRequestHandler, BasicRequestHandler>();
-            services.AddScoped<IViewRequestHandler, ViewRequestHandler>();
-        }
-
-            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -172,6 +178,71 @@ namespace WebSite
                     // template: "{controller=Auth}/{action=Authorization}/{id?}");
                     template: "{controller=Home}/{action=Index}");
             });
+
+                // Делаем миграцию
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var migrator = scope.ServiceProvider.GetService<IMigrationRunner>();
+
+                //migrator.MigrateDown(0);
+                migrator.MigrateUp();
+            }
         }
+
+        /// <summary>
+        /// Регистрация зависимостей
+        /// </summary>
+        /// <param name="services"></param>
+        private void RegisterDependencies(IServiceCollection services)
+        {
+            services.AddScoped<ISecurity, Security>();
+            services.AddScoped<IDataLayer, DataLayerDB>();
+            services.AddScoped<IDataLayerCabinet, DataLayerCabinet>();
+            services.AddScoped<IDataLayerCase, DataLayerCase>();
+            services.AddScoped<IDataLayerNote, DataLayerNote>();
+            services.AddScoped<IDataLayerFigurant, DataLayerFigurant>();
+
+            services.AddScoped<IErrorHandler, DataLayerError>();
+            services.AddScoped<IDataLayerEmployee, DataLayerEmployee>();
+
+            services.AddScoped<IBasicRequestHandler, BasicRequestHandler>();
+            services.AddScoped<IViewRequestHandler, ViewRequestHandler>();
+        }
+
+        /// <summary>
+        /// Удостоверяемся, что база существует. Если нет - создаём её
+        /// </summary>
+        private void EnsureDBCreated()
+        {
+            string connectionString = Configuration.GetSection("DataBaseServer").Value;
+            string dataBaseName = Configuration.GetSection("DataBaseName").Value;
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                sqlConnection.Open();
+                SqlCommand ensureCreatedComand = new SqlCommand("select count(1) from sys.databases d where d.name = '" + dataBaseName + "'", sqlConnection);
+                ensureCreatedComand.CommandType = System.Data.CommandType.Text;
+
+                bool DBExists = false;
+                using (SqlDataReader reader = ensureCreatedComand.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        if (reader.Read())
+                        {
+                            DBExists = reader.GetInt32(0)>0;
+                        }
+                    }
+                }
+                if (!DBExists)         // БД не существует
+                {
+                    SqlCommand c = new SqlCommand("CREATE DATABASE " + dataBaseName, sqlConnection);
+                    c.CommandType = System.Data.CommandType.Text;
+                    c.ExecuteNonQuery();
+                }
+                sqlConnection.Close();
+            }
+            
+        }        
     }
 }

@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentMigrator" Version="3.2.17" />
     <PackageReference Include="StoredProcedureEFCore" Version="1.0.5" />
   </ItemGroup>
 

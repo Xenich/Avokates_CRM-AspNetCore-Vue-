@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.0.1" />
+    <PackageReference Include="FluentMigrator.Runner" Version="3.2.17" />
     <PackageReference Include="MailKit" Version="2.13.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2" PrivateAssets="All" />
